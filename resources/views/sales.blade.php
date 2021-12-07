@@ -71,7 +71,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Delivery Status</label>
-                                    <select type="text" class="form-control form-control-sm" v-model="overview.delivery_status">
+                                    <select type="text" class="form-control form-control-sm"
+                                            v-model="overview.delivery_status">
                                         <option value="Not Shipped">Not Shipped</option>
                                         @can('salesstatusupdate')
                                             <option value="Shipped">Shipped</option>
@@ -299,10 +300,13 @@
                         },
                         {
                             data: function (value) {
-                                var $class_color = value.delivery_status === 'Not Shipped' ? 'btn-warning' : 'btn-success';
-                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
-                                    '<a href="#" class="btn ' + $class_color + ' btn-delivery-status">' + value.delivery_status + '</a>' +
-                                    '</div>'
+                                if (value.can_be_shipped || value.delivery_status == 'Shipped') {
+                                    var $class_color = value.delivery_status === 'Not Shipped' ? 'btn-warning' : 'btn-success';
+                                    return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                        '<a href="#" class="btn ' + $class_color + ' btn-delivery-status">' + value.delivery_status + '</a>' +
+                                        '</div>'
+                                }
+                                return 'Check Inventory';
                             }, name: 'status', title: 'Delivery Status'
                         },
                         {data: 'customer_name', name: 'customers.name', title: 'Customer'},
