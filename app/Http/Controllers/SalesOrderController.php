@@ -41,7 +41,7 @@ class SalesOrderController extends Controller
             $product_details = $this->getProductDetail($data['id']);
             foreach ($product_details as $products) {
                 $diff = $products->quantity - $products->qty;
-                if ($diff <= 0) {
+                if ($diff < 0) {
                     $data['can_be_shipped'] = 0;
                 }
             }
