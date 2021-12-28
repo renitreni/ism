@@ -21,7 +21,7 @@ tr { page-break-inside: avoid }
     @foreach ($supply as $item)
     <?php $grand_total += $item->quantity * $item->selling_price ?>
         <tr>
-            <td>{{ $item->manual_id }}</td>
+            <td>{{ $item->code }}</td>
             <td>{{ $item->category }}</td>
             <td>{{ $item->name }}</td>
             <td>{{ $item->quantity }}</td>

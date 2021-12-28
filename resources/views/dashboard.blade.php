@@ -333,7 +333,7 @@
                         method: "POST",
                     },
                     columns: [
-                        {data: 'manual_id', name: 'products.manual_id', title: 'ID'},
+                        {data: 'code', name: 'products.code', title: 'Product Model'},
                         {data: 'product_name', name: "products.name", title: 'Product'},
                         {data: 'quantity', title: 'Quantity'},
                     ],
@@ -361,7 +361,7 @@
                         method: "POST",
                     },
                     columns: [
-                        {data: 'manual_id', name: 'products.manual_id', title: 'ID'},
+                        {data: 'code', name: 'products.code', title: 'Product Model'},
                         {data: 'product_name', name: "products.name", title: 'Product'},
                         {data: 'quantity', title: 'Quantity'},
                     ],

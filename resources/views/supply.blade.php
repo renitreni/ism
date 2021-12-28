@@ -182,7 +182,7 @@
                         method: "POST",
                     },
                     columns: [
-                        {data: 'manual_id', name: 'products.manual_id', title: 'Product ID'},
+                        {data: 'code', name: 'products.code', title: 'Product Model'},
                         {data: 'product_name', name: 'products.name', title: 'Product'},
                         {data: 'selling_price', name: 'products.selling_price', title: 'Unit Price'},
                         {
