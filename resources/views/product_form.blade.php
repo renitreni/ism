@@ -22,12 +22,12 @@
                                     <input type="text" class="form-control form-control-sm name" v-model="overview.name">
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Product ID</label>
-                                    <input type="text" class="form-control form-control-sm" v-model="overview.manual_id">
-                                </div>
-                            </div>
+{{--                            <div class="col-md-4">--}}
+{{--                                <div class="form-group">--}}
+{{--                                    <label>Product ID</label>--}}
+{{--                                    <input type="text" class="form-control form-control-sm" v-model="overview.manual_id">--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Product Code</label>
