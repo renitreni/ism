@@ -96,7 +96,7 @@
     <thead class="bg-aliceblue">
     <tr>
         <th scope="col">Description</th>
-        <th scope="col">Product Code</th>
+        <th scope="col">Product Model</th>
         <th scope="col">Serial No.</th>
         <th scope="col">Quantity</th>
         <th scope="col">Unit</th>

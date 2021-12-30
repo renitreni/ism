@@ -30,7 +30,7 @@
 {{--                            </div>--}}
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>Product Code</label>
+                                    <label>Product Model</label>
                                     <input type="text" class="form-control form-control-sm" v-model="overview.code">
                                 </div>
                             </div>
