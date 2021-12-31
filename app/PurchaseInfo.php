@@ -19,15 +19,15 @@ class PurchaseInfo extends Model
 
     public function newPONo()
     {
-        if(Preference::verify('po_auto') == 0) {
+        if (Preference::verify('po_auto') == 0) {
             return '';
         }
         $po_no_list = $this->newQuery()
-                           ->where('po_no', 'like', '%PO%')
-                           ->orderBy('id', 'desc')
-                           ->limit(1)
-                           ->get()
-                           ->toArray();
+            ->where('po_no', 'like', '%PO%')
+            ->orderBy('id', 'desc')
+            ->limit(1)
+            ->get()
+            ->toArray();
         $str_length = 5;
         $year       = Carbon::now()->format('y');
         if (isset($po_no_list[0]["po_no"])) {
@@ -37,19 +37,31 @@ class PurchaseInfo extends Model
             $num = 1;
             $str = substr("0000{$num}", -$str_length);
 
-            return 'PO' . $year . '-' . $str;
+            return 'PO'.$year.'-'.$str;
         } else {
             $numbering = explode('-', $po_no)[1];
             $year      = Carbon::now()->format('y');
-            $final_num = (int)$numbering + 1;
+            $final_num = (int) $numbering + 1;
             $str       = substr("0000{$final_num}", -$str_length);
 
-            return 'PO' . $year . '-' . $str;
+            return 'PO'.$year.'-'.$str;
         }
     }
 
     public static function updateInfo($overview)
     {
         self::query()->where('id', $overview['id'])->update($overview);
+    }
+
+    public function total($start, $end)
+    {
+        return $this->selectRaw('purchase_infos.po_no, vendors.name, summaries.grand_total')
+            ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
+            ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
+            ->orderBy('purchase_infos.po_no', 'desc')
+            ->where('status', 'Received')
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $q->whereBetween('purchase_infos.created_at', [$start, $end]);
+            });
     }
 }

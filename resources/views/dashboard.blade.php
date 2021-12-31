@@ -248,12 +248,12 @@
                         message: "",
                     },
                     so_range: {
-                        start: '',
-                        end: ''
+                        start: '0',
+                        end: '0'
                     },
                     po_range: {
-                        start: '',
-                        end: ''
+                        start: '0',
+                        end: '0'
                     },
                     po_totals: 0,
                     so_totals: 0,
@@ -267,7 +267,7 @@
                         method: 'POST',
                         data: $this.so_range,
                         success(value) {
-                            $this.so_totals = value[0].total;
+                            $this.so_totals = value;
                         }
                     });
                 },
@@ -278,7 +278,7 @@
                         method: 'POST',
                         data: $this.po_range,
                         success(value) {
-                            $this.po_totals = value[0].total;
+                            $this.po_totals = value;
                         }
                     });
                 },
@@ -302,6 +302,17 @@
                         console.log(data);
                     });
 
+                $('#po_totals').daterangepicker({
+                    opens: 'left',
+                }, function (start, end, label) {
+                    $this.po_range.start = start.format('YYYY-MM-DD');
+                    $this.po_range.end = end.format('YYYY-MM-DD');
+                    $this.getPOTotals();
+                    $('#po_totals').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+                });
+
+                $('#po_totals').val('');
+
                 $('#so_totals').daterangepicker({
                     opens: 'left',
                 }, function (start, end, label) {
@@ -311,14 +322,7 @@
                     $('#so_totals').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
                 });
 
-                $('#po_totals').daterangepicker({
-                    opens: 'left',
-                }, function (start, end, label) {
-                    $this.po_range.start = start.format('YYYY-MM-DD');
-                    $this.po_range.end = end.format('YYYY-MM-DD');
-                    $this.getPOTotals();
-                    $('#po_totals').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
-                });
+                $('#so_totals').val('');
 
                 $this.dt = $('#table-in-stock').DataTable({
                     processing: true,
