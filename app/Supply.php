@@ -3,6 +3,7 @@
 namespace App;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -66,5 +67,13 @@ class Supply extends Model
                 self::query()->where('product_id', $value)->update(['quantity' => $final_qty]);
             }
         }
+    }
+
+    public function results()
+    : Builder
+    {
+        return $this->query()
+            ->selectRaw('supplies.*, products.name as product_name, products.manual_id, products.code')
+            ->join('products', 'products.id', '=', 'supplies.product_id');
     }
 }

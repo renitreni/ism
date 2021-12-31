@@ -9,13 +9,10 @@ use App\Exports\SOTotalExcel;
 use App\PurchaseInfo;
 use App\SalesOrder;
 use App\Supply;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Yajra\DataTables\DataTables;
-use PDF;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DashboardController extends Controller
@@ -56,22 +53,12 @@ class DashboardController extends Controller
 
     public function inStock()
     {
-        $supply = Supply::query()
-            ->selectRaw('supplies.*, products.name as product_name, products.manual_id, products.code')
-            ->join('products', 'products.id', '=', 'supplies.product_id')
-            ->where('supplies.quantity', '<>', 0);
-
-        return DataTables::of($supply)->make(true);
+        return DataTables::of((new Supply())->results()->where('supplies.quantity', '<>', 0))->make(true);
     }
 
     public function outOfStock()
     {
-        $supply = Supply::query()
-            ->selectRaw('supplies.*, products.name as product_name, products.manual_id, products.code')
-            ->join('products', 'products.id', '=', 'supplies.product_id')
-            ->where('supplies.quantity', '=', 0);
-
-        return DataTables::of($supply)->make(true);
+        return DataTables::of((new Supply())->results()->where('supplies.quantity', '=', 0))->make(true);
     }
 
     public function orderedPO()
