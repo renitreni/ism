@@ -6,6 +6,7 @@ use App\Exports\AssetsExcel;
 use App\Exports\POTotalExcel;
 use App\Exports\QTNTotalExcel;
 use App\Exports\SOTotalExcel;
+use App\Product;
 use App\PurchaseInfo;
 use App\SalesOrder;
 use App\Supply;
@@ -39,6 +40,11 @@ class DashboardController extends Controller
         $so_count = SalesOrder::query()->count();
 
         return view('dashboard', compact('assets', 'stocks', 'po_count', 'so_count'));
+    }
+
+    public function getFastMoving()
+    {
+        return DataTables::of((new Product())->results())->make(true);
     }
 
     public function computeStock($result)

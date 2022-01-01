@@ -24,11 +24,18 @@ class ProductController extends Controller
 
     public function table()
     {
-        $products = Product::query()
-                           ->selectRaw('products.*, users.name as username')
-                           ->join('users', 'users.id', '=', 'products.assigned_to');
+        $products = Product::query()->with(['tags'])
+            ->selectRaw('products.*, users.name as username')
+            ->join('users', 'users.id', '=', 'products.assigned_to');
 
-        return DataTables::of($products)->make(true);
+        return DataTables::of($products)->setTransformer(function ($data) {
+            $data         = collect($data)->toArray();
+            $data['name'] = isset($data['tags'][0])
+                ? "<label class='badge badge-info'>{$data['tags'][0]['name']['en']}</label> {$data['name']}"
+                : $data['name'];
+
+            return $data;
+        })->make(true);
     }
 
     public function create()
@@ -58,7 +65,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::find($id);
+        $product = Product::where('id', $id)->with(['tags'])->get()[0];
         $gallery = Gallery::query()->where('product_id', $id)->get();
 
         return view('product_form', compact('product', 'gallery'));
@@ -67,9 +74,9 @@ class ProductController extends Controller
     public function findProduct(Request $request)
     {
         $product = DB::table('products')
-                     ->selectRaw('products.*, supplies.quantity, supplies.product_id')
-                     ->join('supplies', 'supplies.product_id', '=', 'products.id')
-                     ->where('products.id', $request->product_id);
+            ->selectRaw('products.*, supplies.quantity, supplies.product_id')
+            ->join('supplies', 'supplies.product_id', '=', 'products.id')
+            ->where('products.id', $request->product_id);
 
         return collect($product->get()[0]);
     }
@@ -77,8 +84,8 @@ class ProductController extends Controller
     public function getList(Request $request)
     {
         $product = Product::query()
-                          ->selectRaw("id as id, name as text")
-                          ->whereRaw("upper(name) like '%" . strtoupper($request->term) . "%'");
+            ->selectRaw("id as id, name as text")
+            ->whereRaw("upper(name) like '%".strtoupper($request->term)."%'");
 
         if ($request->category != '') {
             $product->where('category', $request->category);
@@ -92,10 +99,10 @@ class ProductController extends Controller
     public function getSOList(Request $request)
     {
         $product = Product::query()
-                          ->selectRaw("products.id, products.name as text")
-                          ->join("product_details", "product_details.product_id", "products.id")
-                          ->where("product_details.sales_order_id", $request->so_no)
-                          ->whereRaw("products.name LIKE '%{$request->term}%'");
+            ->selectRaw("products.id, products.name as text")
+            ->join("product_details", "product_details.product_id", "products.id")
+            ->where("product_details.sales_order_id", $request->so_no)
+            ->whereRaw("products.name LIKE '%{$request->term}%'");
 
         if ($request->category != '') {
             $product->where('category', $request->category);
@@ -124,7 +131,13 @@ class ProductController extends Controller
 
     public function update(Request $request)
     {
-        Product::query()->where('id', $request->id)->update($request->input());
+        $product = Product::find($request->id);
+        if ($request->fast_moving) {
+            $product->attachTag('Fast Moving');
+        } else {
+            $product->detachTag('Fast Moving');
+        }
+        Product::query()->where('id', $request->id)->update($request->except('fast_moving', 'tags'));
 
         return ['success' => true];
     }

@@ -16,18 +16,30 @@
                                 <h4>Product Information</h4>
                                 <hr>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" class="form-control form-control-sm name" v-model="overview.name">
+                                    <input type="text" class="form-control form-control-sm name"
+                                           v-model="overview.name">
                                 </div>
                             </div>
-{{--                            <div class="col-md-4">--}}
-{{--                                <div class="form-group">--}}
-{{--                                    <label>Product ID</label>--}}
-{{--                                    <input type="text" class="form-control form-control-sm" v-model="overview.manual_id">--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Is this Fast Moving?</label>
+                                    <div class="dropdown show">
+                                        <a class="btn btn-primary dropdown-toggle"
+                                           href="#!" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                                           aria-haspopup="true" aria-expanded="false">
+                                            <span v-if="fast_moving"> @{{ fast_moving }}</span>
+                                            <span v-else>No</span>
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                            <a class="dropdown-item" href="#" @click="setTag">Fast Moving Item</a>
+                                            <a class="dropdown-item" href="#" @click="removeTag">No</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Product Model</label>
@@ -60,13 +72,15 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Vendor Price</label>
-                                    <input type="text" class="form-control form-control-sm" v-model="overview.vendor_price">
+                                    <input type="text" class="form-control form-control-sm"
+                                           v-model="overview.vendor_price">
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Selling Price</label>
-                                    <input type="text" class="form-control form-control-sm" v-model="overview.selling_price">
+                                    <input type="text" class="form-control form-control-sm"
+                                           v-model="overview.selling_price">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -82,7 +96,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Batch</label>
-                                        <input type="text" class="form-control form-control-sm" v-model="overview.batch">
+                                        <input type="text" class="form-control form-control-sm"
+                                               v-model="overview.batch">
                                     </div>
                                 </div>
                             @endif
@@ -98,7 +113,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Weight</label>
-                                        <input type="text" class="form-control form-control-sm" v-model="overview.weight">
+                                        <input type="text" class="form-control form-control-sm"
+                                               v-model="overview.weight">
                                     </div>
                                 </div>
                             @endif
@@ -106,7 +122,8 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Color</label>
-                                        <input type="text" class="form-control form-control-sm" v-model="overview.color">
+                                        <input type="text" class="form-control form-control-sm"
+                                               v-model="overview.color">
                                     </div>
                                 </div>
                             @endif
@@ -164,7 +181,8 @@
                 return {
                     viewType: 0,
                     overview: {!! $product !!},
-                    images: {!! $gallery !!}
+                    images: {!! $gallery !!},
+                    fast_moving: '',
                 }
             },
             watch: {
@@ -173,8 +191,15 @@
                 }
             },
             methods: {
+                setTag() {
+                    this.fast_moving = 'Fast Moving'
+                },
+                removeTag() {
+                    this.fast_moving = null;
+                },
                 store() {
                     var $this = this;
+                    $this.overview.fast_moving = $this.fast_moving;
                     $.ajax({
                         url: '{{ route('product.store') }}',
                         method: 'POST',
@@ -195,6 +220,7 @@
                 },
                 update() {
                     var $this = this;
+                    $this.overview.fast_moving = $this.fast_moving;
                     $.ajax({
                         url: '{{ route('product.update') }}',
                         method: 'POST',
@@ -231,15 +257,13 @@
             },
             mounted() {
                 var $this = this;
-
+                $this.fast_moving = this.overview.tags ? this.overview.tags[0]['name']['en'] : '';
                 if ('{{ Route::currentRouteName() }}' == 'product.detail') {
                     this.viewType = 0;
                     $('.name').addClass('form-control-plaintext').removeClass('form-control');
-                }
-                else if ('{{ Route::currentRouteName() }}' == 'product.create') {
+                } else if ('{{ Route::currentRouteName() }}' == 'product.create') {
                     this.viewType = 1;
-                }
-                else if ('{{ Route::currentRouteName() }}' == 'product.view') {
+                } else if ('{{ Route::currentRouteName() }}' == 'product.view') {
                     this.viewType = 2;
                     $('label').addClass('font-weight-bold');
                     $('.form-control').addClass('form-control-plaintext').removeClass('form-control');

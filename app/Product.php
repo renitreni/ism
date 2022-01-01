@@ -3,10 +3,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Tags\HasTags;
 
 class Product extends Model
 {
     use SoftDeletes;
+    use HasTags;
 
     protected $guarded = ['id'];
 
@@ -17,7 +19,7 @@ class Product extends Model
                 ->where('id', $product_id)
                 ->get()
                 ->count();
-        
+
         return $count == 1 ? true : false;
     }
 
@@ -28,7 +30,14 @@ class Product extends Model
             ->where('id', $product_id)
             ->get()
             ->count();
-        
+
         return $count == 0 ? true : false;
+    }
+
+    public function results()
+    {
+        return $this::withAnyTags(['Fast Moving'])
+        ->selectRaw('supplies.*, products.name as product_name, products.code')
+        ->join('supplies', 'products.id', '=', 'supplies.product_id');
     }
 }
