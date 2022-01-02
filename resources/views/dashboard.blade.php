@@ -4,7 +4,30 @@
     <div id='app' class="container-fluid">
         <div class="row">
             <!-- Total Assets -->
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-xl-auto col-md-6 mb-4">
+                <div class="card border-left-secondary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                    <a href="{{ route('home.labor.printable') }}" target="_blank"
+                                       class="btn btn-sm btn-secondary">
+                                        <i class="fas fa-hand-holding-usd"></i>
+                                    </a>
+                                     Total Labor
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($labor_total, 2) }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-hand-holding-usd fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Assets -->
+            <div class="col-xl-auto col-md-6 mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -27,7 +50,7 @@
             </div>
 
             <!-- Product Stocks -->
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-xl-auto col-md-6 mb-4">
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -49,7 +72,7 @@
             </div>
 
             <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-xl-auto col-md-6 mb-4">
                 <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body" style="padding-bottom: .1rem;">
                         <div class="row no-gutters align-items-center">
@@ -84,7 +107,7 @@
             </div>
 
             <!-- Pending Requests Card Example -->
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-xl-auto col-md-6 mb-4">
                 <div class="card border-left-warning shadow h-100 py-2">
                     <div class="card-body" style="padding-bottom: .1rem;">
                         <div class="row no-gutters align-items-center">

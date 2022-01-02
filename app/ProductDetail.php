@@ -24,4 +24,10 @@ class ProductDetail extends Model
             ->get()
             ->toArray();
     }
+
+    public function getLabor()
+    {
+        return $this->whereRaw("lower(product_name) LIKE '%labor%'")
+            ->join('sales_orders', 'sales_orders.id', '=', 'product_details.sales_order_id');
+    }
 }

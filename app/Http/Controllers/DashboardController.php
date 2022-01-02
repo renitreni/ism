@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Exports\AssetsExcel;
+use App\Exports\LaborTotalExcel;
 use App\Exports\POTotalExcel;
 use App\Exports\QTNTotalExcel;
 use App\Exports\SOTotalExcel;
 use App\Product;
+use App\ProductDetail;
 use App\PurchaseInfo;
 use App\SalesOrder;
 use App\Supply;
@@ -22,24 +24,29 @@ class DashboardController extends Controller
     {
         Supply::recalibrate();
 
+//#################
         $supply = Supply::query()
             ->selectRaw('(supplies.quantity * products.selling_price) total')
             ->join('products', 'products.id', '=', 'supplies.product_id');
 
         $assets = $this->computeStock($supply);
-
+//#################
+//-----------------
         $supply = Supply::query()
             ->selectRaw('supplies.quantity total')
             ->join('products', 'products.id', '=', 'supplies.product_id')
             ->where('supplies.quantity', '<>', 0);
 
         $stocks = $this->computeStock($supply);
-
+//------------------
         $po_count = PurchaseInfo::query()->count();
-
         $so_count = SalesOrder::query()->count();
 
-        return view('dashboard', compact('assets', 'stocks', 'po_count', 'so_count'));
+        $product_details = (new ProductDetail())->getLabor()
+            ->selectRaw('(product_details.qty * product_details.selling_price) total');
+        $labor_total     = $this->computeStock($product_details);
+
+        return view('dashboard', compact('assets', 'stocks', 'po_count', 'so_count', 'labor_total'));
     }
 
     public function getFastMoving()
@@ -59,12 +66,12 @@ class DashboardController extends Controller
 
     public function inStock()
     {
-        return DataTables::of((new Supply())->results()->where('supplies.quantity', '<>', 0))->make(true);
+        return DataTables::of((new Supply())->results()->where('supplies.quantity', ' <> ', 0))->make(true);
     }
 
     public function outOfStock()
     {
-        return DataTables::of((new Supply())->results()->where('supplies.quantity', '=', 0))->make(true);
+        return DataTables::of((new Supply())->results()->where('supplies.quantity', ' = ', 0))->make(true);
     }
 
     public function orderedPO()
@@ -88,9 +95,14 @@ class DashboardController extends Controller
         return DataTables::of($so)->make(true);
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
+    public function totalLaborPrintable()
+    : BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H:i:s');
+
+        return Excel::download(new LaborTotalExcel(), "LABOR_AUDIT-$date.xlsx");
+    }
+
     public function assetsPrintable()
     : BinaryFileResponse
     {
@@ -105,7 +117,7 @@ class DashboardController extends Controller
     }
 
     public function poTotalPrintable($start, $end)
-    {
+    : BinaryFileResponse {
         $date = now()->format('Y-m-d_H:i:s');
 
         return Excel::download(new POTotalExcel($start, $end), "PO_AUDIT-$date.xlsx");
@@ -119,14 +131,14 @@ class DashboardController extends Controller
 
     public function soTotalPrintable($start, $end)
     : BinaryFileResponse {
-        $date = now()->format('Y-m-d_H:i:s');
+        $date = now()->format('Y - m - d_H:i:s');
 
         return Excel::download(new SOTotalExcel($start, $end), "SO_AUDIT-$date.xlsx");
     }
 
     public function qtnTotalPrintable($start, $end)
     {
-        $date = now()->format('Y-m-d_H:i:s');
+        $date = now()->format('Y - m - d_H:i:s');
 
         return Excel::download(new QTNTotalExcel($start, $end), "QTN_AUDIT-$date.xlsx");
     }
