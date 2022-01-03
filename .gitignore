@@ -13,7 +13,6 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-/public/app/public/logo/*.jpg
+/public/app/public/logo/logo.jpg
 /public/images
 .idea/
-/public/app/public/logo/logo.jpg
