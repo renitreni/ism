@@ -1,4 +1,5 @@
 <?php
+
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
@@ -12,13 +13,13 @@ class Product extends Model
 
     protected $guarded = ['id'];
 
-    public static function  isLimited($product_id)
+    public static function isLimited($product_id)
     {
         $count = self::query()
-                ->where('type','limited')
-                ->where('id', $product_id)
-                ->get()
-                ->count();
+            ->where('type', 'limited')
+            ->where('id', $product_id)
+            ->get()
+            ->count();
 
         return $count == 1 ? true : false;
     }
@@ -26,7 +27,7 @@ class Product extends Model
     public static function isUnLimited($product_id)
     {
         $count = self::query()
-            ->where('type','unlimited')
+            ->where('type', 'unlimited')
             ->where('id', $product_id)
             ->get()
             ->count();
@@ -37,7 +38,17 @@ class Product extends Model
     public function results()
     {
         return $this::withAnyTags(['Fast Moving'])
-        ->selectRaw('supplies.*, products.name as product_name, products.code')
-        ->join('supplies', 'products.id', '=', 'supplies.product_id');
+            ->selectRaw('supplies.*, products.name as product_name, products.code')
+            ->join('supplies', 'products.id', '=', 'supplies.product_id');
+    }
+
+    public function fastMoving($request, $id)
+    {
+        $product = $this->find($id);
+        if ($request->fast_moving) {
+            $product->attachTag('Fast Moving');
+        } else {
+            $product->detachTag('Fast Moving');
+        }
     }
 }

@@ -17,7 +17,7 @@ class AssetsExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColum
     public function query()
     {
         return Supply::query()
-            ->selectRaw('products.name,products.category,products.code,supplies.quantity,products.selling_price')
+            ->selectRaw('products.category,products.code,products.name,supplies.quantity,vendor_price,products.selling_price')
             ->join('products', 'products.id', '=', 'supplies.product_id')
             ->orderBy('products.name');
     }
@@ -25,7 +25,7 @@ class AssetsExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColum
     public function headings()
     : array
     {
-        return ['Product Name', 'Category', 'Product Model', 'Quantity', 'Selling Price'];
+        return ['Category', 'Product Model', 'Product Name', 'Quantity', 'Dealer\'s Price', 'Selling Price'];
     }
 
     public function styles(Worksheet $sheet)
@@ -42,6 +42,8 @@ class AssetsExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColum
             'A' => 55,
             'B' => 40,
             'C' => 40,
+            'E' => 15,
+            'F' => 15,
         ];
     }
 }

@@ -117,8 +117,9 @@ class ProductController extends Controller
     {
         $data                = $request->input();
         $data['assigned_to'] = auth()->user()->id;
-        $id                  = Product::query()->insertGetId($data);
+        $id                  = Product::query()->insertGetId($request->except('fast_moving', 'tags'));
 
+        (new Product())->fastMoving($request, $id);
         Supply::query()->insert([
             "product_id"  => $id,
             "quantity"    => 0,
@@ -131,12 +132,7 @@ class ProductController extends Controller
 
     public function update(Request $request)
     {
-        $product = Product::find($request->id);
-        if ($request->fast_moving) {
-            $product->attachTag('Fast Moving');
-        } else {
-            $product->detachTag('Fast Moving');
-        }
+        (new Product())->fastMoving($request, $request->id);
         Product::query()->where('id', $request->id)->update($request->except('fast_moving', 'tags'));
 
         return ['success' => true];

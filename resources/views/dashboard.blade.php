@@ -14,9 +14,10 @@
                                        class="btn btn-sm btn-secondary">
                                         <i class="fas fa-hand-holding-usd"></i>
                                     </a>
-                                     Total Labor
+                                    Total Project
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($labor_total, 2) }}</div>
+                                <div
+                                    class="h5 font-weight-bold text-gray-800">{{ number_format($labor_total, 2) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-hand-holding-usd fa-2x text-gray-300"></i>
