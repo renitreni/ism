@@ -57,7 +57,7 @@ class ProductReturn extends Model
         $model->contact_person = $request['contact_person'];
         $model->reason = $request['reason'];
         $model->remarks = $request['remarks'];
-        $model->assigned_to = auth()->user()->id;
+        $model->assigned_to = auth()->id();
         $model->save();
 
         return $model->id;

@@ -106,7 +106,7 @@ class PurchaseInfoController extends Controller
 
         $data['overview']['po_no']       = PurchaseInfo::generate()->newPONo();
         $data['overview']['created_at']  = Carbon::now()->format('Y-m-d');
-        $data['overview']['assigned_to'] = auth()->user()->id;
+        $data['overview']['assigned_to'] = auth()->id();
         $id                              = DB::table('purchase_infos')->insertGetId($data['overview']);
 
         $product_details = [];

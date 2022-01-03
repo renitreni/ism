@@ -45,7 +45,7 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $data                = $request->input();
-        $data['assigned_to'] = auth()->user()->id;
+        $data['assigned_to'] = auth()->id();
         Customer::create($data);
 
         return ['success' => true];

@@ -95,7 +95,7 @@ class SalesOrderController extends Controller
     {
         $data                            = $request->input();
         $data['overview']['so_no']       = SalesOrder::generate()->newSONo();
-        $data['overview']['assigned_to'] = auth()->user()->id;
+        $data['overview']['assigned_to'] = auth()->id();
         $data['overview']['created_at']  = Carbon::now()->format('Y-m-d');
 
         $id = DB::table('sales_orders')->insertGetId($data['overview']);

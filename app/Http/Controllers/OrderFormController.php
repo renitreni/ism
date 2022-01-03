@@ -67,7 +67,7 @@ class OrderFormController extends Controller
         $data = $request->input();
         if ($data['overview']['po_no'] != '') {
             $id = PurchaseInfo::query()->insertGetId([
-                "assigned_to" => auth()->user()->id,
+                "assigned_to" => auth()->id(),
                 "po_no"       => $data['overview']['po_no'],
                 "created_at"  => Carbon::now()->format('Y-m-d'),
                 "status"      => "Ordered",
@@ -84,7 +84,7 @@ class OrderFormController extends Controller
             $id = SalesOrder::query()->insertGetId([
                 "customer_id" => $data['overview']['customer_id'],
                 "status"      => "Quote",
-                "assigned_to" => auth()->user()->id,
+                "assigned_to" => auth()->id(),
                 "created_at"  => Carbon::now()->format('Y-m-d'),
                 "so_no"       => $data['overview']['so_no'],
             ]);
@@ -105,7 +105,7 @@ class OrderFormController extends Controller
             }
         }
 
-        $data['overview']['prepared_by'] = auth()->user()->id;
+        $data['overview']['prepared_by'] = auth()->id();
         OrderForm::query()->insert($data['overview']);
 
         return ['success' => true];

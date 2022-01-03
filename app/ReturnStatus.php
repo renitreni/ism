@@ -11,7 +11,7 @@ class ReturnStatus extends Model
         $model = new self();
         $model->product_return_id = $id;
         $model->status = $request['status'];
-        $model->assign_to = auth()->user()->id;
+        $model->assign_to = auth()->id();
         $model->save();
     }
 }

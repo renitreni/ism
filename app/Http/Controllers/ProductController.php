@@ -115,16 +115,16 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $data                = $request->input();
-        $data['assigned_to'] = auth()->user()->id;
-        $id                  = Product::query()->insertGetId($request->except('fast_moving', 'tags'));
+        $data                = $request->except('fast_moving', 'tags');
+        $data['assigned_to'] = auth()->id();
+        $id                  = Product::query()->insertGetId($data);
 
         (new Product())->fastMoving($request, $id);
         Supply::query()->insert([
             "product_id"  => $id,
             "quantity"    => 0,
             "unit_cost"   => 0,
-            "assigned_to" => auth()->user()->id,
+            "assigned_to" => auth()->id(),
         ]);
 
         return ['success' => true, 'id' => $id];
@@ -155,7 +155,7 @@ class ProductController extends Controller
             $gallery->path       = $path;
             $gallery->extension  = $request->image->extension();
             $gallery->size       = $request->image->getSize();
-            $gallery->created_by = auth()->user()->id;
+            $gallery->created_by = auth()->id();
             $gallery->save();
         }
 

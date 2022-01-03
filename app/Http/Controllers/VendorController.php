@@ -62,7 +62,7 @@ class VendorController extends Controller
     public function store(Request $request)
     {
         $data                = $request->input();
-        $data['assigned_to'] = auth()->user()->id;
+        $data['assigned_to'] = auth()->id();
         Vendor::query()->insert($data);
 
         return ['success' => true];
