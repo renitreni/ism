@@ -75,7 +75,7 @@ class UserController extends Controller
 
     public function logoUpload(LogoUploadRequest $request)
     {
-        $request->logo->storeAs('logo', 'logo.jpg');
+        $request->file('logo')->storeAs('logo', 'logo.jpg');
 
         return redirect('/users');
     }

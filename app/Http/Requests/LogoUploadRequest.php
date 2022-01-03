@@ -24,7 +24,6 @@ class LogoUploadRequest extends FormRequest
     public function rules()
     {
         return [
-            'logo' => 'required|image'
         ];
     }
 }

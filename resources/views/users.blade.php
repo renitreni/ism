@@ -27,7 +27,7 @@
                                             <input type="file" name="logo" class="form-control-file">
                                         </div>
                                         <div class="col-md-auto">
-                                            <button class="btn btn-sm btn-primary">Upload Logo</button>
+                                            <button type="submit" class="btn btn-sm btn-primary">Upload Logo</button>
                                         </div>
                                     </div>
                                 </form>
