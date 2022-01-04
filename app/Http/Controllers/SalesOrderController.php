@@ -529,11 +529,10 @@ class SalesOrderController extends Controller
         ];
     }
 
-    public function downloadSaleReport()
-    : BinaryFileResponse
-    {
+    public function downloadSaleReport(Request $request)
+    : BinaryFileResponse {
         $date = now()->format('Y-m-d_H:i:s');
 
-        return Excel::download(new SalesReportExcel(), "SALES_REPORT_$date.xlsx");
+        return Excel::download(new SalesReportExcel($request->start, $request->end), "SALES_REPORT_$date.xlsx");
     }
 }

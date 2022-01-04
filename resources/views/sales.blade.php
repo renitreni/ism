@@ -17,7 +17,8 @@
                             <div class="col-md-12">
                                 <a href="{{ route('sales.create') }}" class="btn btn-sm btn-success"><i
                                         class="fa fa-plus"></i> New Sales Order</a>
-                                <a href="{{ route('sales.report') }}" class="btn btn-sm btn-info">
+                                <a href="#!" class="btn btn-sm btn-info" data-toggle="modal"
+                                   data-target="#salesReportMdl">
                                     <i class="fas fa-download"></i> Sales Report</a>
                             </div>
                             <div class="col-md-12 mt-3">
@@ -154,6 +155,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="salesReportMdl" tabindex="-1" role="dialog" aria-labelledby="salesReportMdl"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Download Sales Report </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Set Date Range</label>
+                                <input type="text" id="sales_report" class="form-control" name="daterange"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <a v-bind:href="'/sales/report/'+ sales_report.start_date +'/'+ sales_report.end_date"
+                           type="button" class="btn btn-primary">Save changes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -167,7 +196,12 @@
                     overview: {
                         id: "",
                         status: ""
+                    },
+                    sales_report: {
+                        start_date: '0',
+                        end_date: '0'
                     }
+
                 }
             },
             methods: {
@@ -253,6 +287,17 @@
             },
             mounted() {
                 var $this = this;
+
+                $('#sales_report').daterangepicker({
+                    opens: 'left',
+                }, function (start, end, label) {
+                    $this.sales_report.start_date = start.format('YYYY-MM-DD');
+                    $this.sales_report.end_date = end.format('YYYY-MM-DD');
+                    $('#sales_report').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+                });
+
+                $('#sales_report').val('');
+
                 $this.dt = $('#table-sales').DataTable({
                     processing: true,
                     serverSide: true,

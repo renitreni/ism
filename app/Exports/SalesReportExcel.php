@@ -6,17 +6,28 @@ use App\ProductDetail;
 use Illuminate\Database\Query\Builder;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles as WithStylesAlias;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColumnWidths
+class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColumnWidths, WithColumnFormatting
 {
+    public $start;
+    public $end;
+
+    public function __construct($start, $end)
+    {
+        $this->start = $start;
+        $this->end   = $end;
+    }
+
     public function query()
     {
         return ProductDetail::query()
-            ->selectRaw('so.created_at,
+            ->selectRaw('so.due_date,
             so.agent,
             so.so_no,
             c.name,
@@ -29,8 +40,12 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             so.payment_method')
             ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
             ->join('customers as c', 'c.id', '=', 'so.customer_id')
-            ->orderBy('so.so_no', 'desc')
-            ->whereNull('purchase_order_id');
+            ->where('so.status', 'Sales')
+            ->when($this->start && $this->end, function ($q) {
+                return $q->whereBetween('due_date', [$this->start, $this->end]);
+            })
+            ->whereNull('purchase_order_id')
+            ->orderBy('so.so_no', 'desc');
     }
 
     public function columnWidths()
@@ -72,6 +87,14 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
     {
         return [
             1 => ['font' => ['bold' => true]],
+        ];
+    }
+
+    public function columnFormats()
+    : array
+    {
+        return [
+            'A' => NumberFormat::FORMAT_DATE_YYYYMMDD,
         ];
     }
 }

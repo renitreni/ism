@@ -113,6 +113,9 @@
                                         <option value="Cash">Cash</option>
                                         <option value="Credit">Credit</option>
                                         <option value="Check">Check</option>
+                                        <option value="Gcash">Gcash</option>
+                                        <option value="BDO Bank">BDO Bank</option>
+                                        <option value="Unionbank">Unionbank</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
