@@ -65,6 +65,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/sales/payment/update', 'SalesOrderController@updatePaymentStatus')->name('sales.payment.update')->middleware('can:salespaymentupdate');
     Route::post('/sales/vat/update', 'SalesOrderController@updateVatStatus')->name('sales.vat.update')->middleware('can:salesvatupdate');
     Route::post('/sales/delivery/update', 'SalesOrderController@updateDeliveryStatus')->name('sales.delivery.update')->middleware('can:salesdeliveryupdate');
+    Route::get('/sales/report', 'SalesOrderController@downloadSaleReport')->name('sales.report');
 
     Route::get('/vendors', 'VendorController@index')->name('vendor')->middleware('can:vendors');
     Route::get('/vendors/create', 'VendorController@create')->name('vendor.create')->middleware('can:vendorscreate');

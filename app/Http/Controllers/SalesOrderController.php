@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SalesReportExcel;
 use App\Preference;
 use App\Product;
 use App\ProductDetail;
 use App\SalesOrder;
 use App\Summary;
 use App\Supply;
+use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Yajra\DataTables\DataTables;
 use DB;
 
@@ -515,7 +518,7 @@ class SalesOrderController extends Controller
     }
 
     public function getListShipped(Request $request)
-    {
+    : array {
         $sales_order = SalesOrder::query()
             ->selectRaw("id as id, so_no as text")
             ->where('delivery_status', 'Shipped')
@@ -524,5 +527,13 @@ class SalesOrderController extends Controller
         return [
             "results" => $sales_order->get(),
         ];
+    }
+
+    public function downloadSaleReport()
+    : BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H:i:s');
+
+        return Excel::download(new SalesReportExcel(), "SALES_REPORT_$date.xlsx");
     }
 }

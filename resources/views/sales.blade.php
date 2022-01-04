@@ -17,6 +17,8 @@
                             <div class="col-md-12">
                                 <a href="{{ route('sales.create') }}" class="btn btn-sm btn-success"><i
                                         class="fa fa-plus"></i> New Sales Order</a>
+                                <a href="{{ route('sales.report') }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-download"></i> Sales Report</a>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <table id="table-sales" class="table table-striped nowrap table-general"
