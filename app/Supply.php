@@ -42,11 +42,8 @@ class Supply extends Model
             ->toArray();
 
         $merged = array_merge($data_po, $data_so);
-        $data = Product::query()->whereIn('id', $merged)->get()->pluck('id');
+        $data = Product::query()->where('type', 'limited')->whereIn('id', $merged)->get()->pluck('id');
 
-        if($data == '39') {
-            dump($data);
-        }
         foreach ($data as $value) {
             $so = DB::table('sales_orders')
                 ->join('product_details', 'product_details.sales_order_id', '=', 'sales_orders.id')
