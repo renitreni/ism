@@ -26,14 +26,14 @@ class PurchaseInfoController extends Controller
     public function table()
     {
         $purchase_info = PurchaseInfo::query()
-                                     ->selectRaw('purchase_infos.id, purchase_infos.subject,
+            ->selectRaw('purchase_infos.id, purchase_infos.subject,
                                      purchase_infos.vat_type,purchase_infos.payment_status,
             vendors.name as vendor_name, purchase_infos.tracking_number, purchase_infos.po_no,
             purchase_infos.requisition_no, users.name, purchase_infos.status, purchase_infos.created_at,
             purchase_infos.updated_at, grand_total, purchase_infos.due_date')
-                                     ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
-                                     ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
-                                     ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to');
+            ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
+            ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
+            ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to');
 
         return DataTables::of($purchase_info)->setTransformer(function ($data) {
             $data               = $data->toArray();
@@ -69,6 +69,7 @@ class PurchaseInfoController extends Controller
             "delivery_address" => Preference::status('delivery_address_fill'),
             "check_number"     => "",
             "check_writer"     => "",
+            "payment_status"   => "UNPAID",
             "tac"              => Preference::status('tac_po_fill'),
             "description"      => "",
             "updated_at"       => Carbon::now()->format('Y-m-d'),
@@ -233,17 +234,17 @@ class PurchaseInfoController extends Controller
 
         if ($purchase_info->status != $data['status']) {
             DB::table('purchase_infos')->where('id', $data['id'])
-              ->update([
-                  'status'     => $data['status'],
-                  'updated_at' => Carbon::now()->format('Y-m-d'),
-              ]);
+                ->update([
+                    'status'     => $data['status'],
+                    'updated_at' => Carbon::now()->format('Y-m-d'),
+                ]);
 
             return ['success' => true];
         }
 
         if ($purchase_info->vat_type != $data['vat_type']) {
             DB::table('purchase_infos')->where('id', $data['id'])
-              ->update(['vat_type' => $data['vat_type']]);
+                ->update(['vat_type' => $data['vat_type']]);
 
             return ['success' => true];
         }
@@ -256,7 +257,7 @@ class PurchaseInfoController extends Controller
         $data = $request->input();
 
         DB::table('purchase_infos')->where('id', $data['id'])
-          ->update(['payment_status' => $data['payment_status']]);
+            ->update(['payment_status' => $data['payment_status']]);
 
         return ['success' => true];
     }
@@ -296,7 +297,7 @@ class PurchaseInfoController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
             }
         }
         $sections = $hold_section;
@@ -309,7 +310,7 @@ class PurchaseInfoController extends Controller
                 'sections'        => $sections,
             ]);
 
-        return $pdf->setPaper('a4')->download($purchase_info["po_no"] . '_' . $purchase_info["vendor_name"] . '.pdf');
+        return $pdf->setPaper('a4')->download($purchase_info["po_no"].'_'.$purchase_info["vendor_name"].'.pdf');
     }
 
     public function previewPO($id)
@@ -336,7 +337,7 @@ class PurchaseInfoController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
             }
         }
         $sections = $hold_section;
@@ -347,18 +348,18 @@ class PurchaseInfoController extends Controller
     public function getOverview($id)
     {
         $purchase_info = PurchaseInfo::query()
-                                     ->selectRaw('purchase_infos.*, IFNULL(vendors.name, \'\') as vendor_name, users.name,
+            ->selectRaw('purchase_infos.*, IFNULL(vendors.name, \'\') as vendor_name, users.name,
                                      vendors.address as vendor_address, vendors.mobile_phone as vendor_mobile_phone')
-                                     ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
-                                     ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to')
-                                     ->where('purchase_infos.id', $id)
-                                     ->get()[0];
+            ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
+            ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to')
+            ->where('purchase_infos.id', $id)
+            ->get()[0];
 
         $product_details = ProductDetail::query()
-                                        ->selectRaw('products.category, products.unit, product_details.*')
-                                        ->where('purchase_order_id', $id)
-                                        ->join('products', 'products.id', 'product_details.product_id')
-                                        ->get();
+            ->selectRaw('products.category, products.unit, product_details.*')
+            ->where('purchase_order_id', $id)
+            ->join('products', 'products.id', 'product_details.product_id')
+            ->get();
         $category        = '';
         $hold            = [];
         foreach ($product_details->toArray() as $value) {
