@@ -10,15 +10,15 @@ return [
     | This option contains settings for PDF generation.
     |
     | Enabled:
-    |    
+    |
     |    Whether to load PDF / Image generation.
     |
     | Binary:
-    |    
+    |
     |    The file path of the wkhtmltopdf / wkhtmltoimage executable.
     |
     | Timout:
-    |    
+    |
     |    The amount of time to wait (in seconds) before PDF / Image generation is stopped.
     |    Setting this to false disables the timeout (unlimited processing time).
     |
@@ -33,20 +33,24 @@ return [
     |    MAC OS: '/usr/local/bin/wkhtmltopdf'
     |    OTHER: 'vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64'
     */
-    
+
     'pdf' => [
         'enabled' => true,
-        'binary'  => env('PATH_PDF')? base_path(env('PATH_PDF')): '/usr/local/bin/wkhtmltopdf',
+        'binary'  => env('PATH_PDF') ? base_path(env('PATH_PDF')) : '/usr/local/bin/wkhtmltopdf',
         'timeout' => false,
-        'options' => [],
+        'options' => [
+            'enable-local-file-access' => true,
+        ],
         'env'     => [],
     ],
-    
+
     'image' => [
         'enabled' => true,
-        'binary'  => env('PATH_PDF')? base_path(env('PATH_PDF')): '/usr/local/bin/wkhtmltopdf',
+        'binary'  => env('PATH_PDF') ? base_path(env('PATH_PDF')) : '/usr/local/bin/wkhtmltopdf',
         'timeout' => false,
-        'options' => [],
+        'options' => [
+            'enable-local-file-access' => true,
+        ],
         'env'     => [],
     ],
 

@@ -337,7 +337,6 @@ class SalesOrderController extends Controller
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
-                'logo'            => asset('app/public/logo/logo.jpg'),
             ]);
 
         return $pdf->setPaper('a4')
