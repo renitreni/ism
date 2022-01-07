@@ -86,7 +86,7 @@
                 </tbody>
             </table>
         </td>
-        <td width="150"><img src="{{ asset('app/public/logo/logo.jpg') }}"
+        <td width="150"><img src="{{ public_path('app/public/logo/logo.jpg') }}"
                              width="150" height="150"></td>
     </tr>
     </tbody>

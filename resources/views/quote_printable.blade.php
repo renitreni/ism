@@ -91,7 +91,7 @@
             </table>
         </td>
         <td width="20%">
-            <img src="{{ public_path('app/public/logo/logo.jpg') }}" style="width: 150px; height: 150px;">
+            <img src="{{ public_path('app/public/logo/logo.jpg') }}" style="height: 150px;">
         </td>
     </tr>
     </tbody>
