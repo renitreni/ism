@@ -91,8 +91,7 @@
             </table>
         </td>
         <td width="20%">
-            1
-            <img src="https://www.dropbox.com/s/nwxkasmw0ed7yx0/logo.jpeg?dl=1" style="width: 150px; height: 150px;" alt="{{ $logo }}">
+            <img src="{{ $logo }}" style="width: 150px; height: 150px;" alt="{{ $logo }}">
         </td>
     </tr>
     </tbody>
