@@ -339,7 +339,7 @@ class SalesOrderController extends Controller
                 'sections'        => $sections,
                 'logo'            => asset('app/public/logo/logo.jpg'),
             ]);
-        dd(asset('app/public/logo/logo.jpg'));
+
         return $pdf->setPaper('a4')
             ->download('QTN '.$sales_order["so_no"].' '.$sales_order["customer_name"].'.pdf');
     }
