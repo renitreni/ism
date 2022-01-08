@@ -41,9 +41,9 @@ class Supply extends Model
             ->pluck('product_id')
             ->toArray();
 
-        $merged = array_merge($data_po, $data_so);
-        $data = Product::query()->where('type', 'limited')->whereIn('id', $merged)->get()->pluck('id');
-
+        $merged    = array_merge($data_po, $data_so);
+        $data      = Product::query()->where('type', 'limited')->whereIn('id', $merged)->get()->pluck('id');
+        $unlimited = Product::query()->where('type', 'unlimited')->get()->pluck('id');
         foreach ($data as $value) {
             $so = DB::table('sales_orders')
                 ->join('product_details', 'product_details.sales_order_id', '=', 'sales_orders.id')
@@ -60,6 +60,7 @@ class Supply extends Model
             $final_qty = $po - $so;
             self::query()->where('product_id', $value)->update(['quantity' => $final_qty]);
         }
+        self::query()->whereIn('product_id', $unlimited)->update(['quantity' => 0]);
     }
 
     public function results()

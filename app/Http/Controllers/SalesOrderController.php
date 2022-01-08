@@ -44,7 +44,8 @@ class SalesOrderController extends Controller
             $product_details = $this->getProductDetail($data['id']);
             foreach ($product_details as $products) {
                 $diff = $products->quantity - $products->qty;
-                if ($diff < 0) {
+
+                if ($diff < 0 && $products->type == 'limited') {
                     $data['can_be_shipped'] = 0;
                 }
             }
@@ -472,7 +473,7 @@ class SalesOrderController extends Controller
     public function getProductDetail($id)
     {
         return ProductDetail::query()
-            ->selectRaw('products.code, products.category, products.unit, products.manual_id, product_details.*, supplies.quantity')
+            ->selectRaw('products.code, products.category, products.type, products.unit, products.manual_id, product_details.*, supplies.quantity')
             ->where('sales_order_id', $id)
             ->join('products', 'products.id', 'product_details.product_id')
             ->join('supplies', 'supplies.product_id', 'product_details.product_id')
