@@ -73,6 +73,7 @@
                                     <select type="text" class="form-control form-control-sm" v-model="overview.status">
                                         <option value="Quote">Quote</option>
                                         <option value="Sales">Sales</option>
+                                        <option value="Project">Project</option>
                                     </select>
                                 </div>
                                 <div class="form-group">

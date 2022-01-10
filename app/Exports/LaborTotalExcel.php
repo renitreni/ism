@@ -22,27 +22,7 @@ class LaborTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, WithC
 
     public function query()
     {
-        return ProductDetail::query()
-            ->selectRaw('so.due_date,
-            so.agent,
-            so.so_no,
-            c.name,
-            product_name,
-            qty,
-            vendor_price,
-            selling_price,
-            (qty * selling_price) as subtotal,
-            so.payment_status,
-            so.payment_method')
-            ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
-            ->join('customers as c', 'c.id', '=', 'so.customer_id')
-            ->whereRaw("lower(product_name) LIKE '%labor%'")
-            ->where('so.status', 'Sales')
-            ->when($this->start && $this->end, function ($q) {
-                return $q->whereBetween('due_date', [$this->start, $this->end]);
-            })
-            ->whereNull('purchase_order_id')
-            ->orderBy('so.so_no', 'desc');
+        return (new ProductDetail())->getTotalProject();
     }
 
     public function columnWidths()
@@ -68,6 +48,7 @@ class LaborTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, WithC
         return [
             'Date',
             'Agent',
+            'Type',
             'SO No.',
             'Customer Name',
             'Item',

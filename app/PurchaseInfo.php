@@ -55,7 +55,11 @@ class PurchaseInfo extends Model
 
     public function total($start, $end)
     {
-        return $this->selectRaw('purchase_infos.po_no, vendors.name, summaries.grand_total')
+        return $this->selectRaw('purchase_infos.due_date, purchase_infos.po_no,
+        subject,
+        vendors.name,
+        purchase_infos.payment_status,
+        summaries.grand_total')
             ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
             ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
             ->orderBy('purchase_infos.po_no', 'desc')

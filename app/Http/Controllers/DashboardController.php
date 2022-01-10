@@ -42,9 +42,8 @@ class DashboardController extends Controller
         $po_count = PurchaseInfo::query()->count();
         $so_count = SalesOrder::query()->count();
 
-        $product_details = (new ProductDetail())->getLabor()
-            ->selectRaw('(product_details.qty * product_details.selling_price) total');
-        $labor_total     = $this->computeStock($product_details);
+        $product_details = (new ProductDetail())->getTotalProject();
+        $labor_total     = $this->computeStock($product_details, 'subtotal');
 
         return view('dashboard', compact('assets', 'stocks', 'po_count', 'so_count', 'labor_total'));
     }
@@ -54,11 +53,11 @@ class DashboardController extends Controller
         return DataTables::of((new Product())->results())->make(true);
     }
 
-    public function computeStock($result)
+    public function computeStock($result, $key = 'total')
     {
         $hold = 0;
         foreach ($result->get()->toArray() as $value) {
-            $hold += $value['total'];
+            $hold += $value[$key];
         }
 
         return $hold;
