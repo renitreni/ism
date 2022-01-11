@@ -41,7 +41,7 @@ class ProductDetail extends Model
             so.payment_method')
             ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
             ->join('customers as c', 'c.id', '=', 'so.customer_id')
-            ->where('so.status', 'Sales')
+            ->where('so.status', 'Project')
             ->when($start && $end, function ($q) use ($start, $end) {
                 return $q->whereBetween('due_date', [$start, $end]);
             })

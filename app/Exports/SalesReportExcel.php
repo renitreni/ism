@@ -35,12 +35,13 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             qty,
             vendor_price,
             selling_price,
-            (qty * selling_price) as subtotal,
+            discount_item,
+            ((qty * selling_price) + discount_item) as subtotal,
             so.payment_status,
             so.payment_method')
             ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
             ->join('customers as c', 'c.id', '=', 'so.customer_id')
-            ->where('so.status', 'Sales')
+            ->whereIn('so.status', ['Sales','Project'])
             ->when($this->start && $this->end, function ($q) {
                 return $q->whereBetween('due_date', [$this->start, $this->end]);
             })
@@ -77,6 +78,7 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             'QTY',
             'Vendor Price',
             'Selling Price',
+            'Discount',
             'Sub Total',
             'Payment Status',
             'Form Of Payment',

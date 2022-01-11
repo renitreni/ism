@@ -47,6 +47,7 @@
                                     <select class="form-control" v-model="overview.status">
                                         <option value="Quote">Quote</option>
                                         <option value="Sales">Sales</option>
+                                        <option value="Project">Project</option>
                                     </select>
                                 </div>
                             </div>
@@ -339,7 +340,12 @@
                         },
                         {
                             data: function (value) {
-                                var $class_color = ["Quote"].includes(value.status) ? 'btn-warning' : 'btn-success';
+                                var $class_color = 'btn-success';
+                                if (["Quote"].includes(value.status)) {
+                                    $class_color = 'btn-warning';
+                                } else if (["Project"].includes(value.status)) {
+                                    $class_color = 'btn-primary';
+                                }
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
                                     '<a href="#" class="btn ' + $class_color + ' btn-status">' + value.status + '</a>' +
                                     '</div>'

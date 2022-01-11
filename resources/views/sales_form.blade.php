@@ -185,10 +185,8 @@
                                                        style="width: 100px;" v-model="product.selling_price">
                                             </td>
                                             <td v-if="product.product_name">
-                                                <input readonly type="text"
-                                                       class="form-control-plaintext form-control-sm"
-                                                       style="width: 100px;"
-                                                       v-bind:value="(product.selling_price * product.qty)">
+                                                <input type="text" class="form-control form-control-sm"
+                                                       style="width: 100px;" v-model="product.discount_item">
                                             </td>
                                             <td v-if="product.product_name">
                                                 <input type="text" class="form-control form-control-sm"
@@ -198,7 +196,7 @@
                                                 <input readonly type="text"
                                                        class="form-control-plaintext form-control-sm total-grid"
                                                        style="width: 100px;"
-                                                       v-bind:value="(product.selling_price * product.qty)">
+                                                       v-bind:value="(product.selling_price * product.qty) + parseFloat(product.discount_item)">
                                             </td>
                                             <td v-if="viewType != 2">
                                                 <button class="btn btn-sm btn-block btn-danger" @click="remove(index)">
@@ -217,13 +215,13 @@
                                                v-model="summary.sub_total">
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <label class="col-form-label col-md-4 col-form-label-sm">Discount</label>
-                                    <div class="col-md-4">
-                                        <input type="number" class="form-control form-control-sm"
-                                               v-model="summary.discount">
-                                    </div>
-                                </div>
+{{--                                <div class="form-group row">--}}
+{{--                                    <label class="col-form-label col-md-4 col-form-label-sm">Discount</label>--}}
+{{--                                    <div class="col-md-4">--}}
+{{--                                        <input type="number" class="form-control form-control-sm"--}}
+{{--                                               v-model="summary.discount">--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
                                 <div class="form-group row" v-show="overview.vat_type == 'VAT INC'">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax %</label>
                                     <div class="input-group col-md-4">
@@ -359,7 +357,7 @@
                     loading: false,
                     viewType: 0,
                     columns: [
-                        'Product', 'Stock', 'Qty', 'Unit Cost', 'Unit Total', 'Serial No.', 'Total Cost', 'Action'
+                        'Product', 'Stock', 'Qty', 'Unit Cost', 'Discount', 'Serial No.', 'Total Cost', 'Action'
                     ],
                     sub_total: 0,
                     overview: {!! $sales_order !!},
