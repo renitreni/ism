@@ -165,11 +165,11 @@
                             </tr>
                             <tr>
                                 <td>Account Name:</td>
-                                <td>{{ $sales_order->account_name }}</td>
+                                <td>{!! nl2br(e($sales_order->account_name)) !!}/td>
                             </tr>
                             <tr>
                                 <td>Account No:</td>
-                                <td>{{ $sales_order->account_no }}</td>
+                                <td>{!! nl2br(e( $sales_order->account_no)) !!}</td>
                             </tr>
                             <tr>
                                 <td>TIN No:</td>
