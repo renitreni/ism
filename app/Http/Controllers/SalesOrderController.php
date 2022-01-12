@@ -276,10 +276,8 @@ class SalesOrderController extends Controller
             } else {
                 if ($cnt == -1) {
                     $cnt = 0;
-                }
-                $total_selling                      = $value['qty'] * $value['selling_price'];
-                $total_labor                        = $value['qty'] * $value['labor_cost'];
-                $sections[$cnt][$value['category']] += $total_labor + ($total_selling - ($total_selling * ($value['discount_item'] / 100)));
+                }$total_selling                      = ($value['qty'] * $value['selling_price']) + $value['discount_item'];
+                $sections[$cnt][$value['category']] += $total_selling;
             }
         }
 
@@ -318,9 +316,8 @@ class SalesOrderController extends Controller
                 ];
                 $cnt++;
             } else {
-                $total_selling                      = $value['qty'] * $value['selling_price'];
-                $total_labor                        = $value['qty'] * $value['labor_cost'];
-                $sections[$cnt][$value['category']] += $total_labor + ($total_selling - ($total_selling * ($value['discount_item'] / 100)));
+                $total_selling                      = ($value['qty'] * $value['selling_price']) + $value['discount_item'];
+                $sections[$cnt][$value['category']] += $total_selling;
             }
         }
 
@@ -358,9 +355,8 @@ class SalesOrderController extends Controller
                 ];
                 $cnt++;
             } else {
-                $total_selling                      = $value['qty'] * $value['selling_price'];
-                $total_labor                        = $value['qty'] * $value['labor_cost'];
-                $sections[$cnt][$value['category']] += $total_labor + ($total_selling - ($total_selling * ($value['discount_item'] / 100)));
+                $total_selling                      = ($value['qty'] * $value['selling_price']) + $value['discount_item'];
+                $sections[$cnt][$value['category']] += $total_selling;
             }
         }
 
@@ -400,9 +396,8 @@ class SalesOrderController extends Controller
                 ];
                 $cnt++;
             } else {
-                $total_selling                      = $value['qty'] * $value['selling_price'];
-                $total_labor                        = $value['qty'] * $value['labor_cost'];
-                $sections[$cnt][$value['category']] += $total_labor + ($total_selling - ($total_selling * ($value['discount_item'] / 100)));
+                $total_selling                      = ($value['qty'] * $value['selling_price']) + $value['discount_item'];
+                $sections[$cnt][$value['category']] += $total_selling;
             }
         }
 
