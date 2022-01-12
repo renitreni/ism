@@ -58,7 +58,7 @@ class SalesOrder extends Model
 
     public function total($start, $end)
     {
-        return $this->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
+        return $this->join('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
             ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
             ->where('delivery_status', 'Shipped')
             ->whereNull('purchase_order_id')

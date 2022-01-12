@@ -61,7 +61,7 @@ class PurchaseInfo extends Model
         purchase_infos.payment_status,
         summaries.grand_total')
             ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
-            ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
+            ->join('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
             ->orderBy('purchase_infos.po_no', 'desc')
             ->where('status', 'Received')
             ->whereNull('sales_order_id')
