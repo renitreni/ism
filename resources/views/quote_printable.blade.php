@@ -193,11 +193,6 @@
                     </tr>
                 @endforeach @endforeach
                 <tr>
-                    <td align="right" style="padding-top: 10px !important;"><strong>DISCOUNT</strong></td>
-                    <td
-                        style="padding-left: 10px !important; padding-top: 10px !important;">{{ number_format($summary->discount,2) }}</td>
-                </tr>
-                <tr>
                     <td align="right"><strong>SUB-TOTAL</strong></td>
                     <td style="padding-left: 10px !important;">
                         {{ number_format($summary->sub_total,2) }}
