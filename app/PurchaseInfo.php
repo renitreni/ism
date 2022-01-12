@@ -64,6 +64,7 @@ class PurchaseInfo extends Model
             ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
             ->orderBy('purchase_infos.po_no', 'desc')
             ->where('status', 'Received')
+            ->whereNull('sales_order_id')
             ->when($start && $end, function ($q) use ($start, $end) {
                 $q->whereBetween('purchase_infos.created_at', [$start, $end]);
             });
