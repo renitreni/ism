@@ -376,7 +376,7 @@
                         var hold = 0;
                         $.each(products, function (x, product) {
                             if (product.product_name) {
-                                hold += (product.selling_price * product.qty)
+                                hold += (product.selling_price * product.qty) - product.discount_item
                             }
                         });
 
@@ -536,7 +536,7 @@
                     $this.summary.sub_total = 0;
                     $.each($this.products, function (x, product) {
                         if (product.product_name) {
-                            $this.summary.sub_total += (product.selling_price * product.qty)
+                            $this.summary.sub_total += (product.selling_price * product.qty) - product.discount_item
                         }
                     });
                     $this.summary.grand_total = $this.summary.sub_total - $this.summary.discount;
