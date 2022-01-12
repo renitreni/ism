@@ -61,6 +61,7 @@ class SalesOrder extends Model
         return $this->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
             ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
             ->where('delivery_status', 'Shipped')
+            ->whereNull('purchase_order_id')
             ->when($start && $end, function ($q) use ($start, $end) {
                 $q->whereBetween('sales_orders.created_at', [$start, $end]);
             });
