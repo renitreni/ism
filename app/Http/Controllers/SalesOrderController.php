@@ -331,7 +331,6 @@ class SalesOrderController extends Controller
             }
         }
         $sections = $hold_section;
-
         $pdf = PDF::loadView('quote_printable',
             [
                 'sales_order'     => $sales_order,
