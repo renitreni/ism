@@ -40,7 +40,7 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             so.payment_status,
             so.payment_method')
             ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
-            ->join('customers as c', 'c.id', '=', 'so.customer_id')
+            ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
             ->whereIn('so.status', ['Sales','Project'])
             ->when($this->start && $this->end, function ($q) {
                 return $q->whereBetween('due_date', [$this->start, $this->end]);
