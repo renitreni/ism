@@ -27,7 +27,9 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
     public function query()
     {
         return ProductDetail::query()
-            ->selectRaw('so.due_date,
+            ->selectRaw('
+            so.status,
+            so.due_date,
             so.agent,
             so.so_no,
             c.name,
@@ -70,6 +72,7 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
     : array
     {
         return [
+            'Status',
             'Date',
             'Agent',
             'SO No.',
