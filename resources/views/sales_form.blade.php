@@ -76,15 +76,15 @@
                                         <option value="Project">Project</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label>Delivery Status</label>
-                                    <select type="text" class="form-control form-control-sm" v-model="overview.delivery_status">
-                                        <option value="Not Shipped">Not Shipped</option>
-                                        @can('salesstatusupdate')
-                                            <option value="Shipped">Shipped</option>
-                                        @endcan
-                                    </select>
-                                </div>
+{{--                                <div class="form-group">--}}
+{{--                                    <label>Delivery Status</label>--}}
+{{--                                    <select type="text" class="form-control form-control-sm" v-model="overview.delivery_status">--}}
+{{--                                        <option value="Not Shipped">Not Shipped</option>--}}
+{{--                                        @can('salesstatusupdate')--}}
+{{--                                            <option value="Shipped">Shipped</option>--}}
+{{--                                        @endcan--}}
+{{--                                    </select>--}}
+{{--                                </div>--}}
                                 <div class="form-group" v-if="overview.status == 'Shipped'">
                                     <label>Shipped Date</label>
                                     <input type="date" class="ui-datepicker form-control form-control-sm"
@@ -119,15 +119,15 @@
                                         <option value="Unionbank">Unionbank</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label>Payment Status</label>
-                                    <select type="text" class="form-control form-control-sm"
-                                            v-model="overview.payment_status">
-                                        <option value="PAID">PAID</option>
-                                        <option value="UNPAID">UNPAID</option>
-                                        <option value="PAID WITH BALANCE">PAID WITH BALANCE</option>
-                                    </select>
-                                </div>
+{{--                                <div class="form-group">--}}
+{{--                                    <label>Payment Status</label>--}}
+{{--                                    <select type="text" class="form-control form-control-sm"--}}
+{{--                                            v-model="overview.payment_status">--}}
+{{--                                        <option value="PAID">PAID</option>--}}
+{{--                                        <option value="UNPAID">UNPAID</option>--}}
+{{--                                        <option value="PAID WITH BALANCE">PAID WITH BALANCE</option>--}}
+{{--                                    </select>--}}
+{{--                                </div>--}}
                             </div>
                             {{-- <div class="col-md-12">
                                 <h4>Address Information</h4>

@@ -70,7 +70,7 @@ class SalesOrderController extends Controller
             "address"         => "",
             "due_date"        => "",
             "payment_method"  => "",
-            "payment_status"  => "PAID",
+            "payment_status"  => "UNPAID",
             "account_name"    => Preference::status('account_name'),
             "account_no"      => Preference::status('account_no'),
             "tac"             => Preference::status('tac_so_fill'),
