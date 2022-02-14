@@ -48,10 +48,6 @@ $cyan: #6cb2eb;
     color: #fff;
 }
 
-.btn-info {
-    color: white !important;
-}
-
 .table td {
     padding: 0.45rem !important;
 }
@@ -241,4 +237,16 @@ body {
 
 .nav-link > span {
     font-size: 16.5px !important;
+}
+
+.btn {
+    color: black !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 600 !important;
+}
+
+td {
+    color: black !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 600 !important;
 }
