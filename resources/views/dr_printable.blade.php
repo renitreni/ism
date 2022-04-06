@@ -129,7 +129,7 @@
             </tr>
         @else
             <tr class="bg-category">
-                <td colspan="8"><strong>{{ $product['category'] }}</strong></td>
+                <td colspan="9"><strong>{{ $product['category'] }}</strong></td>
             </tr>
         @endif @endforeach
     <tr class="bg-aliceblue">
