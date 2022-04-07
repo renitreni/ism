@@ -84,8 +84,7 @@
                 </tr>
                 <tr>
                     <td>Date:</td>
-                    <td class="header-content">{{ \Carbon\Carbon::now()->format('F
-									j, Y') }}</td>
+                    <td class="header-content">{{ \Carbon\Carbon::parse($sales_order->created_at)->format('F j, Y') }}</td>
                 </tr>
                 </tbody>
             </table>
