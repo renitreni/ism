@@ -365,7 +365,7 @@
                         {data: 'customer_name', name: 'customers.name', title: 'Customer'},
                         {data: 'subject', name: 'subject', title: 'Subject'},
                         {data: 'grand_total', name: 'summaries.grand_total', title: 'Total'},
-                        {data: 'username', name: 'users.name', title: 'Assigned'},
+                        {data: 'agent', name: 'agent', title: 'Assigned'},
                         {
                             data: function (value) {
                                 if (value.delivery_status == 'Shipped') {
