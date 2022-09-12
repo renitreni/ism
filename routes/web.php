@@ -174,4 +174,10 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/override/restore/sql', 'OverrideController@restoreSQL')->name('restore.sql');
     Route::post('/override/wipe/sql', 'OverrideController@databaseWipe')->name('override.wipe');
 
+    Route::get('/expenses',  'ExpensesController@index')->name('expenses');
+    Route::post('/expenses/table', 'ExpensesController@table')->name('expenses.table');
+    Route::get('/expenses/create', 'ExpensesController@create')->name('expenses.create');
+    Route::post('/expenses/store', 'ExpensesController@store')->name('expenses.store');
+    Route::get('/expenses/detail/{id}', 'ExpensesController@edit')->name('expenses.edit');
+    Route::post('/expenses/destroy', 'ExpensesController@destroy')->name('expenses.destroy');
 });

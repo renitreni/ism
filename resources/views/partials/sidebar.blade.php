@@ -34,6 +34,11 @@
                 <span>Sales Order</span></a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('expenses') }}">
+                <i class="fas fa-fw fa-money-bill"></i>
+                <span>Expenses</span></a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('return') }}">
                 <i class="fas fa-fw fa-backward"></i>
                 <span>Product Return</span></a>
