@@ -26,13 +26,13 @@ class SOTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColu
     public function query()
     {
         return (new SalesOrder())->total($this->start, $this->end)
-            ->selectRaw('so_no,customers.name,grand_total,agent,payment_status');
+            ->selectRaw('so_no,customers.name,grand_total,agent,payment_status,sales_orders.updated_at');
     }
 
     public function headings()
     : array
     {
-        return ['SO No.', 'Vendor Name', 'Grand Total', 'Agent', 'Payment Status'];
+        return ['SO No.', 'Vendor Name', 'Grand Total', 'Agent', 'Payment Status', 'Date Of Purchased'];
     }
 
     public function styles(Worksheet $sheet)
@@ -50,6 +50,7 @@ class SOTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColu
             'B' => 40,
             'C' => 20,
             'D' => 30,
+            'E' => 30,
         ];
     }
 }
