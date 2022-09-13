@@ -34,6 +34,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/home/qtn/printable/{start}/{end}', 'DashboardController@qtnTotalPrintable')->name('home.qtn.printable');
     Route::get('/home/labor', 'DashboardController@totalLaborPrintable')->name('home.labor.printable');
     Route::post('/fast/moving', 'DashboardController@getFastMoving')->name('home.fast.moving');
+    Route::post('/home/expenses', 'DashboardController@expensesPrintable')->name('home.expenses.printable');
 
     Route::get('/purchase', 'PurchaseInfoController@index')->name('purchase')->middleware('can:purchaseorder');
     Route::get('/purchase/create', 'PurchaseInfoController@create')->name('purchase.create')->middleware('can:purchaseordercreate');

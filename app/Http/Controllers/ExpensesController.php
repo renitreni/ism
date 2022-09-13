@@ -21,7 +21,7 @@ class ExpensesController extends Controller
 
     public function create(Request $request)
     {
-        return view('expenses_form');
+        return view('expenses_form', ['expenses_no' => app(Expenses::class)->newExpenseNo()]);
     }
 
     public function store(Request $request)

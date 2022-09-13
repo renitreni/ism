@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Expenses;
 use App\Exports\AssetsExcel;
+use App\Exports\ExpensesTotalExcel;
 use App\Exports\LaborTotalExcel;
 use App\Exports\POTotalExcel;
 use App\Exports\QTNTotalExcel;
@@ -44,8 +46,8 @@ class DashboardController extends Controller
 
         $product_details = (new ProductDetail())->getTotalProject();
         $labor_total     = $this->computeStock($product_details, 'subtotal');
-
-        return view('dashboard', compact('assets', 'stocks', 'po_count', 'so_count', 'labor_total'));
+        $expenses_total   = Expenses::query()->sum('total_amount');
+        return view('dashboard', compact('assets', 'stocks', 'po_count', 'so_count', 'labor_total', 'expenses_total'));
     }
 
     public function getFastMoving()
@@ -140,5 +142,15 @@ class DashboardController extends Controller
         $date = now()->format('Y - m - d_H:i:s');
 
         return Excel::download(new QTNTotalExcel($start, $end), "QTN_AUDIT-$date.xlsx");
+    }
+
+    public function expensesPrintable(Request $request)
+    {
+        $dates = explode(' - ', $request->get('daterange'));
+        $start = $dates[0] ?? '';
+        $end = $dates[1] ?? '';
+        $date = now()->format('Y - m - d_H:i:s');
+        
+        return Excel::download(new ExpensesTotalExcel($start, $end), "EXPENSES_AUDIT-$date.xlsx");
     }
 }

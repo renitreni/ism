@@ -97,7 +97,7 @@
                             bSortable: false,
                             title: 'Action'
                         },
-                        {data: 'id', name: 'id', title: 'ID'},
+                        {data: 'expenses_no', name: 'expenses_no', title: 'ID'},
                         {data: 'cost_center', title: 'Cost Center'},
                         {data: 'description', title: 'Description'},
                         {data: 'person_assigned', title: 'Person Assigned'},

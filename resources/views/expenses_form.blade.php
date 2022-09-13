@@ -15,7 +15,11 @@
                 <div class="card-body">
                     <div>
                         <div class="row">
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-2 mb-2">
+                                <label>Expenses No.</label>
+                                <input class="form-control" v-model='overview.expenses_no'>
+                            </div>
+                            <div class="col-md-4 mb-2">
                                 <label>Cost Center</label>
                                 <input class="form-control" v-model='overview.cost_center'>
                             </div>
@@ -73,6 +77,7 @@
                         {!! $overview !!}
                     @else
                         {     
+                            expenses_no: "{{ $expenses_no }}",
                             cost_center: "",
                             description: "",
                             person_assigned: "",

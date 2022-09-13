@@ -3,6 +3,38 @@
 @section('content')
     <div id='app' class="container-fluid">
         <div class="row">
+            <!-- Total Expenses -->
+            <div class="col-xl-auto col-md-6 mb-4">
+                <form method="POST" action="{{ route('home.expenses.printable') }}">
+                    @csrf
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        <button type="submit"
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fas fa-fw fa-money-bill"></i>
+                                    </button>
+                                        Total Expenses
+                                    </div>
+                                    <div
+                                        class="h5 font-weight-bold text-gray-800">{{ number_format($expenses_total, 2) }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-fw fa-money-bill fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col ml-3 mr-3">
+                                    <input type="text" id="so_totals" class="form-control" name="daterange"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <!-- Total Assets -->
             <div class="col-xl-auto col-md-6 mb-4">
                 <div class="card border-left-secondary shadow h-100 py-2">
