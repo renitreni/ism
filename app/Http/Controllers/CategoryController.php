@@ -11,7 +11,7 @@ class CategoryController extends Controller
     {
         Category::truncate();
         foreach ($request->category as $value) {
-            Category::query()->insert(['NAME' => strtoupper($value), 'TYPE' => 'SERVICES']);
+            Category::query()->insert(['name' => strtoupper($value), 'type' => 'SERVICES']);
         }
         $category = Category::all()->pluck('name');
 
@@ -20,7 +20,7 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        Category::query()->insert(['NAME' => strtoupper($request->category), 'TYPE' => 'SERVICES']);
+        Category::query()->create(['name' => strtoupper($request->get('category')), 'type' => 'SERVICES']);
         $category = Category::all()->pluck('name');
 
         return ['success' => true, 'categories' => $category];

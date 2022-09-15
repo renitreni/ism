@@ -21,7 +21,7 @@
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label>Cost Center</label>
-                                <input class="form-control" v-model='overview.cost_center'>
+                                <input class="form-control" name="cost_center" v-model='overview.cost_center'>
                             </div>
                             <div class="col-md-3 mb-2">
                                 <label>Expense Date</label>
@@ -29,7 +29,7 @@
                             </div>
                             <div class="col-md-3 mb-2">
                                 <label>Person Assigned</label>
-                                <input class="form-control" v-model='overview.person_assigned'>
+                                <input class="form-control" name="person_assigned" v-model='overview.person_assigned'>
                             </div>
                             <div class="col-md-3  mb-2">
                                 <label>Total Amount</label>
@@ -44,12 +44,12 @@
                                 <input class="form-control" v-model='overview.dr_no'>
                             </div>
                             <div class="col-md-6 mb-2">
-                                <label>Remarks</label>
-                                <textarea class="form-control" v-model='overview.remarks'></textarea>
+                                <label>Description</label>
+                                <input class="form-control" name="description" v-model='overview.description'/>
                             </div>
                             <div class="col-md-6 mb-2">
-                                <label>Description</label>
-                                <textarea class="form-control"  v-model='overview.description'></textarea>
+                                <label>Remarks</label>
+                                <input class="form-control" name="remarks" v-model='overview.remarks'/>
                             </div>
                             <div class="col-md-12 mb-2 mt-2">
                                 <button type="button" class="btn btn-block btn-primary" @click="save()">Submit</button>
@@ -64,7 +64,6 @@
 </div>
 @endsection
 
-
 @section('scripts')
     <script>
         const app = new Vue({
@@ -76,7 +75,7 @@
                     @isset($overview)
                         {!! $overview !!}
                     @else
-                        {     
+                        {
                             expenses_no: "{{ $expenses_no }}",
                             cost_center: "",
                             description: "",
@@ -113,6 +112,25 @@
                 }
             },
             mounted() {
+                $('[name="description"]').autocomplete({
+                    minLength: 2,
+                    source: {!! $expenses_list->unique('description')->pluck('description') !!}
+                });
+
+                $('[name="remarks"]').autocomplete({
+                    minLength: 2,
+                    source: {!! $expenses_list->unique('remarks')->pluck('remarks') !!}
+                });
+
+                $('[name="cost_center"]').autocomplete({
+                    minLength: 2,
+                    source: {!! $expenses_list->unique('cost_center')->pluck('cost_center') !!}
+                });
+
+                $('[name="person_assigned"]').autocomplete({
+                    minLength: 2,
+                    source: {!! $expenses_list->unique('person_assigned')->pluck('person_assigned') !!}
+                });
             }
         });
     </script>

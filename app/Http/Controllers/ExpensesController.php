@@ -13,7 +13,6 @@ class ExpensesController extends Controller
         return view('expenses');
     }
 
-    
     public function table()
     {
         return DataTables::of(Expenses::all())->make(true);
@@ -21,7 +20,18 @@ class ExpensesController extends Controller
 
     public function create(Request $request)
     {
-        return view('expenses_form', ['expenses_no' => app(Expenses::class)->newExpenseNo()]);
+        return view('expenses_form', [
+            'expenses_list' => Expenses::all(),
+            'expenses_no' => app(Expenses::class)->newExpenseNo()
+        ]);
+    }
+
+    public function edit($id)
+    {
+        return view('expenses_form', [
+            'expenses_list' => Expenses::all(),
+            'overview' => Expenses::find($id)
+        ]);
     }
 
     public function store(Request $request)
@@ -29,12 +39,6 @@ class ExpensesController extends Controller
         Expenses::updateOrCreate(['id' => $request->has('id') ? $request->get('id') : null], $request->all());
 
         return 'success';
-    }
-
-    public function edit($id)
-    {
-        
-        return view('expenses_form', ['overview' => Expenses::find($id)]);
     }
 
     public function destroy(Request $request)
