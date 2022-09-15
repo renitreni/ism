@@ -429,9 +429,16 @@ class SalesOrderController extends Controller
                 $categories[] = $value['category'];
             }
         }
+
         $hold = [];
         foreach ($product_details->toArray() as $value) {
             $hold[$value['category']][] = $value;
+        }
+
+        if(array_key_exists('DISCOUNT', $hold)){
+            $v = $hold['DISCOUNT'];
+            unset($hold['DISCOUNT']);
+            $hold['DISCOUNT'] = $v;
         }
 
         $final = [];
@@ -482,6 +489,7 @@ class SalesOrderController extends Controller
             ->where('sales_order_id', $id)
             ->join('products', 'products.id', 'product_details.product_id')
             ->join('supplies', 'supplies.product_id', 'product_details.product_id')
+            ->orderBy('products.category')
             ->get();
 
     }
