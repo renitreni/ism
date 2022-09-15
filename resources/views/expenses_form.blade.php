@@ -148,23 +148,36 @@
                 }
             },
             mounted() {
+                var $this = this;
                 $('[name="description"]').autocomplete({
                     minLength: 2,
+                    select: function (event, ui) {
+                        $this.overview.description = ui.item.value;
+                    },
                     source: {!! $expenses_list->unique('description')->where('description', '<>', null)->pluck('description') !!}
                 });
 
                 $('[name="remarks"]').autocomplete({
                     minLength: 2,
+                    select: function (event, ui) {
+                        $this.overview.remarks = ui.item.value;
+                    },
                     source: {!! $expenses_list->unique('remarks')->where('remarks', '<>', null)->pluck('remarks') !!}
                 });
 
                 $('[name="cost_center"]').autocomplete({
                     minLength: 2,
+                    select: function (event, ui) {
+                        $this.overview.cost_center = ui.item.value;
+                    },
                     source: {!! $expenses_list->unique('cost_center')->where('cost_center', '<>', null)->pluck('cost_center') !!}
                 });
 
                 $('[name="person_assigned"]').autocomplete({
                     minLength: 2,
+                    select: function (event, ui) {
+                        $this.overview.person_assigned = ui.item.value;
+                    },
                     source: {!! $expenses_list->unique('person_assigned')->where('person_assigned', '<>', null)->pluck('person_assigned') !!}
                 });
             }
