@@ -423,25 +423,36 @@ class SalesOrderController extends Controller
 
         $product_details = $this->getProductDetail($id);
 
-        $category = '';
-        $hold     = [];
+        $categories = [];
         foreach ($product_details->toArray() as $value) {
-            if ($value['category'] != $category) {
-                $hold[]   = ['category' => $value['category']];
-                $category = $value['category'];
+            if (!in_array($value['category'], $categories)) {
+                $categories[] = $value['category'];
             }
-            unset($value['name']);
-            unset($value['manufacturer']);
-            unset($value['description']);
-            unset($value['batch']);
-            unset($value['color']);
-            unset($value['size']);
-            unset($value['weight']);
-            unset($value['assigned_to']);
-            unset($value['id']);
-            $hold[] = $value;
         }
-        $product_details = collect($hold);
+        $hold = [];
+        foreach ($product_details->toArray() as $value) {
+            $hold[$value['category']][] = $value;
+        }
+
+        $final = [];
+        foreach ($hold as $key => $sub)
+        {
+            $final[] = ['category' => $key];
+            foreach ($sub as $item) {
+                unset($item['name']);
+                unset($item['manufacturer']);
+                unset($item['description']);
+                unset($item['batch']);
+                unset($item['color']);
+                unset($item['size']);
+                unset($item['weight']);
+                unset($item['assigned_to']);
+                unset($item['id']);
+                $final[] = $item;
+            }
+        }
+
+        $product_details = collect($final);
 
         $summary = collect([
             'purchase_order_id' => '',

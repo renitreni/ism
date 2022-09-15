@@ -18,7 +18,7 @@ class CreateProductDetailsTable extends Migration
             $table->bigInteger('purchase_order_id')->nullable();
             $table->bigInteger('sales_order_id')->nullable();
             $table->string('product_id',200)->nullable();
-            $table->string('product_name',200)->nullable();
+            $table->text('product_name')->nullable();
             $table->string('product_code',200)->nullable();
             $table->text('notes')->nullable();
             $table->float('qty')->nullable();
