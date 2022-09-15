@@ -70,6 +70,10 @@ class SecurityController extends Controller
         "salespaymentupdate",
         "salesvatupdate",
         "salesdeliveryupdate",
+        "expenses",
+        "expensescreate",
+        "expensesupdate",
+        "expensesdelete",
     ];
 
     public function roles()

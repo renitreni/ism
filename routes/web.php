@@ -175,10 +175,11 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/override/restore/sql', 'OverrideController@restoreSQL')->name('restore.sql');
     Route::post('/override/wipe/sql', 'OverrideController@databaseWipe')->name('override.wipe');
 
-    Route::get('/expenses',  'ExpensesController@index')->name('expenses');
+    Route::get('/expenses',  'ExpensesController@index')->name('expenses')->middleware('can:expenses');
     Route::post('/expenses/table', 'ExpensesController@table')->name('expenses.table');
     Route::get('/expenses/create', 'ExpensesController@create')->name('expenses.create');
-    Route::post('/expenses/store', 'ExpensesController@store')->name('expenses.store');
+    Route::post('/expenses/store', 'ExpensesController@store')->name('expenses.store')->middleware('can:expensescreate');
     Route::get('/expenses/detail/{id}', 'ExpensesController@edit')->name('expenses.edit');
-    Route::post('/expenses/destroy', 'ExpensesController@destroy')->name('expenses.destroy');
+    Route::post('/expenses/update', 'ExpensesController@store')->name('expenses.update')->middleware('can:expensesupdate');
+    Route::post('/expenses/destroy', 'ExpensesController@destroy')->name('expenses.destroy')->middleware('can:expensesdelete');
 });

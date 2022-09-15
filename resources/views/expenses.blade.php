@@ -66,6 +66,14 @@
                                 success(value) {
                                     Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
                                     $this.dt.draw();
+                                },
+                                error(e) {
+                                    console.log(e);
+                                    Swal.fire(
+                                        e.statusText,
+                                        e.responseJSON.message,
+                                        'warning'
+                                    );
                                 }
                             });
                         }

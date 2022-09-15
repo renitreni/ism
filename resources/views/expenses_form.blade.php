@@ -52,7 +52,8 @@
                                 <input class="form-control" name="remarks" v-model='overview.remarks'/>
                             </div>
                             <div class="col-md-12 mb-2 mt-2">
-                                <button type="button" class="btn btn-block btn-primary" @click="save()">Submit</button>
+                                <button v-if="overview.id" type="button" class="btn btn-block btn-primary" @click="update()">Update</button>
+                                <button v-else type="button" class="btn btn-block btn-primary" @click="save()">Submit</button>
                                 <a href="{{ route('expenses') }}" class="btn btn-block btn-secondary" >Cancel</a>
                             </div>
                         </div>
@@ -91,6 +92,33 @@
                 }
             },
             methods: {
+                update() {
+                    var $this = this;
+                    $.ajax({
+                        url: '{{ route('expenses.update') }}',
+                        method: 'POST',
+                        data: $this.overview,
+                        success: function(value) {
+                            Swal.fire(
+                                'Good job!',
+                                'Operation is successful.',
+                                'success'
+                            ).then((result) => {
+                                if (result.value) {
+                                    window.location = '{{ route('expenses') }}'
+                                }
+                            })
+                        },
+                        error(e) {
+                            console.log(e);
+                            Swal.fire(
+                                e.statusText,
+                                e.responseJSON.message,
+                                'warning'
+                            );
+                        }
+                    });
+                },
                 save() {
                     var $this = this;
                     $.ajax({
@@ -107,6 +135,14 @@
                                     window.location = '{{ route('expenses') }}'
                                 }
                             })
+                        },
+                        error(e) {
+                            console.log(e);
+                            Swal.fire(
+                                e.statusText,
+                                e.responseJSON.message,
+                                'warning'
+                            );
                         }
                     });
                 }
@@ -114,22 +150,22 @@
             mounted() {
                 $('[name="description"]').autocomplete({
                     minLength: 2,
-                    source: {!! $expenses_list->unique('description')->pluck('description') !!}
+                    source: {!! $expenses_list->unique('description')->where('description', '<>', null)->pluck('description') !!}
                 });
 
                 $('[name="remarks"]').autocomplete({
                     minLength: 2,
-                    source: {!! $expenses_list->unique('remarks')->pluck('remarks') !!}
+                    source: {!! $expenses_list->unique('remarks')->where('remarks', '<>', null)->pluck('remarks') !!}
                 });
 
                 $('[name="cost_center"]').autocomplete({
                     minLength: 2,
-                    source: {!! $expenses_list->unique('cost_center')->pluck('cost_center') !!}
+                    source: {!! $expenses_list->unique('cost_center')->where('cost_center', '<>', null)->pluck('cost_center') !!}
                 });
 
                 $('[name="person_assigned"]').autocomplete({
                     minLength: 2,
-                    source: {!! $expenses_list->unique('person_assigned')->pluck('person_assigned') !!}
+                    source: {!! $expenses_list->unique('person_assigned')->where('person_assigned', '<>', null)->pluck('person_assigned') !!}
                 });
             }
         });
