@@ -4,7 +4,7 @@
     <div id='app' class="container-fluid">
         <div class="row">
             <!-- Total Expenses -->
-            <div class="col-xl-auto col-md-6 mb-4">
+            <div class="col-6 col-md-3 mb-4">
                 <form method="POST" action="{{ route('home.expenses.printable') }}">
                     @csrf
                     <div class="card border-left-primary shadow h-100 py-2">
@@ -19,7 +19,7 @@
                                         Total Expenses
                                     </div>
                                     <div
-                                        class="h5 font-weight-bold text-gray-800">{{ number_format($expenses_total, 2) }}</div>
+                                        class="h5 font-weight-bold text-gray-800">@{{ numberWithCommas(expense_totals) }}</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-fw fa-money-bill fa-2x text-gray-300"></i>
@@ -27,7 +27,7 @@
                             </div>
                             <div class="row">
                                 <div class="col ml-3 mr-3">
-                                    <input type="text" id="so_totals" class="form-control" name="daterange"/>
+                                    <input type="text" id="expenses_totals" class="form-control" name="daterange"/>
                                 </div>
                             </div>
                         </div>
@@ -36,7 +36,7 @@
             </div>
 
             <!-- Total Assets -->
-            <div class="col-xl-auto col-md-6 mb-4">
+            <div class="col-6 col-md-3 mb-4">
                 <div class="card border-left-secondary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -60,7 +60,7 @@
             </div>
 
             <!-- Total Assets -->
-            <div class="col-xl-auto col-md-6 mb-4">
+            <div class="col-6 col-md-3 mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -83,7 +83,7 @@
             </div>
 
             <!-- Product Stocks -->
-            <div class="col-xl-auto col-md-6 mb-4">
+            <div class="col-6 col-md-3 mb-4">
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
@@ -104,8 +104,8 @@
                 </div>
             </div>
 
-            <!-- Earnings (Monthly) Card Example -->
-            <div class="col-xl-auto col-md-6 mb-4">
+            <!-- Total Po -->
+            <div class="col-6 col-md-3 mb-4">
                 <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body" style="padding-bottom: .1rem;">
                         <div class="row no-gutters align-items-center">
@@ -139,8 +139,8 @@
                 </div>
             </div>
 
-            <!-- Pending Requests Card Example -->
-            <div class="col-xl-auto col-md-6 mb-4">
+            <!-- Total So -->
+            <div class="col-6 col-md-3 mb-4">
                 <div class="card border-left-warning shadow h-100 py-2">
                     <div class="card-body" style="padding-bottom: .1rem;">
                         <div class="row no-gutters align-items-center">
@@ -329,11 +329,27 @@
                         start: '0',
                         end: '0'
                     },
+                    expenses_range: {
+                        start: '0',
+                        end: '0'
+                    },
                     po_totals: 0,
                     so_totals: 0,
+                    expense_totals: 0,
                 }
             },
             methods: {
+                getExpenseTotals() {
+                    var $this = this;
+                    $.ajax({
+                        url: "{{ route('home.total.expenses') }}",
+                        method: 'POST',
+                        data: $this.expenses_range,
+                        success(value) {
+                            $this.expense_totals = value;
+                        }
+                    });
+                },
                 getSOTotals() {
                     var $this = this;
                     $.ajax({
@@ -366,6 +382,7 @@
 
                 $this.getSOTotals();
                 $this.getPOTotals();
+                $this.getExpenseTotals();
 
                 fetch('https://geolocation-db.com/json/')
                     .then((response) => {
@@ -376,19 +393,19 @@
                         console.log(data);
                     });
 
-                $('#po_totals').daterangepicker({
+                $('#expenses_totals').daterangepicker({
                     opens: 'left',
                 }, function (start, end, label) {
-                    $this.po_range.start = start.format('YYYY-MM-DD');
-                    $this.po_range.end = end.format('YYYY-MM-DD');
-                    $this.getPOTotals();
-                    $('#po_totals').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+                    $this.expenses_range.start = start.format('YYYY-MM-DD');
+                    $this.expenses_range.end = end.format('YYYY-MM-DD');
+                    $this.getExpenseTotals();
+                    $('#expenses_totals').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
                 });
 
-                $('#po_totals').val('');
+                $('#expenses_totals').val('');
 
                 $('#so_totals').daterangepicker({
-                    opens: 'left',
+                    opens: 'right',
                 }, function (start, end, label) {
                     $this.so_range.start = start.format('YYYY-MM-DD');
                     $this.so_range.end = end.format('YYYY-MM-DD');

@@ -124,6 +124,10 @@ class DashboardController extends Controller
         return Excel::download(new POTotalExcel($start, $end), "PO_AUDIT-$date.xlsx");
     }
 
+    public function totalExpenses(Request $request)
+    {
+        return (new Expenses())->total($request->start, $request->end)->sum('total_amount');
+    }
 
     public function totalSO(Request $request)
     {
@@ -150,7 +154,7 @@ class DashboardController extends Controller
         $start = $dates[0] ?? '';
         $end = $dates[1] ?? '';
         $date = now()->format('Y - m - d_H:i:s');
-        
+
         return Excel::download(new ExpensesTotalExcel($start, $end), "EXPENSES_AUDIT-$date.xlsx");
     }
 }

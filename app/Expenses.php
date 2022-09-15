@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expenses extends Model
 {
-    protected  $fillable =[
+    protected $fillable = [
         'expenses_no',
         'cost_center',
         'description',
@@ -16,17 +16,17 @@ class Expenses extends Model
         'si_no',
         'dr_no',
         'remarks',
-        'created_by'
+        'created_by',
     ];
 
     public function newExpenseNo()
     {
         $so_no_list = $this->newQuery()
-            ->where('expenses_no', 'like', '%EXP%')
-            ->orderBy('id', 'desc')
-            ->limit(1)
-            ->get()
-            ->toArray();
+                           ->where('expenses_no', 'like', '%EXP%')
+                           ->orderBy('id', 'desc')
+                           ->limit(1)
+                           ->get()
+                           ->toArray();
         $str_length = 5;
         $year       = now()->format('y');
 
@@ -49,4 +49,10 @@ class Expenses extends Model
         }
     }
 
+    public function total($start, $end)
+    {
+        return $this->when($start && $end, function ($q) use ($start, $end) {
+            $q->whereBetween('expense_date', [$start, $end]);
+        });
+    }
 }
