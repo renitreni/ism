@@ -173,36 +173,35 @@
                 $this.dt = $('#table-supplies').DataTable({
                     processing: true,
                     serverSide: true,
-                    scrollX: true,
-                    responsive: true,
                     pageLength: 100,
+                    "bAutoWidth": false,
                     order: [[0, 'desc']],
                     ajax: {
                         url: "{{ route('supply.table') }}",
                         method: "POST",
                     },
                     columns: [
+                        {data: 'product_name', name: 'products.name', title: 'Product Name', width: '100%'},
                         {data: 'code', name: 'products.code', title: 'Product Model'},
-                        {data: 'product_name', name: 'products.name', title: 'Product'},
                         {data: 'selling_price', name: 'products.selling_price', title: 'Unit Price'},
                         {
                             data: function (value) {
                                 if (value.unit == null) {
                                     value.unit = '';
                                 }
-                                return '<a href="/supply/versus/' + value.product_id + '" target="_blank" class="btn btn-sm btn-info btn-block">' + value.quantity + ' ' + value.unit + '</a>';
+                                return '<a href="/supply/versus/' + value.product_id + '" target="_blank" class="btn btn-sm btn-info">' + value.quantity + ' ' + value.unit + '</a>';
                             },
                             name: 'quantity', title: 'Quantity'
                         },
                         {
                             data: function (value) {
-                                return '<a href="#" class="links-btn-po btn btn-sm btn-primary btn-block">' + value.po_count + '</a>';
+                                return '<a href="#" class="links-btn-po btn btn-sm btn-primary">' + value.po_count + '</a>';
                             },
                             name: 'po_sum.total', title: 'PO'
                         },
                         {
                             data: function (value) {
-                                return '<a href="#" class="links-btn-so btn btn-sm btn-primary btn-block">' + value.so_count + '</a>';
+                                return '<a href="#" class="links-btn-so btn btn-sm btn-primary">' + value.so_count + '</a>';
                             },
                             name: 'so_sum.total', title: 'SO'
                         },
