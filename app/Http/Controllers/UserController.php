@@ -29,6 +29,7 @@ class UserController extends Controller
         $user = collect([
             'name'  => '',
             'email' => '',
+            'position' => '',
         ]);
 
         return view('user_form', compact('user'));
@@ -45,6 +46,7 @@ class UserController extends Controller
     {
         User::query()->insert([
             'name'     => $request->name,
+            'position' => $request->position,
             'email'    => $request->email,
             'password' => Hash::make('password'),
         ]);
