@@ -4,7 +4,7 @@
     <div id='app' class="container-fluid">
         <div class="row">
             <!-- Total Expenses -->
-            <div class="col-6 col-md-3 mb-4">
+            <div class="col-6 col-md-4 mb-4">
                 <form method="POST" action="{{ route('home.expenses.printable') }}">
                     @csrf
                     <div class="card border-left-primary shadow h-100 py-2">
@@ -25,87 +25,18 @@
                                     <i class="fas fa-fw fa-money-bill fa-2x text-gray-300"></i>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col ml-3 mr-3">
-                                    <input type="text" id="expenses_totals" class="form-control" name="daterange"/>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col ml-3 mr-3">
+                                <input type="text" id="expenses_totals" class="form-control" name="daterange"/>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
 
-            <!-- Total Assets -->
-            <div class="col-6 col-md-3 mb-4">
-                <div class="card border-left-secondary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
-                                    <a href="{{ route('home.labor.printable') }}" target="_blank"
-                                       class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-hand-holding-usd"></i>
-                                    </a>
-                                    Total Project
-                                </div>
-                                <div
-                                    class="h5 font-weight-bold text-gray-800">{{ number_format($labor_total, 2) }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-hand-holding-usd fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Assets -->
-            <div class="col-6 col-md-3 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    <a href="{{ route('home.assets.printable') }}" target="_blank"
-                                       class="btn btn-sm btn-primary">
-                                        <i class="fas fa-file-download"></i>
-                                    </a>
-                                    Assets
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($assets,2) }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product Stocks -->
-            <div class="col-6 col-md-3 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    <a v-bind:href="'/products/'" class="btn btn-sm btn-success">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    Product Stocks
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800"> {{ $stocks }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-boxes fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Total Po -->
-            <div class="col-6 col-md-3 mb-4">
+            <div class="col-6 col-md-4 mb-4">
                 <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body" style="padding-bottom: .1rem;">
                         <div class="row no-gutters align-items-center">
@@ -140,7 +71,7 @@
             </div>
 
             <!-- Total So -->
-            <div class="col-6 col-md-3 mb-4">
+            <div class="col-6 col-md-4 mb-4">
                 <div class="card border-left-warning shadow h-100 py-2">
                     <div class="card-body" style="padding-bottom: .1rem;">
                         <div class="row no-gutters align-items-center">
@@ -164,6 +95,75 @@
                     <div class="row">
                         <div class="col ml-3 mr-3">
                             <input type="text" id="so_totals" class="form-control" name="daterange"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Assets -->
+            <div class="col-6 col-md-4 mb-4">
+                <div class="card border-left-secondary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                    <a href="{{ route('home.labor.printable') }}" target="_blank"
+                                       class="btn btn-sm btn-secondary">
+                                        <i class="fas fa-hand-holding-usd"></i>
+                                    </a>
+                                    Total Project
+                                </div>
+                                <div
+                                    class="h5 font-weight-bold text-gray-800">{{ number_format($labor_total, 2) }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-hand-holding-usd fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Assets -->
+            <div class="col-6 col-md-4 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    <a href="{{ route('home.assets.printable') }}" target="_blank"
+                                       class="btn btn-sm btn-primary">
+                                        <i class="fas fa-file-download"></i>
+                                    </a>
+                                    Assets
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($assets,2) }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Stocks -->
+            <div class="col-6 col-md-4 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    <a v-bind:href="'/products/'" class="btn btn-sm btn-success">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    Product Stocks
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800"> {{ $stocks }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -403,6 +403,17 @@
                 });
 
                 $('#expenses_totals').val('');
+
+                $('#po_totals').daterangepicker({
+                    opens: 'left',
+                }, function (start, end, label) {
+                    $this.po_range.start = start.format('YYYY-MM-DD');
+                    $this.po_range.end = end.format('YYYY-MM-DD');
+                    $this.getPOTotals();
+                    $('#po_totals').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+                });
+
+                $('#po_totals').val('');
 
                 $('#so_totals').daterangepicker({
                     opens: 'right',
