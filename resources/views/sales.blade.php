@@ -353,17 +353,14 @@
                         },
                         {
                             data: function (value) {
-                                let $class_color = value.delivery_status === 'Not Shipped' ? 'btn-warning' : 'btn-success';
-
-                                if (!value.can_be_shipped || !value.delivery_status == 'Shipped') {
-                                    value.delivery_status += '(CI)'
+                                if (value.can_be_shipped || value.delivery_status == 'Shipped') {
+                                    var $class_color = value.delivery_status === 'Not Shipped' ? 'btn-warning' : 'btn-success';
+                                    return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                        '<a href="#" class="btn ' + $class_color + ' btn-delivery-status">' + value.delivery_status + '</a>' +
+                                        '</div>'
                                 }
-
-                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
-                                    '<a href="#" class="btn ' + $class_color + ' btn-delivery-status">' + value.delivery_status + '</a>' +
-                                    '</div>';
-
-                            }, name: 'delivery_status', title: 'Delivery Status'
+                                return 'Check Inventory';
+                            }, name: 'status', title: 'Delivery Status'
                         },
                         {data: 'customer_name', name: 'customers.name', title: 'Customer'},
                         {data: 'subject', name: 'subject', title: 'Subject'},
