@@ -72,6 +72,12 @@ class OverrideController extends Controller
                 case 'vendors':
                     DB::table('vendors')->delete();
                     break;
+                case 'expenses':
+                    DB::table('expenses')->delete();
+                    break;
+                case 'supplies':
+                    DB::table('supplies')->update(['quantity' => 0]);
+                    break;
             }
             Alert::success('DB Wiped Successful!', 'Successful Wiped!');
         } else {

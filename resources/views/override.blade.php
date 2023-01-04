@@ -14,46 +14,6 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-{{--                            <div class="col-md-12">--}}
-{{--                                <h4>Backup and Restore</h4>--}}
-{{--                                <hr>--}}
-{{--                            </div>--}}
-{{--                            <div class="row col-md-12">--}}
-{{--                                <div class="col-md-3">--}}
-{{--                                    <form method="POST" action="{{ route('restore.point') }}">--}}
-{{--                                        @csrf--}}
-{{--                                        <button type="submit" class="btn btn-block btn-info"><i class="fas fa-hdd"></i>--}}
-{{--                                            Create--}}
-{{--                                            Restore Point--}}
-{{--                                        </button>--}}
-{{--                                    </form>--}}
-{{--                                </div>--}}
-{{--                                <label class="control-label col-md-auto mt-1">--}}
-{{--                                    Lastest Backup: <strong>{{ isset($list[0]) ? $list[0] : ''  }}</strong>--}}
-{{--                                </label>--}}
-{{--                            </div>--}}
-{{--                            <div class="row col-md-12 mt-2">--}}
-{{--                                <div class="col-md-12">--}}
-{{--                                    <form method="POST" class="row" action="{{ route('restore.sql') }}">--}}
-{{--                                        @csrf--}}
-{{--                                        <div class="col-md-3">--}}
-{{--                                            <button type="submit" class="btn btn-block btn-warning">--}}
-{{--                                                <i class="fas fa-satellite-dish"></i>--}}
-{{--                                                Restore this Backup--}}
-{{--                                            </button>--}}
-{{--                                        </div>--}}
-{{--                                        <div class="col-md-5">--}}
-{{--                                            <select name="dumpsql" class="form-control">--}}
-{{--                                                @foreach($list as $value)--}}
-{{--                                                    <option value="{{ $value }}">--}}
-{{--                                                        <strong>{{ $value }}</strong>--}}
-{{--                                                    </option>--}}
-{{--                                                @endforeach--}}
-{{--                                            </select>--}}
-{{--                                        </div>--}}
-{{--                                    </form>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
                             <div class="col-md-12 mt-3">
                                 <h4>Data Wipe Out</h4>
                                 <hr>
@@ -87,6 +47,12 @@
                                                 </option>
                                                 <option value="vendors">
                                                     <strong>Vendors</strong>
+                                                </option>
+                                                <option value="expenses">
+                                                    <strong>Expenses</strong>
+                                                </option>
+                                                <option value="supplies">
+                                                    <strong>Supplies</strong>
                                                 </option>
                                             </select>
                                         </div>
