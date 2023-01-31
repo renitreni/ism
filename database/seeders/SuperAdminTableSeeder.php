@@ -1,5 +1,8 @@
 <?php
+namespace Database\Seeders;
 
+use Illuminate\Support\Str;
+use Silber\Bouncer\Bouncer;
 use Illuminate\Database\Seeder;
 
 class SuperAdminTableSeeder extends Seeder
@@ -20,6 +23,6 @@ class SuperAdminTableSeeder extends Seeder
                 'remember_token'    => Str::random(10),
             ]
         );
-        Bouncer::allow(\App\User::find($id))->everything();
+        app(Bouncer::class)->allow(\App\User::find($id))->everything();
     }
 }
