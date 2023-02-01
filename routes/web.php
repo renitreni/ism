@@ -180,6 +180,10 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/expenses/update', 'ExpensesController@store')->name('expenses.update')->middleware('can:expensesupdate');
     Route::post('/expenses/destroy', 'ExpensesController@destroy')->name('expenses.destroy')->middleware('can:expensesdelete');
 
-    Route::get('/quote', 'QuoteController@index')->name('quote');
+    Route::get('/quote', 'QuoteController@index')->name('quote')->middleware('can:quote');
     Route::post('/quote/table', 'QuoteController@table')->name('quote.table');
+    Route::get('/quote/create', 'SalesOrderController@create')->name('quote.create')->middleware('can:quotecreate');
+    Route::get('/quote/view/{id}', 'SalesOrderController@show')->name('quote.view')->middleware('can:quoteretrieve');
+    Route::get('/quote/detail/{id}', 'SalesOrderController@show')->name('quote.detail')->middleware('can:quoteupdate');
+    Route::post('/quote/destroy', 'SalesOrderController@destroy')->name('quote.destroy')->middleware('can:quotedestroy');
 });

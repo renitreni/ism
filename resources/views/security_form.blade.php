@@ -20,8 +20,8 @@
                                     <input class="form-control form-control-sm" v-model="role">
                                 </div>
                             </div>
-                            {{--BATCH PROCESS--}}
-                            @if(env('SECTION_BATCHING') == 'show')
+                            {{-- BATCH PROCESS --}}
+                            @if (env('SECTION_BATCHING') == 'show')
                                 <div class="col-md-12 row">
                                     <div class="col-md-12 mt-4">
                                         <h3>Order Form</h3>
@@ -82,9 +82,9 @@
                                 </div>
                             @endif
 
-                            {{--Process Order--}}
-                            @if(env('SECTION_INVENTORY') == 'show')
-                                {{--Purchase Order--}}
+                            {{-- Process Order --}}
+                            @if (env('SECTION_INVENTORY') == 'show')
+                                {{-- Purchase Order --}}
                                 <div class="col-md-12 row">
                                     <div class="col-md-12 mt-4">
                                         <h3>Purchase Order</h3>
@@ -904,6 +904,78 @@
                                         </div>
                                     </div>
                                 </div>
+                                {{-- Quote --}}
+                                <div class="col-md-12 row">
+                                    <div class="col-md-12 mt-4">
+                                        <h3>Quote</h3>
+                                        <hr>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.quote">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Quote</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.quotecreate">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Quote Create</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.quoteretrieve">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Quote Retrieve</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.quoteupdate">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Quote Update</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.quotedestroy">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Quote Delete</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @endif
 
                             <div class="col-md-12">
@@ -935,8 +1007,11 @@
                     $.ajax({
                         url: '{{ route('role.store') }}',
                         method: 'POST',
-                        data: {role: $this.role, abilities: $this.abilities},
-                        success: function (value) {
+                        data: {
+                            role: $this.role,
+                            abilities: $this.abilities
+                        },
+                        success: function(value) {
                             Swal.fire(
                                 'Good job!',
                                 'Operation is successful.',
@@ -955,8 +1030,11 @@
                     $.ajax({
                         url: '{{ route('role.abilities') }}',
                         method: 'POST',
-                        data: {role: $this.role, abilities: $this.abilities},
-                        success: function (value) {
+                        data: {
+                            role: $this.role,
+                            abilities: $this.abilities
+                        },
+                        success: function(value) {
                             Swal.fire(
                                 'Good job!',
                                 'Operation is successful.',
@@ -975,11 +1053,9 @@
 
                 if ('{{ Route::currentRouteName() }}' == 'role.detail') {
                     this.viewType = 0;
-                }
-                else if ('{{ Route::currentRouteName() }}' == 'role.create') {
+                } else if ('{{ Route::currentRouteName() }}' == 'role.create') {
                     this.viewType = 1;
-                }
-                else if ('{{ Route::currentRouteName() }}' == 'role.view') {
+                } else if ('{{ Route::currentRouteName() }}' == 'role.view') {
                     this.viewType = 2;
                     $('label').addClass('font-weight-bold');
                     $('.form-control').addClass('form-control-plaintext').removeClass('form-control');

@@ -310,12 +310,12 @@
                         {
                             data: function (value) {
                                 if (value.delivery_status !== 'Shipped') {
-                                    edit = '<a href="/sales/detail/' + value.id + '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
+                                    edit = '<a href="/quote/detail/' + value.id + '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
                                 } else {
                                     edit = '';
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
-                                    '<a href="/sales/view/' + value.id + '" class="btn btn-primary btn-view">' +
+                                    '<a href="/quote/view/' + value.id + '" class="btn btn-primary btn-view">' +
                                     '<i class="fa fa-eye"></i></a>' +
                                     edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +

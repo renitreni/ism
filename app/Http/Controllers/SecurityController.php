@@ -74,6 +74,11 @@ class SecurityController extends Controller
         "expensescreate",
         "expensesupdate",
         "expensesdelete",
+        "quote",
+        "quoteretrieve",
+        "quotecreate",
+        "quoteupdate",
+        "quotedestroy",
     ];
 
     public function roles()
@@ -134,7 +139,7 @@ class SecurityController extends Controller
                 $abilities[$value] = false;
             }
         }
-        $abilities = collect($abilities);
+        $abilities = collect($abilities ?? []);
 
         return view('security_form', compact('role', 'abilities'));
     }
