@@ -10,16 +10,13 @@
                 <!-- Approach -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Sales Overview</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Quotes Overview</h6>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12">
                                 <a href="{{ route('sales.create') }}" class="btn btn-sm btn-success"><i
                                         class="fa fa-plus"></i> New Sales Order</a>
-                                <a href="#!" class="btn btn-sm btn-info" data-toggle="modal"
-                                   data-target="#salesReportMdl">
-                                    <i class="fas fa-download"></i> Sales Report</a>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <table id="table-sales" class="table table-striped nowrap table-general"
@@ -45,8 +42,8 @@
                                 <div class="form-group">
                                     <label class="control-label">Pick a status</label>
                                     <select class="form-control" v-model="overview.status">
-                                        <option value="Sales">Sales</option>
-                                        <option value="Project">Project</option>
+                                        <option value="Quote">Quote</option>
+                                        <option value="Waiting For PO Approved">Waiting For PO Approved</option>
                                     </select>
                                 </div>
                             </div>
@@ -306,7 +303,7 @@
                     pageLength: 100,
                     order: [[1, 'desc']],
                     ajax: {
-                        url: "{{ route('sales.table') }}",
+                        url: "{{ route('quote.table') }}",
                         method: "POST",
                     },
                     columns: [
@@ -350,17 +347,18 @@
                                     '</div>'
                             }, name: 'status', title: 'Status'
                         },
-                        {
-                            data: function (value) {
-                                if (value.can_be_shipped || value.delivery_status == 'Shipped') {
-                                    var $class_color = value.delivery_status === 'Not Shipped' ? 'btn-warning' : 'btn-success';
-                                    return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
-                                        '<a href="#" class="btn ' + $class_color + ' btn-delivery-status">' + value.delivery_status + '</a>' +
-                                        '</div>'
-                                }
-                                return 'Check Inventory';
-                            }, name: 'status', title: 'Delivery Status'
-                        },
+                        // Commented temporirly cause this is for quotes only
+                        // {
+                        //     data: function (value) {
+                        //         if (value.can_be_shipped || value.delivery_status == 'Shipped') {
+                        //             var $class_color = value.delivery_status === 'Not Shipped' ? 'btn-warning' : 'btn-success';
+                        //             return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                        //                 '<a href="#" class="btn ' + $class_color + ' btn-delivery-status">' + value.delivery_status + '</a>' +
+                        //                 '</div>'
+                        //         }
+                        //         return 'Check Inventory';
+                        //     }, name: 'status', title: 'Delivery Status'
+                        // },
                         {data: 'customer_name', name: 'customers.name', title: 'Customer'},
                         {data: 'subject', name: 'subject', title: 'Subject'},
                         {data: 'grand_total', name: 'summaries.grand_total', title: 'Total'},

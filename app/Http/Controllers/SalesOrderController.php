@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\SalesReportExcel;
+use App\Http\Controllers\Traits\HasProductDetail;
 use App\Preference;
 use App\Product;
 use App\ProductDetail;
@@ -20,6 +21,8 @@ use DB;
 
 class SalesOrderController extends Controller
 {
+    use HasProductDetail;
+
     public function index()
     {
         return view('sales');
@@ -32,7 +35,8 @@ class SalesOrderController extends Controller
                              summaries.grand_total')
             ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
             ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
-            ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to');
+            ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
+            ->whereIn('sales_orders.status', ['Sales', 'Project']);
 
         return DataTables::of($vendors)->setTransformer(function ($data) {
             $data                   = $data->toArray();
@@ -480,18 +484,6 @@ class SalesOrderController extends Controller
             'product_details' => $product_details,
             'summary'         => $summary,
         ];
-    }
-
-    public function getProductDetail($id)
-    {
-        return ProductDetail::query()
-            ->selectRaw('products.code, products.category, products.type, products.unit, products.manual_id, product_details.*, supplies.quantity')
-            ->where('sales_order_id', $id)
-            ->join('products', 'products.id', 'product_details.product_id')
-            ->join('supplies', 'supplies.product_id', 'product_details.product_id')
-            ->orderBy('products.category')
-            ->get();
-
     }
 
     public function converToRoman($num)

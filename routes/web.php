@@ -80,10 +80,6 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/vendors/update', 'VendorController@update')->name('vendor.update');
     Route::post('/vendors/store', 'VendorController@store')->name('vendor.store');
 
-//    Route::get('/inquiry', 'InquiryController@index')->name('inquiry');
-//    Route::post('/inquiry/table', 'InquiryController@table')->name('inquiry.table');
-//    Route::post('/inquiry/destroy', 'InquiryController@destroy')->name('inquiry.destroy');
-
     Route::get('/customer', 'CustomerController@index')->name('customer')->middleware('can:customers');
     Route::get('/customer/create', 'CustomerController@create')->name('customer.create')->middleware('can:customercreate');
     Route::get('/customer/view/{id}', 'CustomerController@show')->name('customer.view')->middleware('can:customerretrieve');
@@ -183,4 +179,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/expenses/detail/{id}', 'ExpensesController@edit')->name('expenses.edit');
     Route::post('/expenses/update', 'ExpensesController@store')->name('expenses.update')->middleware('can:expensesupdate');
     Route::post('/expenses/destroy', 'ExpensesController@destroy')->name('expenses.destroy')->middleware('can:expensesdelete');
+
+    Route::get('/quote', 'QuoteController@index')->name('quote');
+    Route::post('/quote/table', 'QuoteController@table')->name('quote.table');
 });

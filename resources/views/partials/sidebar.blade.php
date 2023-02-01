@@ -29,6 +29,11 @@
                 <span>Purchase Order</span></a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('quote') }}">
+                <i class="fas fa-fw fa-certificate"></i>
+                <span>Quotes</span></a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('sales') }}">
                 <i class="fas fa-fw fa-money-check-alt"></i>
                 <span>Sales Order</span></a>
