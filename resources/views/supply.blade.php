@@ -15,7 +15,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12 mt-3">
-                                <table id="table-supplies" class="table table-hover nowrap table-general"
+                                <table id="table-supplies" class="table table-striped nowrap table-general"
                                        style="width:100%"></table>
                             </div>
                         </div>
@@ -173,8 +173,9 @@
                 $this.dt = $('#table-supplies').DataTable({
                     processing: true,
                     serverSide: true,
+                    scrollX: true,
+                    responsive: true,
                     pageLength: 100,
-                    "bAutoWidth": false,
                     order: [[0, 'desc']],
                     ajax: {
                         url: "{{ route('supply.table') }}",
