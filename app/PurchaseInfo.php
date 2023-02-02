@@ -37,14 +37,14 @@ class PurchaseInfo extends Model
             $num = 1;
             $str = substr("0000{$num}", -$str_length);
 
-            return 'PO'.$year.'-'.$str;
+            return 'PO' . $year . '-' . $str;
         } else {
             $numbering = explode('-', $po_no)[1];
             $year      = Carbon::now()->format('y');
             $final_num = (int) $numbering + 1;
             $str       = substr("0000{$final_num}", -$str_length);
 
-            return 'PO'.$year.'-'.$str;
+            return 'PO' . $year . '-' . $str;
         }
     }
 
@@ -68,5 +68,16 @@ class PurchaseInfo extends Model
             ->when($start && $end, function ($q) use ($start, $end) {
                 $q->whereBetween('purchase_infos.created_at', [$start, $end]);
             });
+    }
+
+    public function pricesAffected($productId)
+    {
+        return $this->query()
+            ->selectRaw('pd.id as pd_id')
+            ->join('product_details as pd', 'pd.purchase_order_id', '=', 'purchase_infos.id')
+            ->where('purchase_infos.status', 'Ordered')
+            ->where('pd.product_id', $productId)
+            ->get()
+            ->pluck('pd_id');
     }
 }

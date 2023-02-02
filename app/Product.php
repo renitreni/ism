@@ -13,6 +13,24 @@ class Product extends Model
 
     protected $guarded = ['id'];
 
+    protected $fillables = [
+        'manual_id',
+        'name',
+        'code',
+        'category',
+        'manufacturer',
+        'selling_price',
+        'vendor_price',
+        'unit',
+        'description',
+        'batch',
+        'color',
+        'size',
+        'weight',
+        'type',
+        'assigned_to',
+    ];
+
     public static function isLimited($product_id)
     {
         $count = self::query()

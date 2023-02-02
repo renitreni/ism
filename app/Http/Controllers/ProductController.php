@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Category;
+use App\Supply;
 use App\Gallery;
 use App\Product;
-use App\Supply;
+use App\Category;
+use App\ProductDetail;
+use App\PurchaseInfo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
-use DB;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -24,9 +26,10 @@ class ProductController extends Controller
 
     public function table()
     {
-        $products = Product::query()->with(['tags'])
+        $products = Product::query()
+            ->with(['tags'])
             ->selectRaw('products.*, users.name as username')
-            ->join('users', 'users.id', '=', 'products.assigned_to');
+            ->leftJoin('users', 'users.id', '=', 'products.assigned_to');
 
         return DataTables::of($products)->setTransformer(function ($data) {
             $data         = collect($data)->toArray();
@@ -85,7 +88,7 @@ class ProductController extends Controller
     {
         $product = Product::query()
             ->selectRaw("id as id, name as text")
-            ->whereRaw("upper(name) like '%".strtoupper($request->term)."%'");
+            ->whereRaw("upper(name) like '%" . strtoupper($request->term) . "%'");
 
         if ($request->category != '') {
             $product->where('category', $request->category);
@@ -133,7 +136,36 @@ class ProductController extends Controller
     public function update(Request $request)
     {
         (new Product())->fastMoving($request, $request->id);
-        Product::query()->where('id', $request->id)->update($request->except('fast_moving', 'tags'));
+
+        $product = Product::find($request->id);
+        $product->manual_id = $request->get('manual_id');
+        $product->name = $request->get('name');
+        $product->code = $request->get('code');
+        $product->category = $request->get('category');
+        $product->manufacturer = $request->get('manufacturer');
+        $product->selling_price = $request->get('selling_price');
+        $product->vendor_price = $request->get('vendor_price');
+        $product->unit = $request->get('unit');
+        $product->description = $request->get('description');
+        $product->batch = $request->get('batch');
+        $product->color = $request->get('color');
+        $product->size = $request->get('size');
+        $product->weight = $request->get('weight');
+        $product->type = $request->get('type');
+        $product->assigned_to = $request->get('assigned_to');
+
+        if ($product->isDirty('vendor_price')) {
+            $productDetailsIds = (new PurchaseInfo())
+                ->pricesAffected($request->id);
+            foreach ($productDetailsIds as $id) {
+                $productDetail = ProductDetail::find($id);
+                $productDetail->selling_price = $request->get('selling_price');
+                $productDetail->vendor_price = $request->get('vendor_price');
+                $productDetail->save();
+            }
+        }
+
+        $product->save();
 
         return ['success' => true];
     }
