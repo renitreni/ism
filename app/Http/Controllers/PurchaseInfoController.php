@@ -128,6 +128,11 @@ class PurchaseInfoController extends Controller
                         'vendor_price'      => $item['vendor_price'],
                         'discount_item'     => $item['discount_item'],
                     ];
+
+                    $product = Product::find($item['product_id']);
+                    $product->selling_price = $item['selling_price'];
+                    $product->vendor_price = $item['vendor_price'];
+                    $product->save();
                 }
             }
 

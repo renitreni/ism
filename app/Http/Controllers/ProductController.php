@@ -153,18 +153,6 @@ class ProductController extends Controller
         $product->weight = $request->get('weight');
         $product->type = $request->get('type');
         $product->assigned_to = $request->get('assigned_to');
-
-        if ($product->isDirty('vendor_price')) {
-            $productDetailsIds = (new PurchaseInfo())
-                ->pricesAffected($request->id);
-            foreach ($productDetailsIds as $id) {
-                $productDetail = ProductDetail::find($id);
-                $productDetail->selling_price = $request->get('selling_price');
-                $productDetail->vendor_price = $request->get('vendor_price');
-                $productDetail->save();
-            }
-        }
-
         $product->save();
 
         return ['success' => true];
