@@ -417,8 +417,6 @@
                             'Discount and shipping is blank.',
                             'warning'
                         ).then((result) => {
-                            if (result.value) {
-                            }
                         });
                         return false;
                     }
@@ -439,7 +437,11 @@
                                 'success'
                             ).then((result) => {
                                 if (result.value) {
-                                    window.location = '{{ route('sales') }}'
+                                    if($this.overview.status == 'Quote') {
+                                        window.location = '{{ route("quote") }}'
+                                    } else {
+                                        window.location = '{{ route("sales") }}'
+                                    }
                                 }
                             })
                         }

@@ -45,6 +45,7 @@
                                 <div class="form-group">
                                     <label class="control-label">Pick a status</label>
                                     <select class="form-control" v-model="overview.status">
+                                        <option value="Quote">Quote</option>
                                         <option value="Sales">Sales</option>
                                         <option value="Project">Project</option>
                                     </select>

@@ -44,6 +44,8 @@
                                     <select class="form-control" v-model="overview.status">
                                         <option value="Quote">Quote</option>
                                         <option value="Waiting For PO Approved">Waiting For PO Approved</option>
+                                        <option value="Sales">Sales</option>
+                                        <option value="Project">Project</option>
                                     </select>
                                 </div>
                             </div>
