@@ -267,7 +267,7 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <a href="{{ route('sales') }}" class="btn btn-warning">Back</a>
+                                <a href="{{ URL::previous() }}" class="btn btn-warning">Back</a>
                                 <button class="btn btn-info" v-if="viewType == 1" @click="store">Save New</button>
                                 <button class="btn btn-primary" v-if="viewType == 0" @click="update">Update Now</button>
                                 <a href="{{ route('sales.print', isset($sales_order->id) ? $sales_order->id : '') }}"
