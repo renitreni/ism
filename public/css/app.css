@@ -7230,3 +7230,49 @@ td {
   font-weight: 600 !important;
 }
 
+.bg-gradient-warning {
+    background-image: linear-gradient(180deg, #000000 10%, #978c75 100%) !important;
+}
+
+.topbar {
+    background-color: #2c2c2c !important;
+    color: white;
+}
+
+#wrapper #content-wrapper {
+    background-color: #4c4c4c !important;
+}
+
+footer.sticky-footer {
+    background-color: #2c2c2c !important;
+}
+
+.card {
+    background-color: #000 !important;
+    border: 1px solid #303132 !important;
+}
+
+.text-gray-800 {
+    color: #ffffff !important;
+}
+
+td{
+    color: #ffffff !important;
+}
+
+th {
+    color: #ffffff !important;
+}
+
+.card-header
+{
+    background-color: #000 !important;
+}
+
+.text-primary {
+  color: #ffffff !important;
+}
+/*
+.btn {
+    color: #ffffff !important;
+} */
