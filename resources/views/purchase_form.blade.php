@@ -180,7 +180,7 @@
                                             <td v-if="product.product_name"><input readonly type="text"
                                                                                    class="form-control-plaintext form-control-sm"
                                                                                    v-model="product.product_name"></td>
-                                            <td v-else colspan="7" style="background-color: bisque;">
+                                            <td v-else colspan="7" style="background-color: rgba(61, 61, 61, 0.925);">
                                                 <h5 style="margin-top: 5px;"><strong>@{{ product.category }}</strong>
                                                 </h5>
                                             </td>
