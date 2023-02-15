@@ -7272,7 +7272,7 @@ th {
 .text-primary {
   color: #ffffff !important;
 }
-/*
-.btn {
+
+td > input {
     color: #ffffff !important;
-} */
+}
