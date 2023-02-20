@@ -38,7 +38,7 @@
                         <div class="row">
                             <div class="col-md-4" v-for="link in links">
                                 <div class="form-group">
-                                    <a v-bind:href="url + link.link" target="_blank" class="btn btn-link">
+                                    <a v-bind:href="url + link.link" target="_blank" class="btn btn-link text-white">
                                         @{{ link.number }} <span class="badge badge-light">@{{ link.status }}</span>
                                     </a>
                                 </div>
