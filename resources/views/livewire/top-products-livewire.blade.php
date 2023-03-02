@@ -27,22 +27,28 @@
                         </div>
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-2 mb-2">
-                                    Sales Count
+                                <div class="col-auto mb-2">
+                                    Top #
                                 </div>
-                                <div class="col-10 mb-2">
-                                    Name
+                                <div class="col-auto mb-2">
+                                    <strong>Quantity</strong>
                                 </div>
-                                @foreach ($tops as $value)
-                                    <div class="col-2">
-                                        <strong>
-                                            {{ $value->sales }}
-                                        </strong>
+                                <div class="col-9 mb-2">
+                                    <strong>Product</strong>
+                                </div>
+                                <div class="col-12">
+                                </div>
+                                @foreach ($tops as $key => $value)
+                                    <div class="col-auto">
+                                        Top {{ ++$key }}
                                     </div>
-                                    <div class="col-10">
-                                        <strong>
-                                            {{ $value->name }}
-                                        </strong>
+                                    <div class="col-auto">
+                                        {{ $value->qty_total }}
+                                    </div>
+                                    <div class="col-9">
+                                        {{ $value->name }}
+                                    </div>
+                                    <div class="col-12">
                                     </div>
                                 @endforeach
                             </div>

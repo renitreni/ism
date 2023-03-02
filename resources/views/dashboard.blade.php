@@ -183,6 +183,9 @@
             <div class="col-6">
                 <livewire:top-sales-agent-livewire>
             </div>
+            <div class="col-6">
+                <livewire:top-products-livewire>
+            </div>
         </div>
 
         <!-- Content Row -->

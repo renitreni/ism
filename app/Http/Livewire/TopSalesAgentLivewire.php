@@ -27,7 +27,8 @@ class TopSalesAgentLivewire extends Component
             WHERE MONTH(sales_orders.created_at) = {$this->month}
             AND YEAR(sales_orders.created_at) = {$this->year}
             GROUP BY assigned_to, u.name
-            ORDER BY 1 desc");
+            ORDER BY 1 desc
+            LIMIT 3");
 
         return view('livewire.top-sales-agent-livewire');
     }
