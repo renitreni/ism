@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @yield('styles')
+    @livewireStyles()
 </head>
 
 <body id="page-top">
@@ -97,7 +98,7 @@
         </div>
     </div>
 </div>
-
+@livewireScripts()
 <!-- Bootstrap core JavaScript-->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

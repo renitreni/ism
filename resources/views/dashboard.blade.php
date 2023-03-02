@@ -1,5 +1,14 @@
 @extends('admin_layout')
 
+@section('styles')
+<style>
+    input, select, textarea {
+        color: #ffffff !important;
+        background-color: #ffffff00 !important;
+    }
+</style>
+@endsection
+
 @section('content')
     <div id='app' class="container-fluid">
         <div class="row">
@@ -169,9 +178,15 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mb-4">
+            <div class="col-6">
+                <livewire:top-sales-agent-livewire>
+            </div>
+        </div>
+
         <!-- Content Row -->
         <div class="row">
-
             <div class="col-lg-6 mb-4">
                 <!-- Approach -->
                 <div class="card shadow mb-4">

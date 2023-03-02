@@ -182,7 +182,11 @@
                         method: "POST",
                     },
                     columns: [
-                        {data: 'product_name', name: 'products.name', title: 'Product Name', width: '100%'},
+                        {
+                            data: function (value) {
+                                return '<input class="form-control" value="'+value.product_name+'">';
+                            }
+                            , name: 'products.name', title: 'Product Name', width: '100%'},
                         {data: 'code', name: 'products.code', title: 'Product Model'},
                         {data: 'selling_price', name: 'products.selling_price', title: 'Unit Price'},
                         {
