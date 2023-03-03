@@ -27,11 +27,11 @@ class TopSalesAgentLivewire extends Component
             LEFT JOIN summaries AS s ON s.sales_order_id = sales_orders.id
                 WHERE MONTH(sales_orders.created_at) = {$this->month}
                 AND YEAR(sales_orders.created_at) = {$this->year}
-                AND sales_orders.status = 'Sales'
+                AND sales_orders.status IN ('Sales', 'Project')
                 GROUP BY agent
                 ORDER BY 1 desc
             LIMIT 3");
-            
+
         return view('livewire.top-sales-agent-livewire');
     }
 }
