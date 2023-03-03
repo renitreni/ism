@@ -302,6 +302,7 @@ class SalesOrderController extends Controller
             ]);
 
         return $pdf->setPaper('a4')
+            ->setTemporaryFolder(public_path())
             ->download('SO '.$sales_order["so_no"].' '.$sales_order["customer_name"].'.pdf');
     }
 
