@@ -2,6 +2,9 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
+                <div class="card-header">
+                   <strong>TOP SALES AGENT OF THE MONTH</strong>
+                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6 mb-3">
@@ -26,26 +29,22 @@
                             <input type="number" wire:model="year" class="form-control">
                         </div>
                         <div class="col-12">
-                            <div class="row">
-                                <div class="col-2 mb-2">
-                                    Sales Count
-                                </div>
-                                <div class="col-10 mb-2">
-                                    Name
-                                </div>
-                                @foreach ($tops as $value)
-                                    <div class="col-2">
-                                        <strong>
-                                            {{ $value->sales }}
-                                        </strong>
-                                    </div>
-                                    <div class="col-10">
-                                        <strong>
-                                            {{ $value->name }}
-                                        </strong>
-                                    </div>
-                                @endforeach
-                            </div>
+                            <table class="table">
+                                <thead>
+                                    <th>Top #</th>
+                                    <th>Agent</th>
+                                    <th>Total Sales</th>
+                                </thead>
+                                <tbody>
+                                    @foreach ($tops as $key => $value)
+                                    <tr>
+                                        <td>{{ ++$key }}</td>
+                                        <td>{{ $value->name }}</td>
+                                        <td>{{ $value->sales }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
