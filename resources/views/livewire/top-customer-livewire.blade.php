@@ -35,7 +35,7 @@
                                 <thead>
                                     <th>Top #</th>
                                     <th>Customer</th>
-                                    <th>Quantity</th>
+                                    <th>Total Purchased</th>
                                 </thead>
                                 <tbody>
                                     @foreach ($tops as $key => $value)
