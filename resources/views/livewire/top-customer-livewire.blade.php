@@ -4,7 +4,7 @@
             <div class="card">
                 <div class="card-header">
                    <strong>
-                        TOP PRODUCTS OF THE MONTH
+                        TOP CUSTOMERS OF THE MONTH
                     </strong>
                 </div>
                 <div class="card-body">
@@ -34,7 +34,7 @@
                             <table class="table">
                                 <thead>
                                     <th>Top #</th>
-                                    <th>Product</th>
+                                    <th>Customer</th>
                                     <th>Quantity</th>
                                 </thead>
                                 <tbody>
@@ -42,7 +42,7 @@
                                     <tr>
                                         <td>{{ ++$key }}</td>
                                         <td>{{ $value->name }}</td>
-                                        <td>{{ $value->qty_total }}</td>
+                                        <td>{{ $value->total }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>

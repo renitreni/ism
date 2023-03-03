@@ -179,11 +179,14 @@
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-6">
+        <div class="row">
+            <div class="col-6 mb-4">
                 <livewire:top-sales-agent-livewire>
             </div>
-            <div class="col-6">
+            <div class="col-6 mb-4">
+                <livewire:top-customer-livewire>
+            </div>
+            <div class="col-12 mb-4">
                 <livewire:top-products-livewire>
             </div>
         </div>
