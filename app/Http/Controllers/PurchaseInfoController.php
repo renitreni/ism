@@ -315,7 +315,9 @@ class PurchaseInfoController extends Controller
                 'sections'        => $sections,
             ]);
 
-        return $pdf->setPaper('a4')->download($purchase_info["po_no"].'_'.$purchase_info["vendor_name"].'.pdf');
+        return $pdf->setPaper('a4')
+            ->setTemporaryFolder(public_path())
+            ->download($purchase_info["po_no"].'_'.$purchase_info["vendor_name"].'.pdf');
     }
 
     public function previewPO($id)

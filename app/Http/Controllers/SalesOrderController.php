@@ -342,6 +342,7 @@ class SalesOrderController extends Controller
             ]);
 
         return $pdf->setPaper('a4')
+            ->setTemporaryFolder(public_path())
             ->download('QTN '.$sales_order["so_no"].' '.$sales_order["customer_name"].'.pdf');
     }
 
@@ -382,6 +383,7 @@ class SalesOrderController extends Controller
             ]);
 
         return $pdf->setPaper('a4')
+            ->setTemporaryFolder(public_path())
             ->download('DR '.$sales_order["so_no"].' '.$sales_order["customer_name"].'.pdf');
     }
 

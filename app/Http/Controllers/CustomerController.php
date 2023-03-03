@@ -88,6 +88,8 @@ class CustomerController extends Controller
 
         $pdf = PDF::loadView('customer_printable', ['customers' => $customers]);
 
-        return $pdf->setPaper('a4')->download('CUSTOMER_LIST - ' . Carbon::now()->format('Y-m-d') . '.pdf');
+        return $pdf->setPaper('a4')
+            ->setTemporaryFolder(public_path())
+            ->download('CUSTOMER_LIST - ' . Carbon::now()->format('Y-m-d') . '.pdf');
     }
 }

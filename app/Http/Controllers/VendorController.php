@@ -91,6 +91,8 @@ class VendorController extends Controller
 
         $pdf = PDF::loadView('vendor_printable', ['vendors' => $vendors]);
 
-        return $pdf->setPaper('a4')->download('VENDOR_LIST - ' . Carbon::now()->format('Y-m-d') . '.pdf');
+        return $pdf->setPaper('a4')
+            ->setTemporaryFolder(public_path())
+            ->download('VENDOR_LIST - ' . Carbon::now()->format('Y-m-d') . '.pdf');
     }
 }
