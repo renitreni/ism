@@ -20,7 +20,7 @@ class TopProductsLivewire extends Component
     }
     public function render()
     {
-        $this->tops = DB::select(" SELECT SUM(pd.qty) AS qty_total, pd.product_id, p.name
+        $this->tops = DB::select("SELECT SUM(pd.qty) AS qty_total, pd.product_id, p.name
                 FROM sales_orders
                 LEFT JOIN product_details AS pd ON pd.sales_order_id = sales_orders.id
                 LEFT JOIN products AS p ON p.id = pd.product_id
