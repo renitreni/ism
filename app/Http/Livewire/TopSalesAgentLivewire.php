@@ -21,10 +21,9 @@ class TopSalesAgentLivewire extends Component
 
     public function render()
     {
-        $this->tops = DB::select("SELECT SUM(s.grand_total) AS sales, agent as name
+        $this->tops = DB::select("SELECT SUM(s.sub_total) AS sales, agent as name
             FROM sales_orders
-            LEFT JOIN users AS u ON u.id = assigned_to
-            LEFT JOIN summaries AS s ON s.sales_order_id = sales_orders.id
+            INNER JOIN summaries AS s ON s.sales_order_id = sales_orders.id
                 WHERE MONTH(sales_orders.created_at) = {$this->month}
                 AND YEAR(sales_orders.created_at) = {$this->year}
                 AND sales_orders.status IN ('Sales', 'Project')
