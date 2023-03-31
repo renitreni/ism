@@ -26,27 +26,27 @@ class DashboardController extends Controller
     {
         Supply::recalibrate();
 
-//#################
+        //#################
         $supply = Supply::query()
             ->selectRaw('(supplies.quantity * products.selling_price) total')
             ->join('products', 'products.id', '=', 'supplies.product_id');
 
         $assets = $this->computeStock($supply);
-//#################
-//-----------------
+        //#################
+        //-----------------
         $supply = Supply::query()
             ->selectRaw('supplies.quantity total')
             ->join('products', 'products.id', '=', 'supplies.product_id')
             ->where('supplies.quantity', '<>', 0);
 
         $stocks = $this->computeStock($supply);
-//------------------
+        //------------------
         $po_count = PurchaseInfo::query()->count();
         $so_count = SalesOrder::query()->count();
 
         $product_details = (new ProductDetail())->getTotalProject();
         $labor_total     = $this->computeStock($product_details, 'subtotal');
-        $expenses_total   = Expenses::query()->sum('total_amount');
+        $expenses_total  = Expenses::query()->sum('total_amount');
         return view('dashboard', compact('assets', 'stocks', 'po_count', 'so_count', 'labor_total', 'expenses_total'));
     }
 
@@ -96,16 +96,14 @@ class DashboardController extends Controller
         return DataTables::of($so)->make(true);
     }
 
-    public function totalLaborPrintable()
-    : BinaryFileResponse
+    public function totalLaborPrintable(): BinaryFileResponse
     {
         $date = now()->format('Y-m-d_H:i:s');
 
         return Excel::download(new LaborTotalExcel(), "LABOR_AUDIT-$date.xlsx");
     }
 
-    public function assetsPrintable()
-    : BinaryFileResponse
+    public function assetsPrintable(): BinaryFileResponse
     {
         $date = now()->format('Y-m-d_H:i:s');
 
@@ -117,8 +115,8 @@ class DashboardController extends Controller
         return (new PurchaseInfo())->total($request->start, $request->end)->sum('grand_total');
     }
 
-    public function poTotalPrintable($start, $end)
-    : BinaryFileResponse {
+    public function poTotalPrintable($start, $end): BinaryFileResponse
+    {
         $date = now()->format('Y-m-d_H:i:s');
 
         return Excel::download(new POTotalExcel($start, $end), "PO_AUDIT-$date.xlsx");
@@ -134,8 +132,8 @@ class DashboardController extends Controller
         return (new SalesOrder())->total($request->start, $request->end)->sum('grand_total');
     }
 
-    public function soTotalPrintable($start, $end)
-    : BinaryFileResponse {
+    public function soTotalPrintable($start, $end): BinaryFileResponse
+    {
         $date = now()->format('Y - m - d_H:i:s');
 
         return Excel::download(new SOTotalExcel($start, $end), "SO_AUDIT-$date.xlsx");
