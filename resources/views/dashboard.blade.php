@@ -24,29 +24,8 @@
             <livewire:component.total-s-o-component />
 
             <!-- Total Project -->
-            <div class="col-6 col-md-4 mb-4">
-                <div class="card border-left-secondary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
-                                    <a href="{{ route('home.labor.printable') }}" target="_blank"
-                                        class="btn btn-sm btn-secondary">
-                                        <i class="fas fa-hand-holding-usd"></i>
-                                    </a>
-                                    Total Project
-                                </div>
-                                <div class="h5 font-weight-bold text-gray-800">{{ number_format($labor_total, 2) }}
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-hand-holding-usd fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <livewire:component.total-project-component />
+            
             <!-- Total Assets -->
             <div class="col-6 col-md-4 mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
