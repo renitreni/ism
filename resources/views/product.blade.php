@@ -59,7 +59,7 @@
                             <div class="col-md-12">
                                 <ul class="list-group">
                                     <li v-for="(category, idx) in categories"
-                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        class="list-group-item d-flex justify-content-between align-items-center bg-dark">
                                         @{{ category }}
                                         <button class="btn btn-sm btn-danger" @click="deleteCategory(idx)"><i
                                                     class="fa fa-times"></i>
