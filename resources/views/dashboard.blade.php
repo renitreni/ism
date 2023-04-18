@@ -12,6 +12,7 @@
 @endsection
 
 @section('content')
+<div id="app">
     <div class="container-fluid">
         <div class="row">
             <!-- Total Expenses -->
@@ -74,7 +75,7 @@
         </div>
     </div>
 
-    <div id='app' class="container-fluid">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-6 mb-4">
                 <livewire:top-sales-agent-livewire>
@@ -219,6 +220,7 @@
             </div>
         </div>
     </div>
+</div>
 @endsection
 
 @section('scripts')
