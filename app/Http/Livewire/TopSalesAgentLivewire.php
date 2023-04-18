@@ -29,7 +29,7 @@ class TopSalesAgentLivewire extends Component
                 AND sales_orders.status IN ('Sales', 'Project')
                 GROUP BY agent
                 ORDER BY 1 desc
-            LIMIT 3");
+            LIMIT 10");
 
         return view('livewire.top-sales-agent-livewire');
     }
