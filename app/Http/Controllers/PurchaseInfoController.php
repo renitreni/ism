@@ -25,6 +25,7 @@ class PurchaseInfoController extends Controller
 
     public function table()
     {
+        Supply::recalibrate();
         $purchase_info = PurchaseInfo::query()
             ->selectRaw('purchase_infos.id, purchase_infos.subject,
                                      purchase_infos.vat_type,purchase_infos.payment_status,

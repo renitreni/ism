@@ -30,6 +30,7 @@ class SalesOrderController extends Controller
 
     public function table()
     {
+        Supply::recalibrate();
         $vendors = SalesOrder::query()
             ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
                              summaries.grand_total')
