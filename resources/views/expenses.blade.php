@@ -113,6 +113,7 @@
                         {data: 'expense_date', title: 'expenses'},
                         {data: 'si_no', title: 'SI Number'},
                         {data: 'dr_no', title: 'DR Number'},
+                        {data: 'remarks', title: 'Remarks'},
                     ],
                     drawCallback: function () {
                         $('table .btn').on('click', function () {
