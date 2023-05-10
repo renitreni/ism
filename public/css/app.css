@@ -9147,3 +9147,7 @@ select option {
 .in-range {
     color: #f70000 !important;
 }
+
+::-webkit-calendar-picker-indicator {
+    filter: invert(1) !important;
+}
