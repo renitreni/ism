@@ -41,7 +41,7 @@
                                     <tr>
                                         <td>{{ ++$key }}</td>
                                         <td>{{ $value->name }}</td>
-                                        <td>{{ number_format($value->qty_total) }}</td>
+                                        <td>{{ number_format($value->sales) }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>

@@ -43,7 +43,7 @@
                                     <tr>
                                         <td>{{ ++$key }}</td>
                                         <td>{{ $value->name }}</td>
-                                        <td>{{ $value->qty_total }}</td>
+                                        <td>{{ number_format($value->total) }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
