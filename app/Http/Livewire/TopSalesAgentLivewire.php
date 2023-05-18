@@ -24,9 +24,9 @@ class TopSalesAgentLivewire extends Component
         $this->tops = DB::select("SELECT SUM(s.sub_total) AS sales, agent as name
             FROM sales_orders
             INNER JOIN summaries AS s ON s.sales_order_id = sales_orders.id
-                WHERE MONTH(sales_orders.due_date) = {$this->month}
-                AND YEAR(sales_orders.due_date) = {$this->year}
-                AND sales_orders.status IN ('Sales', 'Project')
+                WHERE YEAR(sales_orders.due_date) = {$this->year}".
+                ($this->month ? " AND MONTH(sales_orders.created_at) = {$this->month} " : ' ')
+                ."AND sales_orders.status IN ('Sales', 'Project')
                 GROUP BY agent
                 ORDER BY 1 desc
             LIMIT 10");

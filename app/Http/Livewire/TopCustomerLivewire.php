@@ -23,10 +23,10 @@ class TopCustomerLivewire extends Component
         $this->tops = DB::select("SELECT SUM(s.sub_total) AS total, sales_orders.customer_id, c.name
         FROM sales_orders
         INNER JOIN summaries AS s ON s.sales_order_id = sales_orders.id
-        LEFT JOIN customers AS c ON c.id = sales_orders.customer_id
-        WHERE MONTH(sales_orders.due_date) = {$this->month}
-        AND YEAR(sales_orders.due_date) = {$this->year}
-        AND sales_orders.status IN ('Sales', 'Project')
+        LEFT JOIN customers AS c ON c.id = sales_orders.customer_id 
+        WHERE YEAR(sales_orders.due_date) = {$this->year}".
+        ($this->month ? " AND MONTH(sales_orders.created_at) = {$this->month} " : ' ')
+        ."AND sales_orders.status IN ('Sales', 'Project')
         AND c.id NOT IN (2)
         GROUP BY sales_orders.customer_id, c.name
         ORDER BY 1 desc

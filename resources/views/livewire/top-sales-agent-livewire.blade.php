@@ -10,6 +10,7 @@
                         <div class="col-6 mb-3">
                             <label>Month</label>
                             <select wire:model="month" class="form-control">
+                                <option value="">All</option>
                                 <option value="01">January</option>
                                 <option value="02">February</option>
                                 <option value="03">March</option>
