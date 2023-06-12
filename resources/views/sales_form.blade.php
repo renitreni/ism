@@ -127,12 +127,9 @@
                                 <div class="form-group">
                                     <label>Payment Method</label>
                                     <select class="form-control" v-model="overview.payment_method">
-                                        <option value="Cash">Cash</option>
-                                        <option value="Credit">Credit</option>
-                                        <option value="Check">Check</option>
-                                        <option value="Gcash">Gcash</option>
-                                        <option value="BDO Bank">BDO Bank</option>
-                                        <option value="Unionbank">Unionbank</option>
+                                        @foreach ($paymentMethods as $methods)
+                                            <option value="{{ $methods->name }}">{{ $methods->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 {{--                                <div class="form-group"> --}}

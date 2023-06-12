@@ -31,6 +31,7 @@ class PaymentMethodLivewire extends Component
         PaymentMethod::create(['name' => $this->payment]);
 
         $this->paymentList = PaymentMethod::all()->toArray();
+        $this->payment = null;
     }
 
     public function destroy($id)

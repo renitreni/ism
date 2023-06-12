@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\SalesReportExcel;
 use App\Http\Controllers\Traits\HasProductDetail;
+use App\PaymentMethod;
 use App\Preference;
 use App\Product;
 use App\ProductDetail;
@@ -96,8 +97,9 @@ class SalesOrderController extends Controller
             "grand_total"    => "0",
             "sub_total"      => "0",
         ]);
+        $paymentMethods  = PaymentMethod::all();
 
-        return view('sales_form', compact('sales_order', 'product_details', 'summary'));
+        return view('sales_form', compact('sales_order', 'product_details', 'summary', 'paymentMethods'));
     }
 
     public function store(Request $request)
@@ -260,8 +262,9 @@ class SalesOrderController extends Controller
         $sales_order     = $data['sales_order'];
         $product_details = $data['product_details'];
         $summary         = $data['summary'];
+        $paymentMethods  = PaymentMethod::all();
 
-        return view('sales_form', compact('sales_order', 'product_details', 'summary'));
+        return view('sales_form', compact('sales_order', 'product_details', 'summary', 'paymentMethods'));
     }
 
     public function printable($id)
