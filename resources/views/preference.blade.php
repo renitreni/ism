@@ -14,6 +14,8 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
+                            {{-- Payment Methods --}}
+                            @livewire('component.payment-method-livewire')
                             {{--Editables--}}
                             <div class="col-md-12 mt-3 row">
                                 <div class="col-md-12">
