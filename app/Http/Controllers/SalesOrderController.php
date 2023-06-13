@@ -34,7 +34,7 @@ class SalesOrderController extends Controller
         Supply::recalibrate();
         $vendors = SalesOrder::query()
             ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
-                             summaries.grand_total')
+            shipped_date,summaries.grand_total')
             ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
             ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
             ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
@@ -43,7 +43,7 @@ class SalesOrderController extends Controller
         return DataTables::of($vendors)->setTransformer(function ($data) {
             $data                   = $data->toArray();
             $data['created_at']     = Carbon::parse($data['created_at'])->format('F j, Y');
-            $data['updated_at']     = Carbon::parse($data['updated_at'])->format('F j, Y');
+            $data['shipped_date_display'] = $data['shipped_date'] ? Carbon::parse($data['shipped_date'])->format('F j, Y') : 'No Date';
             $data['due_date']       = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
             $data['can_be_shipped'] = 1;
 
@@ -247,10 +247,24 @@ class SalesOrderController extends Controller
     public function updateStatus(Request $request)
     {
         $data = $request->input();
-        DB::table('sales_orders')->where('id', $data['id'])
-            ->update([
-                'status' => $data['status'],
-            ]);
+        $salesOrder = DB::table('sales_orders')->where('id', $data['id'])->get()[0];
+
+        if ($salesOrder->status != $data['status']) {
+            DB::table('sales_orders')->where('id', $data['id'])
+                ->update([
+                    'status' => $data['status'],
+                ]);
+            return ['success' => true];
+        }
+
+
+        if ($salesOrder->shipped_date != $data['shipped_date']) {
+            DB::table('sales_orders')->where('id', $data['id'])
+                ->update([
+                    'shipped_date' => $data['shipped_date'],
+                ]);
+            return ['success' => true];
+        }
 
         return ['success' => false];
     }
@@ -284,7 +298,8 @@ class SalesOrderController extends Controller
             } else {
                 if ($cnt == -1) {
                     $cnt = 0;
-                }$total_selling                      = ($value['qty'] * $value['selling_price']) + $value['discount_item'];
+                }
+                $total_selling                      = ($value['qty'] * $value['selling_price']) + $value['discount_item'];
                 $sections[$cnt][$value['category']] += $total_selling;
             }
         }
@@ -292,22 +307,24 @@ class SalesOrderController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
             }
         }
         $sections = $hold_section;
 
-        $pdf = PDF::loadView('sales_printable',
+        $pdf = PDF::loadView(
+            'sales_printable',
             [
                 'sales_order'     => $sales_order,
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
-            ]);
+            ]
+        );
 
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())
-            ->download('SO '.$sales_order["so_no"].' '.$sales_order["customer_name"].'.pdf');
+            ->download('SO ' . $sales_order["so_no"] . ' ' . $sales_order["customer_name"] . '.pdf');
     }
 
     public function quote($id)
@@ -333,21 +350,23 @@ class SalesOrderController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
             }
         }
         $sections = $hold_section;
-        $pdf = PDF::loadView('quote_printable',
+        $pdf = PDF::loadView(
+            'quote_printable',
             [
                 'sales_order'     => $sales_order,
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
-            ]);
+            ]
+        );
 
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())
-            ->download('QTN '.$sales_order["so_no"].' '.$sales_order["customer_name"].'.pdf');
+            ->download('QTN ' . $sales_order["so_no"] . ' ' . $sales_order["customer_name"] . '.pdf');
     }
 
     public function deliver($id)
@@ -373,22 +392,24 @@ class SalesOrderController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
             }
         }
         $sections = $hold_section;
 
-        $pdf = PDF::loadView('dr_printable',
+        $pdf = PDF::loadView(
+            'dr_printable',
             [
                 'sales_order'     => $sales_order,
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
-            ]);
+            ]
+        );
 
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())
-            ->download('DR '.$sales_order["so_no"].' '.$sales_order["customer_name"].'.pdf');
+            ->download('DR ' . $sales_order["so_no"] . ' ' . $sales_order["customer_name"] . '.pdf');
     }
 
     public function previewSO($id)
@@ -415,7 +436,7 @@ class SalesOrderController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
             }
         }
         $sections = $hold_section;
@@ -446,15 +467,14 @@ class SalesOrderController extends Controller
             $hold[$value['category']][] = $value;
         }
 
-        if(array_key_exists('DISCOUNT', $hold)){
+        if (array_key_exists('DISCOUNT', $hold)) {
             $v = $hold['DISCOUNT'];
             unset($hold['DISCOUNT']);
             $hold['DISCOUNT'] = $v;
         }
 
         $final = [];
-        foreach ($hold as $key => $sub)
-        {
+        foreach ($hold as $key => $sub) {
             $final[] = ['category' => $key];
             foreach ($sub as $item) {
                 unset($item['name']);
@@ -530,8 +550,8 @@ class SalesOrderController extends Controller
         return $res;
     }
 
-    public function getListShipped(Request $request)
-    : array {
+    public function getListShipped(Request $request): array
+    {
         $sales_order = SalesOrder::query()
             ->selectRaw("id as id, so_no as text")
             ->where('delivery_status', 'Shipped')
@@ -542,7 +562,8 @@ class SalesOrderController extends Controller
         ];
     }
 
-    public function downloadSaleReport(Request $request): BinaryFileResponse {
+    public function downloadSaleReport(Request $request): BinaryFileResponse
+    {
         $date = now()->format('Y-m-d_H:i:s');
 
         return Excel::download(new SalesReportExcel($request->start, $request->end), "SALES_REPORT_$date.xlsx");

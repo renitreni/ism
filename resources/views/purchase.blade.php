@@ -1,5 +1,24 @@
 @extends('admin_layout')
 
+@section('styles')
+    <style>
+        input,
+        select,
+        textarea {
+            color: #ffffff !important;
+            background-color: #ffffff00 !important;
+        }
+
+        .select2-selection__rendered {
+            color: #ffffff !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            background-color: #ffffff00;
+        }
+    </style>
+@endsection
+
 @section('content')
     <div id='app' class="container-fluid">
 
@@ -20,9 +39,36 @@
                             </div>
                             <div class="col-md-12 mt-3">
                                 <table id="table-inquiry" class="table table-striped nowrap table-general"
-                                       style="width:100%"></table>
+                                    style="width:100%"></table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="receivedDateModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Received Date</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">Received Date</label>
+                                    <input type="date" class="form-control form-control-sm" v-model="overview.received_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="update">Save changes</button>
                     </div>
                 </div>
             </div>
@@ -143,7 +189,7 @@
                         url: '{{ route('purchase.payment.status.update') }}',
                         method: 'POST',
                         data: $this.overview,
-                        success: function (value) {
+                        success: function(value) {
                             Swal.fire('Updated!', 'Payment Status has been updated.', 'success');
                             $this.dt.draw();
                             $('#paymentModal').modal('hide');
@@ -156,12 +202,13 @@
                         url: '{{ route('purchase.status.update') }}',
                         method: 'POST',
                         data: $this.overview,
-                        success: function (value) {
+                        success: function(value) {
                             Swal.fire('Updated!', 'Status has been updated.', 'success');
                             $this.dt.draw();
                             $('#statusModal').modal('hide');
                             $('#vatTypeModal').modal('hide');
                             $('#paymentModal').modal('hide');
+                            $('#receivedDateModal').modal('hide');
                         }
                     });
                 },
@@ -198,21 +245,24 @@
                     scrollX: true,
                     responsive: true,
                     pageLength: 100,
-                    order: [[1, 'desc']],
+                    order: [
+                        [1, 'desc']
+                    ],
                     ajax: {
                         url: "{{ route('purchase.table') }}",
                         method: "POST",
                     },
-                    columns: [
-                        {
-                            data: function (value) {
+                    columns: [{
+                            data: function(value) {
                                 if (value.status == 'Ordered') {
-                                    edit = '<a href="/purchase/detail/' + value.id + '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
+                                    edit = '<a href="/purchase/detail/' + value.id +
+                                        '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
                                 } else {
                                     edit = '';
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
-                                    '<a href="/purchase/view/' + value.id + '" class="btn btn-primary btn-view"><i class="fa fa-eye"></i></a>' +
+                                    '<a href="/purchase/view/' + value.id +
+                                    '" class="btn btn-primary btn-view"><i class="fa fa-eye"></i></a>' +
                                     edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
                                     '</div>'
@@ -221,55 +271,94 @@
                             bSortable: false,
                             title: 'Action'
                         },
-                        {data: 'po_no', name: 'purchase_infos.po_no', title: 'PO NO.'},
                         {
-                            data: function (value) {
-                                var $class_color = value.payment_status === 'UNPAID' ? 'btn-warning' : 'btn-success';
+                            data: 'po_no',
+                            name: 'purchase_infos.po_no',
+                            title: 'PO NO.'
+                        },
+                        {
+                            data: function(value) {
+                                var $class_color = value.payment_status === 'UNPAID' ?
+                                    'btn-warning' : 'btn-success';
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                    '<a href="#" class="btn ' + $class_color + ' btn-payment">' + value.payment_status + '</a>' +
+                                    '<a href="#" class="btn ' + $class_color + ' btn-payment">' +
+                                    value.payment_status + '</a>' +
                                     '</div>'
-                            }, name: 'payment_status', title: 'Payment'
+                            },
+                            name: 'payment_status',
+                            title: 'Payment'
                         },
                         {
-                            data: function (value) {
-                                var $class_color = value.status === 'Ordered' ? 'btn-warning' : 'btn-success';
+                            data: function(value) {
+                                var $class_color = value.status === 'Ordered' ? 'btn-warning' :
+                                    'btn-success';
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                    '<a href="#" class="btn ' + $class_color + ' btn-status">' + value.status + '</a>' +
+                                    '<a href="#" class="btn ' + $class_color + ' btn-status">' +
+                                    value.status + '</a>' +
                                     '</div>'
-                            }, name: 'status', title: 'Status'
+                            },
+                            name: 'status',
+                            title: 'Status'
                         },
-                        {data: 'subject', title: 'DR/SI'},
-                        {data: 'vendor_name', name: 'vendors.name', title: 'Vendor'},
-                        {data: 'grand_total', name: 'summaries.grand_total', title: 'Total'},
-                        {data: 'name', name: 'users.name', title: 'Assigned'},
                         {
-                            data: function (value) {
-                                if (value.status == 'Received') {
-                                    return value.updated_at
-                                }
-                                return 'No Date'
-                            }, name: 'purchase_infos.updated_at', title: 'Received Date'
+                            data: 'subject',
+                            title: 'DR/SI'
                         },
-                        {data: 'due_date', name: 'due_date', title: 'Due Date'},
+                        {
+                            data: 'vendor_name',
+                            name: 'vendors.name',
+                            title: 'Vendor'
+                        },
+                        {
+                            data: 'grand_total',
+                            name: 'summaries.grand_total',
+                            title: 'Total'
+                        },
+                        {
+                            data: 'name',
+                            name: 'users.name',
+                            title: 'Assigned'
+                        },
+                        {
+                            data: function(value) {
+                                if(value.received_date_display == 'No Date')
+                                    return value.received_date_display
+
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
+                                    '<a href="#" class="btn btn-info btn-received-date">' +
+                                    value.received_date_display + '</a>' +
+                                    '</div>'
+                            },
+                            name: 'purchase_infos.received_date',
+                            title: 'Received Date'
+                        },
+                        {
+                            data: 'due_date',
+                            name: 'due_date',
+                            title: 'Due Date'
+                        },
                     ],
-                    drawCallback: function () {
-                        $('table .btn').on('click', function () {
+                    drawCallback: function() {
+                        $('table .btn').on('click', function() {
                             let data = $(this).parent().parent().parent();
                             let hold = $this.dt.row(data).data();
                             $this.overview = hold;
                             console.log(hold);
                         });
-                        $('.btn-destroy').on('click', function () {
+                        $('.btn-destroy').on('click', function() {
                             $this.destroy();
                         });
-                        $('.btn-status').on('click', function () {
+                        $('.btn-status').on('click', function() {
                             $('#statusModal').modal('show');
                         });
-                        $('.btn-payment').on('click', function () {
+                        $('.btn-payment').on('click', function() {
                             $('#paymentModal').modal('show');
                         });
-                        $('.btn-vat').on('click', function () {
+                        $('.btn-vat').on('click', function() {
                             $('#vatTypeModal').modal('show');
+                        });
+                        $('.btn-received-date').on('click', function() {
+                            $('#receivedDateModal').modal('show');
                         });
                     }
                 });

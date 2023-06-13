@@ -27,7 +27,7 @@ class PurchaseInfoController extends Controller
     {
         Supply::recalibrate();
         $purchase_info = PurchaseInfo::query()
-            ->selectRaw('purchase_infos.id, purchase_infos.subject,
+            ->selectRaw('purchase_infos.id, purchase_infos.subject,purchase_infos.received_date,
                                      purchase_infos.vat_type,purchase_infos.payment_status,
             vendors.name as vendor_name, purchase_infos.tracking_number, purchase_infos.po_no,
             purchase_infos.requisition_no, users.name, purchase_infos.status, purchase_infos.created_at,
@@ -39,7 +39,7 @@ class PurchaseInfoController extends Controller
         return DataTables::of($purchase_info)->setTransformer(function ($data) {
             $data               = $data->toArray();
             $data['created_at'] = Carbon::parse($data['created_at'])->format('F j, Y');
-            $data['updated_at'] = Carbon::parse($data['updated_at'])->format('F j, Y');
+            $data['received_date_display'] = $data['received_date'] ? Carbon::parse($data['received_date'])->format('F j, Y') : 'No Date';
             $data['due_date']   = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
 
             return $data;
@@ -239,11 +239,15 @@ class PurchaseInfoController extends Controller
         $purchase_info = DB::table('purchase_infos')->where('id', $data['id'])->get()[0];
 
         if ($purchase_info->status != $data['status']) {
-            DB::table('purchase_infos')->where('id', $data['id'])
-                ->update([
-                    'status'     => $data['status'],
-                    'updated_at' => Carbon::now()->format('Y-m-d'),
-                ]);
+
+            $purchase = PurchaseInfo::find($data['id']);
+            $purchase->received_date = null;
+
+            if ($data['status'] == 'Received') {
+                $purchase->received_date = Carbon::now()->format('Y-m-d');
+            }
+
+            $purchase->save();
 
             return ['success' => true];
         }
@@ -251,6 +255,14 @@ class PurchaseInfoController extends Controller
         if ($purchase_info->vat_type != $data['vat_type']) {
             DB::table('purchase_infos')->where('id', $data['id'])
                 ->update(['vat_type' => $data['vat_type']]);
+
+            return ['success' => true];
+        }
+
+
+        if ($purchase_info->received_date != $data['received_date']) {
+            DB::table('purchase_infos')->where('id', $data['id'])
+                ->update(['received_date' => Carbon::parse($data['received_date'])->format('Y-m-d')]);
 
             return ['success' => true];
         }
@@ -303,22 +315,24 @@ class PurchaseInfoController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
             }
         }
         $sections = $hold_section;
 
-        $pdf = PDF::loadView('purchase_printable',
+        $pdf = PDF::loadView(
+            'purchase_printable',
             [
                 'purchase_info'   => $purchase_info,
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
-            ]);
+            ]
+        );
 
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())
-            ->download($purchase_info["po_no"].'_'.$purchase_info["vendor_name"].'.pdf');
+            ->download($purchase_info["po_no"] . '_' . $purchase_info["vendor_name"] . '.pdf');
     }
 
     public function previewPO($id)
@@ -345,7 +359,7 @@ class PurchaseInfoController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
             }
         }
         $sections = $hold_section;

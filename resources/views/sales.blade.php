@@ -1,5 +1,24 @@
 @extends('admin_layout')
 
+@section('styles')
+    <style>
+        input,
+        select,
+        textarea {
+            color: #ffffff !important;
+            background-color: #ffffff00 !important;
+        }
+
+        .select2-selection__rendered {
+            color: #ffffff !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            background-color: #ffffff00;
+        }
+    </style>
+@endsection
+
 @section('content')
     <div id='app' class="container-fluid">
 
@@ -30,6 +49,34 @@
                 </div>
             </div>
         </div>
+
+        <div id="shippedDateModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Status</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">Pick a status</label>
+                                    <input type="date" class="form-control" v-model="overview.shipped_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="update">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="statusModal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -219,6 +266,7 @@
                             $('#statusModal').modal('hide');
                             $('#vatTypeModal').modal('hide');
                             $('#paymentModal').modal('hide');
+                            $('#shippedDateModal').modal('hide');
                         }
                     });
                 },
@@ -367,12 +415,15 @@
                         {data: 'grand_total', name: 'summaries.grand_total', title: 'Total'},
                         {data: 'agent', name: 'agent', title: 'Assigned'},
                         {
-                            data: function (value) {
-                                if (value.delivery_status == 'Shipped') {
-                                    return value.updated_at
-                                }
-                                return 'No Date'
-                            }, name: 'sales_orders.updated_at', title: 'Shipped Date'
+                            data: function(value) {
+                                if(value.shipped_date_display == 'No Date')
+                                    return value.shipped_date_display
+
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
+                                    '<a href="#" class="btn btn-info btn-shipped-date">' +
+                                    value.shipped_date_display + '</a>' +
+                                    '</div>'
+                            }, name: 'shipped_date', title: 'Shipped Date',
                         },
                         {data: 'due_date', name: 'due_date', title: 'Date of Purchased'},
                     ],
@@ -396,6 +447,9 @@
                         });
                         $('.btn-delivery-status').on('click', function () {
                             $('#deliveryStatusModal').modal('show');
+                        });
+                        $('.btn-shipped-date').on('click', function () {
+                            $('#shippedDateModal').modal('show');
                         });
                     }
                 });
