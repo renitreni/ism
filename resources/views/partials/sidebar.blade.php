@@ -116,7 +116,7 @@
                aria-expanded="true"
                aria-controls="collapseTwo">
                 <i class="fa fa-cogs"></i>
-                <span>Configuration</span>
+                <span>Settings</span>
             </a>
             <div id="collapseSecurity" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
