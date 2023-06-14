@@ -12,12 +12,10 @@ use App\PurchaseInfo;
 use App\ProductDetail;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use App\Exports\SalesReportExcel;
 use Illuminate\Support\Facades\DB;
 use App\Exports\PurchaseReportExcel;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use Silber\Bouncer\BouncerFacade as Bouncer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PurchaseInfoController extends Controller

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\JobOrderController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -190,4 +191,9 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/quote/view/{id}', 'SalesOrderController@show')->name('quote.view')->middleware('can:quoteretrieve');
     Route::get('/quote/detail/{id}', 'SalesOrderController@show')->name('quote.detail')->middleware('can:quoteupdate');
     Route::post('/quote/destroy', 'SalesOrderController@destroy')->name('quote.destroy')->middleware('can:quotedestroy');
+
+    Route::get('/job-order', [JobOrderController::class, 'index'])->name('job-order');
+    Route::post('/job-order/table', [JobOrderController::class, 'table'])->name('job-order.table');
+    Route::get('/job-order/create', [JobOrderController::class, 'create'])->name('job-order.create');
+    Route::post('/job-order/store', [JobOrderController::class, 'store'])->name('job-order.store');
 });
