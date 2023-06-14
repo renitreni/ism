@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -49,6 +52,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/purchase/print/{id}', 'PurchaseInfoController@printable')->name('purchase.print');
     Route::get('/purchase/preview/{id}', 'PurchaseInfoController@previewPO')->name('purchase.preview');
     Route::post('/purchase/payment/status/update', 'PurchaseInfoController@updatePaymentStatus')->name('purchase.payment.status.update');
+    Route::get('/purchase/report/{start}/{end}', 'PurchaseInfoController@downloadPurchaseReport')->name('purchase.report');
 
     Route::get('/sales', 'SalesOrderController@index')->name('sales')->middleware('can:salesorder');
     Route::get('/sales/create', 'SalesOrderController@create')->name('sales.create')->middleware('can:salesordercreate');

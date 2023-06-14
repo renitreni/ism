@@ -2,19 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Preference;
-use App\Product;
-use App\ProductDetail;
-use App\PurchaseInfo;
-use App\Summary;
-use App\Supply;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Silber\Bouncer\BouncerFacade as Bouncer;
-use Yajra\DataTables\DataTables;
 use PDF;
+use App\Supply;
+use App\Product;
+use App\Summary;
+use Carbon\Carbon;
+use App\Preference;
+use App\PurchaseInfo;
+use App\ProductDetail;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use App\Exports\SalesReportExcel;
+use Illuminate\Support\Facades\DB;
+use App\Exports\PurchaseReportExcel;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use Silber\Bouncer\BouncerFacade as Bouncer;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PurchaseInfoController extends Controller
 {
@@ -461,5 +465,16 @@ class PurchaseInfoController extends Controller
 
         // return the result
         return $res;
+    }
+
+    public function downloadPurchaseReport(Request $request): BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H:i:s');
+        $start = $request->start ?: now()->format('Y-m-d');
+        $end = $request->end ?: now()->format('Y-m-d');
+        return Excel::download(
+            new PurchaseReportExcel($start, $end),
+            "PURCHASE_REPORT_$date.xlsx"
+        );
     }
 }

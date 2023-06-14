@@ -36,12 +36,43 @@
                             <div class="col-md-12">
                                 <a href="{{ route('purchase.create') }}" class="btn btn-sm btn-success"><i
                                         class="fa fa-plus"></i> New Purchase Order</a>
+                                <a href="#!" class="btn btn-sm btn-info" data-toggle="modal"
+                                    data-target="#purchaseReportMdl">
+                                    <i class="fas fa-download"></i> Purchase Report</a>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <table id="table-inquiry" class="table table-striped nowrap table-general"
                                     style="width:100%"></table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="purchaseReportMdl" tabindex="-1" role="dialog" aria-labelledby="purchaseReportMdl"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Download Purchase Report </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Set Date Range</label>
+                                <input type="text" id="purchase_report" class="form-control" name="daterange" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <a v-bind:href="'/purchase/report/'+ purchase_report.start_date +'/'+ purchase_report.end_date"
+                            type="button" class="btn btn-primary">Save changes</a>
                     </div>
                 </div>
             </div>
@@ -61,7 +92,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="control-label">Received Date</label>
-                                    <input type="date" class="form-control form-control-sm" v-model="overview.received_date">
+                                    <input type="date" class="form-control form-control-sm"
+                                        v-model="overview.received_date">
                                 </div>
                             </div>
                         </div>
@@ -176,6 +208,10 @@
             data() {
                 return {
                     dt: null,
+                    purchase_report: {
+                        start_date: '0',
+                        end_date: '0'
+                    },
                     overview: {
                         id: "",
                         status: "",
@@ -239,6 +275,17 @@
             },
             mounted() {
                 var $this = this;
+
+                $('#purchase_report').daterangepicker({
+                    opens: 'left',
+                }, function(start, end, label) {
+                    $this.purchase_report.start_date = start.format('YYYY-MM-DD');
+                    $this.purchase_report.end_date = end.format('YYYY-MM-DD');
+                    $('#purchase_report').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+                    console.log(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'))
+                });
+
+
                 $this.dt = $('#table-inquiry').DataTable({
                     processing: true,
                     serverSide: true,
@@ -321,7 +368,7 @@
                         },
                         {
                             data: function(value) {
-                                if(value.received_date_display == 'No Date')
+                                if (value.received_date_display == 'No Date')
                                     return value.received_date_display
 
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
