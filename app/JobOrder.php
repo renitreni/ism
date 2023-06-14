@@ -20,6 +20,7 @@ class JobOrder extends Model
         'contact_person',
         'mobile_no',
         'status',
+        'agent',
         'remarks',
     ];
 
@@ -29,17 +30,17 @@ class JobOrder extends Model
         // if (Preference::verify('po_auto') == 0) {
         //     return '';
         // }
-        
+
         $po_no_list = $this->newQuery()
-            ->where('job_no', 'like', '%PO%')
+            ->where('job_no', 'like', '%JO%')
             ->orderBy('id', 'desc')
             ->limit(1)
             ->get()
             ->toArray();
         $str_length = 5;
         $year       = Carbon::now()->format('y');
-        if (isset($po_no_list[0]["po_no"])) {
-            $po_no = $po_no_list[0]["po_no"];
+        if (isset($po_no_list[0]["job_no"])) {
+            $po_no = $po_no_list[0]["job_no"];
         }
         if (count($po_no_list) == 0 || substr(explode('-', $po_no)[0], -2) != $year) {
             $num = 1;

@@ -23,7 +23,8 @@ class CreateJobOrdersTable extends Migration
             $table->string('contact_person')->nullable();
             $table->string('mobile_no')->nullable();
             $table->string('status')->nullable();
-            $table->string('remarks')->nullable();
+            $table->text('remarks')->nullable();
+            $table->string('agent');
             $table->string('created_by');
             $table->timestamps();
         });

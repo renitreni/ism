@@ -38,13 +38,17 @@
                                     <label>Job No.</label>
                                     <input class="form-control" v-model='overview.job_no'>
                                 </div>
-                                <div class="col-md-4 mb-2">
+                                <div class="col-md-3 mb-2">
                                     <label>Customer Name</label>
                                     <input class="form-control" v-model='overview.customer_name'>
                                 </div>
-                                <div class="col-md-4 mb-2">
+                                <div class="col-md-3 mb-2">
                                     <label>Contact Person</label>
                                     <input class="form-control" v-model='overview.contact_person'>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label>Agent</label>
+                                    <input class="form-control" v-model='overview.agent'>
                                 </div>
                                 <div class="col-md-12"></div>
                                 <div class="col-md-2 mb-2">
@@ -87,6 +91,42 @@
                                     <label>Remarks</label>
                                     <textarea class="form-control" v-model='overview.remarks'></textarea>
                                 </div>
+                                <div class="col-md-12 mt-3 d-flex">
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-success mr-2" v-on:click="addProduct">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <h2>PRODUCTS</h2>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-md-3 font-weight-bold">Product</div>
+                                        <div class="col-md-1 font-weight-bold">Qty</div>
+                                        <div class="col-md-2 font-weight-bold">Serial Number</div>
+                                        <div class="col-md-3 font-weight-bold">Physical Appearance</div>
+                                        <div class="col-md-2 font-weight-bold">Product Status</div>
+                                        <div class="col-md-1 font-weight-bold">Actions</div>
+                                    </div>
+                                    <div class="row" v-for="product, idx in overview.products">
+                                        <div class="col-md-3"><input type="text" class="form-control"
+                                                v-model="product.product"></div>
+                                        <div class="col-md-1"><input type="number" class="form-control"
+                                                v-model="product.qty"></div>
+                                        <div class="col-md-2"><input type="text" class="form-control"
+                                                v-model="product.serial_number"></div>
+                                        <div class="col-md-3"><input type="text" class="form-control"
+                                                v-model="product.physical_appearance"></div>
+                                        <div class="col-md-2"><input type="text" class="form-control"
+                                                v-model="product.product_status"></div>
+                                        <div class="col-md-1">
+                                            <button type="button" v-on:click="removeProduct(idx, product.product)"
+                                                class="btn btn btn-danger">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="col-md-12 mb-2 mt-2">
                                     <div class="d-flex flex-row w-auto">
                                         <button v-if="overview.id" type="button" class="btn btn-block btn-primary mx-2"
@@ -113,10 +153,10 @@
             data() {
                 return {
                     dt: null,
-                    overview: @isset($overview)
-                        {!! $overview !!}
+                    @isset($overview)
+                        overview: {!! $overview !!}
                     @else
-                        {
+                        overview: {
                             'job_no': "{{ $jobNo }}",
                             'customer_name': "",
                             'process_type': "",
@@ -126,7 +166,9 @@
                             'mobile_no': "",
                             'status': "",
                             'remarks': "",
-                            'created_by': {{ auth()->id() }}
+                            'agent': "",
+                            'created_by': {{ auth()->id() }},
+                            'products': []
                         }
                     @endisset
                 }
@@ -153,7 +195,7 @@
                             console.log(e);
                             Swal.fire(
                                 e.statusText,
-                                e.responseJSON.message,
+                                e.responseJSON.messaproduct.productge,
                                 'warning'
                             );
                         }
@@ -185,6 +227,21 @@
                             );
                         }
                     });
+                    product.product
+                },
+                addProduct() {
+                    this.overview.products.push({
+                        'product': '',
+                        'qty': 0,
+                        'serial_number': '',
+                        'physical_appearance': '',
+                        'product_status': ''
+                    });
+                },
+                removeProduct(index, product) {
+                    console.log(product)
+                    console.log(index)
+                    this.overview.products.splice(index, 1);
                 }
             },
             mounted() {

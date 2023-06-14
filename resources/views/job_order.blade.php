@@ -34,11 +34,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12">
-                                <a href="{{ route('purchase.create') }}" class="btn btn-sm btn-success"><i
-                                        class="fa fa-plus"></i> New Purchase Order</a>
-                                <a href="#!" class="btn btn-sm btn-info" data-toggle="modal"
-                                    data-target="#purchaseReportMdl">
-                                    <i class="fas fa-download"></i> Purchase Report</a>
+                                <a href="{{ route('job-order.create') }}" class="btn btn-sm btn-success"><i
+                                        class="fa fa-plus"></i> New Job Order</a>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <table id="table-inquiry" class="table table-striped nowrap table-general"
@@ -81,12 +78,8 @@
                     },
                     columns: [{
                             data: function(value) {
-                                if (value.status == 'Ordered') {
-                                    edit = '<a href="/purchase/detail/' + value.id +
-                                        '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
-                                } else {
-                                    edit = '';
-                                }
+                                edit = '<a href="/job-order/edit/' + value.id +
+                                    '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
                                     '<a href="/purchase/view/' + value.id +
                                     '" class="btn btn-primary btn-view"><i class="fa fa-eye"></i></a>' +
@@ -99,70 +92,49 @@
                             title: 'Action'
                         },
                         {
-                            data: 'po_no',
-                            name: 'purchase_infos.po_no',
-                            title: 'PO NO.'
+                            data: 'job_no',
+                            name: 'job_no',
+                            title: 'Job No.'
                         },
                         {
-                            data: function(value) {
-                                var $class_color = value.payment_status === 'UNPAID' ?
-                                    'btn-warning' : 'btn-success';
-                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                    '<a href="#" class="btn ' + $class_color + ' btn-payment">' +
-                                    value.payment_status + '</a>' +
-                                    '</div>'
-                            },
-                            name: 'payment_status',
-                            title: 'Payment'
+                            data: 'customer_name',
+                            name: 'customer_name',
+                            title: 'Customer Name'
                         },
                         {
-                            data: function(value) {
-                                var $class_color = value.status === 'Ordered' ? 'btn-warning' :
-                                    'btn-success';
-                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                    '<a href="#" class="btn ' + $class_color + ' btn-status">' +
-                                    value.status + '</a>' +
-                                    '</div>'
-                            },
+                            data: 'process_type',
+                            name: 'process_type',
+                            title: 'Process Type'
+                        },
+                        {
+                            data: 'date_of_purchased',
+                            name: 'date_of_purchased',
+                            title: 'Date Of Purchased'
+                        },
+                        {
+                            data: 'so_no',
+                            name: 'so_no',
+                            title: 'Ref SO No.'
+                        },
+                        {
+                            data: 'contact_person',
+                            name: 'contact_person',
+                            title: 'Contact Person'
+                        },
+                        {
+                            data: 'mobile_no',
+                            name: 'mobile_no',
+                            title: 'Mobile No.'
+                        },
+                        {
+                            data: 'status',
                             name: 'status',
                             title: 'Status'
                         },
                         {
-                            data: 'subject',
-                            title: 'DR/SI'
-                        },
-                        {
-                            data: 'vendor_name',
-                            name: 'vendors.name',
-                            title: 'Vendor'
-                        },
-                        {
-                            data: 'grand_total',
-                            name: 'summaries.grand_total',
-                            title: 'Total'
-                        },
-                        {
-                            data: 'name',
-                            name: 'users.name',
-                            title: 'Assigned'
-                        },
-                        {
-                            data: function(value) {
-                                if (value.received_date_display == 'No Date')
-                                    return value.received_date_display
-
-                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                    '<a href="#" class="btn btn-info btn-received-date">' +
-                                    value.received_date_display + '</a>' +
-                                    '</div>'
-                            },
-                            name: 'purchase_infos.received_date',
-                            title: 'Received Date'
-                        },
-                        {
-                            data: 'due_date',
-                            name: 'due_date',
-                            title: 'Due Date'
+                            data: 'remarks',
+                            name: 'remarks',
+                            title: 'Remarks'
                         },
                     ],
                     drawCallback: function() {

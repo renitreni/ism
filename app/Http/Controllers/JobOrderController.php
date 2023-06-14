@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Enums\JobOrderStatusEnum;
 use App\Enums\JobOrderProcessEnum;
+use App\Http\Requests\JobOrderStoreRequest;
+use App\JobOrderProduct;
 
 class JobOrderController extends Controller
 {
@@ -32,10 +34,10 @@ class JobOrderController extends Controller
         return view('job_order_form', compact('jobNo', 'customers', 'processTypes', 'statuses'));
     }
 
-    public function store(Request $request)
+    public function store(JobOrderStoreRequest $request)
     {
         $jobOrder = JobOrder::create([
-            "job_no" => "JO23-00001",
+            "job_no" => $request->get('job_no'),
             "customer_name" => $request->get('customer_name'),
             "process_type" => $request->get('process_type'),
             "date_of_purchased" => $request->get('date_of_purchased'),
@@ -44,6 +46,8 @@ class JobOrderController extends Controller
             "mobile_no" => $request->get('mobile_no'),
             "status" => $request->get('status'),
             "remarks" => $request->get('remarks'),
+            'status' => $request->get('status'),
+            'agent' => $request->get('agent'),
             "created_by" => $request->get('created_by')
         ]);
 
@@ -53,6 +57,22 @@ class JobOrderController extends Controller
             'status_date' => $request->get('status_date'),
         ]);
 
+        foreach($request->get('products') as $item){
+            JobOrderProduct::create([
+                'job_order_id' => $jobOrder->id,
+                "product" => $item['product'],
+                "qty" => $item['qty'],
+                "serial_number" => $item['serial_number'],
+                "physical_appearance" => $item['physical_appearance'],
+                "product_status" => $item['product_status'],
+            ]);
+        }
+
         return ['success' => true];
+    }
+
+    public function edit(JobOrder $jobOrder)
+    {
+        dd($jobOrder);
     }
 }
