@@ -61,4 +61,9 @@ class JobOrder extends Model
     {
         return $this->hasMany(JobOrderStatus::class);
     }
+
+    public function jobOrderProducts(): HasMany
+    {
+        return $this->hasMany(JobOrderProduct::class);
+    }
 }

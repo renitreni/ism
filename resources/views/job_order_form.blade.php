@@ -153,8 +153,8 @@
             data() {
                 return {
                     dt: null,
-                    @isset($overview)
-                        overview: {!! $overview !!}
+                    @if($overview)
+                        overview: @json($overview)
                     @else
                         overview: {
                             'job_no': "{{ $jobNo }}",
@@ -170,14 +170,14 @@
                             'created_by': {{ auth()->id() }},
                             'products': []
                         }
-                    @endisset
+                    @endif
                 }
             },
             methods: {
                 update() {
                     var $this = this;
                     $.ajax({
-                        url: '{{ route('expenses.update') }}',
+                        url: '{{ route('job-order.update') }}',
                         method: 'POST',
                         data: $this.overview,
                         success: function(value) {
@@ -187,7 +187,7 @@
                                 'success'
                             ).then((result) => {
                                 if (result.value) {
-                                    window.location = '{{ route('expenses') }}'
+                                    window.location = '{{ route('job-order') }}'
                                 }
                             })
                         },
