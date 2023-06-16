@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <label>Customer Name</label>
-                                    <input class="form-control" v-model='overview.customer_name'>
+                                    <input class="form-control customer" v-model='overview.customer_name'>
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <label>Contact Person</label>
@@ -93,7 +93,8 @@
                                 </div>
                                 <div class="col-md-12 mt-3 d-flex">
                                     <div>
-                                        <button type="button" class="btn btn-sm btn-success mr-2" v-on:click="addProduct">
+                                        <button type="button" class="btn btn-sm btn-success mr-2" data-toggle="modal"
+                                            data-target="#productModal">
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
@@ -109,8 +110,9 @@
                                         <div class="col-md-1 font-weight-bold">Actions</div>
                                     </div>
                                     <div class="row" v-for="product, idx in overview.products">
-                                        <div class="col-md-3"><input type="text" class="form-control"
-                                                v-model="product.product"></div>
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control products" v-model="product.product" readonly>
+                                        </div>
                                         <div class="col-md-1"><input type="number" class="form-control"
                                                 v-model="product.qty"></div>
                                         <div class="col-md-2"><input type="text" class="form-control"
@@ -143,6 +145,36 @@
                 </div>
             </div>
         </div>
+
+
+        <div id="productModal" class="modal fade" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Find a Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">Products</label>
+                                    <select class="form-control select2-product">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" @click="addProduct()">Insert
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -153,7 +185,7 @@
             data() {
                 return {
                     dt: null,
-                    @if($overview ?? null)
+                    @if ($overview ?? null)
                         overview: @json($overview)
                     @else
                         overview: {
@@ -230,26 +262,49 @@
                     product.product
                 },
                 addProduct() {
-                    this.overview.products.push({
-                        'product': '',
-                        'qty': 0,
-                        'serial_number': '',
-                        'physical_appearance': '',
-                        'product_status': ''
+                    var $this = this;
+                    var prod_id = $('.select2-product').find(':selected').val();
+                    $.ajax({
+                        url: '{{ route('product.find') }}',
+                        method: 'POST',
+                        data: {
+                            product_id: prod_id
+                        },
+                        success: function(value) {
+                            $this.overview.products.push({
+                                'product': value.name,
+                                'qty': 0,
+                                'serial_number': '',
+                                'physical_appearance': '',
+                                'product_status': ''
+                            });
+                            $('.select2-product').val(null).trigger('change');
+                        }
                     });
                 },
                 removeProduct(index, product) {
-                    console.log(product)
-                    console.log(index)
                     this.overview.products.splice(index, 1);
                 }
             },
             mounted() {
                 var $this = this;
-                $('[name="description"]').autocomplete({
+
+                $('.select2-product').select2({
+                    width: '100%',
+                    ajax: {
+                        url: '{{ route('product.list') }}',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: function(params) {
+                            return params;
+                        }
+                    }
+                });
+
+                $('.customer').autocomplete({
                     minLength: 2,
                     select: function(event, ui) {
-                        $this.overview.description = ui.item.value;
+                        $this.overview.customer_name = ui.item.value;
                     },
                     source: {!! $customers !!}
                 });

@@ -148,7 +148,7 @@
                         {
                             data: 'mobile_no',
                             name: 'mobile_no',
-                            title: 'Mobile No.'0
+                            title: 'Mobile No.'
                         },
                         {
                             data: 'status',
