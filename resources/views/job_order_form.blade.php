@@ -153,7 +153,7 @@
             data() {
                 return {
                     dt: null,
-                    @if($overview)
+                    @if($overview ?? null)
                         overview: @json($overview)
                     @else
                         overview: {

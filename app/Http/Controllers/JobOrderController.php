@@ -131,4 +131,14 @@ class JobOrderController extends Controller
 
         return ['success' => true];
     }
+
+    public function destroy(Request $request)
+    {
+        $jobOrder = JobOrder::query()->find($request->id);
+        $jobOrder->jobOrderStatus()->delete();
+        $jobOrder->jobOrderProducts()->delete();
+        $jobOrder->delete();
+
+        return ['success' => true];
+    }
 }

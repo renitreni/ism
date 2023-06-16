@@ -46,7 +46,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 @endsection
 
@@ -59,7 +58,32 @@
                     dt: null,
                 }
             },
-            methods: {},
+            methods: {
+                destroy() {
+                    var $this = this;
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.value) {
+                            $.ajax({
+                                url: "{{ route('job-order.destroy') }}",
+                                method: 'POST',
+                                data: $this.overview,
+                                success(value) {
+                                    Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
+                                    $this.dt.draw();
+                                }
+                            });
+                        }
+                    });
+                }
+            },
             mounted() {
                 var $this = this;
 
@@ -124,7 +148,7 @@
                         {
                             data: 'mobile_no',
                             name: 'mobile_no',
-                            title: 'Mobile No.'
+                            title: 'Mobile No.'0
                         },
                         {
                             data: 'status',
@@ -146,18 +170,6 @@
                         });
                         $('.btn-destroy').on('click', function() {
                             $this.destroy();
-                        });
-                        $('.btn-status').on('click', function() {
-                            $('#statusModal').modal('show');
-                        });
-                        $('.btn-payment').on('click', function() {
-                            $('#paymentModal').modal('show');
-                        });
-                        $('.btn-vat').on('click', function() {
-                            $('#vatTypeModal').modal('show');
-                        });
-                        $('.btn-received-date').on('click', function() {
-                            $('#receivedDateModal').modal('show');
                         });
                     }
                 });
