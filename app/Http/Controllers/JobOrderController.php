@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\JobOrder;
 use App\JobOrderStatus;
+use App\JobOrderProduct;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Enums\JobOrderStatusEnum;
 use App\Enums\JobOrderProcessEnum;
 use App\Http\Requests\JobOrderStoreRequest;
-use App\JobOrderProduct;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 
 class JobOrderController extends Controller
 {
@@ -140,5 +141,27 @@ class JobOrderController extends Controller
         $jobOrder->delete();
 
         return ['success' => true];
+    }
+
+    public function download(JobOrder $jobOrder)
+    {
+        $pdf = SnappyPdf::loadView('job_order_printable',$this->getDowloadDetails($jobOrder));
+
+        return $pdf->setPaper('a4')
+            ->setTemporaryFolder(public_path())
+            ->download($jobOrder["job_no"] . '.pdf');
+    }
+
+    public function preview(JobOrder $jobOrder)
+    {
+        return view('job_order_printable', $this->getDowloadDetails($jobOrder));
+    }
+
+    public function getDowloadDetails($jobOrder)
+    {
+        return [
+            'jobOrder' => $jobOrder,
+            'products' => $jobOrder->jobOrderProducts
+        ];
     }
 }

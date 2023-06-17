@@ -199,4 +199,6 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/job-order/edit/{jobOrder}', [JobOrderController::class, 'edit'])->name('job-order.edit');
     Route::post('/job-order/update', [JobOrderController::class, 'update'])->name('job-order.update');
     Route::post('/job-order/destroy', [JobOrderController::class, 'destroy'])->name('job-order.destroy');
+    Route::get('/job-order/download/{jobOrder}', [JobOrderController::class, 'download'])->name('job-order.download');
+    Route::get('/job-order/preview/{jobOrder}', [JobOrderController::class, 'preview'])->name('job-order.preview');
 });

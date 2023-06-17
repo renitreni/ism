@@ -36,7 +36,7 @@ return [
 
     'pdf' => [
         'enabled' => true,
-        'binary'  => env('PATH_PDF') ? base_path(env('PATH_PDF')) : '/usr/local/bin/wkhtmltopdf',
+        'binary'  => env('PATH_PDF') ? base_path(env('PATH_PDF')) : '/usr/bin/wkhtmltopdf',
         'timeout' => false,
         'options' => [
             'enable-local-file-access' => true,
