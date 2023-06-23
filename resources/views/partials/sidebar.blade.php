@@ -44,9 +44,9 @@
                 <span>Expenses</span></a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('return') }}">
+            <a class="nav-link" href="{{ route('job-order') }}">
                 <i class="fas fa-fw fa-backward"></i>
-                <span>Product Return</span></a>
+                <span>Job Order</span></a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('customer') }}">
