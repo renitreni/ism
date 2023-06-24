@@ -133,22 +133,18 @@
                         <i class="fas fa-exclamation-triangle"></i>
                         <span>Override</span>
                     </a>
+                    <a class="collapse-item" href="{{ route('users') }}">
+                        <i class="fas fa-fw fa-user-alt"></i>
+                        <span>User Accounts</span>
+                    </a>
+                    <a class="collapse-item" href="{{ route('audit') }}">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Audit Log</span>
+                    </a>
                 </div>
             </div>
         </li>
     @endif
-
-<!-- Nav Item - User Accounts -->
-    <li class="nav-item">
-        <a class="nav-link" href="{{ route('users') }}">
-            <i class="fas fa-fw fa-user-alt"></i>
-            <span>User Accounts</span></a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ route('audit') }}">
-            <i class="fas fa-fw fa-clock"></i>
-            <span>Audit Log</span></a>
-    </li>
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

@@ -161,7 +161,7 @@
                             </tr>
                             <tr>
                                 <td>Account Name:</td>
-                                <td>{!! nl2br(e($sales_order->account_name)) !!}/td>
+                                <td>{!! nl2br(e($sales_order->account_name)) !!}</td>
                             </tr>
                             <tr>
                                 <td>Account No:</td>
