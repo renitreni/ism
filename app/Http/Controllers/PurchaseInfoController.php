@@ -244,7 +244,7 @@ class PurchaseInfoController extends Controller
 
             $purchase = PurchaseInfo::find($data['id']);
             $purchase->received_date = null;
-
+            $purchase->status = $data['status'];
             if ($data['status'] == 'Received') {
                 $purchase->received_date = Carbon::now()->format('Y-m-d');
             }

@@ -281,7 +281,8 @@
                 }, function(start, end, label) {
                     $this.purchase_report.start_date = start.format('YYYY-MM-DD');
                     $this.purchase_report.end_date = end.format('YYYY-MM-DD');
-                    $('#purchase_report').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+                    $('#purchase_report').val(start.format('YYYY-MM-DD') + ' - ' + end.format(
+                    'YYYY-MM-DD'));
                     console.log(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'))
                 });
 
@@ -337,12 +338,18 @@
                         },
                         {
                             data: function(value) {
-                                var $class_color = value.status === 'Ordered' ? 'btn-warning' :
-                                    'btn-success';
-                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                    '<a href="#" class="btn ' + $class_color + ' btn-status">' +
-                                    value.status + '</a>' +
-                                    '</div>'
+                                if (value.status === 'Ordered') {
+                                    return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
+                                        '<a href="#" class="btn btn-warning btn-status">' +
+                                        value.status + '</a>' +
+                                        '</div>'
+                                } else {
+                                    return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
+                                        '<a href="#" class="btn btn-success">' +
+                                        value.status + '</a>' +
+                                        '</div>'
+
+                                }
                             },
                             name: 'status',
                             title: 'Status'
