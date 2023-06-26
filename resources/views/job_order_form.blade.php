@@ -93,8 +93,7 @@
                                 </div>
                                 <div class="col-md-12 mt-3 d-flex">
                                     <div>
-                                        <button type="button" class="btn btn-sm btn-success mr-2" data-toggle="modal"
-                                            data-target="#productModal">
+                                        <button type="button" class="btn btn-sm btn-success mr-2" v-on:click="addProduct">
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
@@ -109,9 +108,9 @@
                                         <div class="col-md-2 font-weight-bold">Product Status</div>
                                         <div class="col-md-1 font-weight-bold">Actions</div>
                                     </div>
-                                    <div class="row" v-for="product, idx in overview.products">
+                                    <div class="row mt-2" v-for="product, idx in overview.products">
                                         <div class="col-md-3">
-                                            <input type="text" class="form-control products" v-model="product.product" readonly>
+                                            <textarea type="text" class="form-control products" v-model="product.product"></textarea>
                                         </div>
                                         <div class="col-md-1"><input type="number" class="form-control"
                                                 v-model="product.qty"></div>
@@ -119,8 +118,8 @@
                                                 v-model="product.serial_number"></div>
                                         <div class="col-md-3"><input type="text" class="form-control"
                                                 v-model="product.physical_appearance"></div>
-                                        <div class="col-md-2"><input type="text" class="form-control"
-                                                v-model="product.product_status"></div>
+                                        <div class="col-md-2"><textarea type="text" class="form-control"
+                                                v-model="product.product_status"></textarea></div>
                                         <div class="col-md-1">
                                             <button type="button" v-on:click="removeProduct(idx, product.product)"
                                                 class="btn btn btn-danger">
@@ -263,24 +262,32 @@
                 },
                 addProduct() {
                     var $this = this;
-                    var prod_id = $('.select2-product').find(':selected').val();
-                    $.ajax({
-                        url: '{{ route('product.find') }}',
-                        method: 'POST',
-                        data: {
-                            product_id: prod_id
-                        },
-                        success: function(value) {
-                            $this.overview.products.push({
-                                'product': value.name,
+                    //var prod_id = $('.select2-product').find(':selected').val();
+
+                    $this.overview.products.push({
+                                'product': '',
                                 'qty': 0,
                                 'serial_number': '',
                                 'physical_appearance': '',
                                 'product_status': ''
                             });
-                            $('.select2-product').val(null).trigger('change');
-                        }
-                    });
+                    // $.ajax({
+                    //     url: '{{ route('product.find') }}',
+                    //     method: 'POST',
+                    //     data: {
+                    //         product_id: prod_id
+                    //     },
+                    //     success: function(value) {
+                    //         $this.overview.products.push({
+                    //             'product': value.name,
+                    //             'qty': 0,
+                    //             'serial_number': '',
+                    //             'physical_appearance': '',
+                    //             'product_status': ''
+                    //         });
+                    //         $('.select2-product').val(null).trigger('change');
+                    //     }
+                    // });
                 },
                 removeProduct(index, product) {
                     this.overview.products.splice(index, 1);

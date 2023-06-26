@@ -177,7 +177,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <a v-bind:href="'/sales/report/'+ sales_report.start_date +'/'+ sales_report.end_date"
-                           type="button" class="btn btn-primary">Save changes</a>
+                           type="button" class="btn btn-primary">Download</a>
                     </div>
                 </div>
             </div>

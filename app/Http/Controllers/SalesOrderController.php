@@ -238,7 +238,7 @@ class SalesOrderController extends Controller
         DB::table('sales_orders')->where('id', $data['id'])
             ->update([
                 'delivery_status' => $data['delivery_status'],
-                'shipped_date' =>  $data['delivery_status'] == 'Shipped' ? now(): null
+                'shipped_date' =>  $data['delivery_status'] == 'Shipped' ? now() : null
             ]);
 
         return ['success' => true];
@@ -568,5 +568,12 @@ class SalesOrderController extends Controller
         $date = now()->format('Y-m-d_H:i:s');
 
         return Excel::download(new SalesReportExcel($request->start, $request->end), "SALES_REPORT_$date.xlsx");
+    }
+
+    public function downloadSaleReportAll(Request $request): BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H:i:s');
+
+        return Excel::download(new SalesReportExcel(0, 0), "SALES_REPORT_$date.xlsx");
     }
 }
