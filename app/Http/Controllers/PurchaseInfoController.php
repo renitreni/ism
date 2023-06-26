@@ -475,4 +475,12 @@ class PurchaseInfoController extends Controller
             "PURCHASE_REPORT_$date.xlsx"
         );
     }
+
+    public function downloadPurchaseReportAll(Request $request): BinaryFileResponse
+    {
+        return Excel::download(
+            new PurchaseReportExcel(0, 0),
+            "PURCHASE_REPORT_" . now()->format('Y-m-dHms') . ".xlsx"
+        );
+    }
 }

@@ -54,6 +54,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/purchase/preview/{id}', 'PurchaseInfoController@previewPO')->name('purchase.preview');
     Route::post('/purchase/payment/status/update', 'PurchaseInfoController@updatePaymentStatus')->name('purchase.payment.status.update');
     Route::get('/purchase/report/{start}/{end}', 'PurchaseInfoController@downloadPurchaseReport')->name('purchase.report');
+    Route::get('/purchase/report/all', 'PurchaseInfoController@downloadPurchaseReportAll')->name('purchase.report.all');
 
     Route::get('/sales', 'SalesOrderController@index')->name('sales')->middleware('can:salesorder');
     Route::get('/sales/create', 'SalesOrderController@create')->name('sales.create')->middleware('can:salesordercreate');

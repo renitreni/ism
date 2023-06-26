@@ -72,7 +72,9 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <a v-bind:href="'/purchase/report/'+ purchase_report.start_date +'/'+ purchase_report.end_date"
-                            type="button" class="btn btn-primary">Save changes</a>
+                            type="button" class="btn btn-primary">DOWNLOAD</a>
+                        <a v-bind:href="'/purchase/report/all'"
+                            type="button" class="btn btn-primary">DOWNLOAD ALL</a>
                     </div>
                 </div>
             </div>
@@ -282,7 +284,7 @@
                     $this.purchase_report.start_date = start.format('YYYY-MM-DD');
                     $this.purchase_report.end_date = end.format('YYYY-MM-DD');
                     $('#purchase_report').val(start.format('YYYY-MM-DD') + ' - ' + end.format(
-                    'YYYY-MM-DD'));
+                        'YYYY-MM-DD'));
                     console.log(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'))
                 });
 
