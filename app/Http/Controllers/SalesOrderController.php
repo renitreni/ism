@@ -238,7 +238,7 @@ class SalesOrderController extends Controller
         DB::table('sales_orders')->where('id', $data['id'])
             ->update([
                 'delivery_status' => $data['delivery_status'],
-                'updated_at'      => Carbon::now()->format('Y-m-d'),
+                'shipped_date' =>  $data['delivery_status'] == 'Shipped' ? now(): null
             ]);
 
         return ['success' => true];
@@ -254,6 +254,7 @@ class SalesOrderController extends Controller
                 ->update([
                     'status' => $data['status'],
                 ]);
+
             return ['success' => true];
         }
 
