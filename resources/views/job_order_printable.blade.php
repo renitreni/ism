@@ -7,6 +7,7 @@
 
 <body>
 
+<div class="container">
 
     <body>
         {{-- STATEMENT TTILE --}}
@@ -99,4 +100,5 @@
         </div>
     </div>
 
+</div>
 </html>
