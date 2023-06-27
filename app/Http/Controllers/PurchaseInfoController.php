@@ -77,6 +77,7 @@ class PurchaseInfoController extends Controller
             "description"      => "",
             "updated_at"       => Carbon::now()->format('Y-m-d'),
             "vat_type"         => "VAT EX",
+            "received_date"   => Carbon::now()->format('Y-m-d'),
         ]);
 
         $product_details = collect([]);
