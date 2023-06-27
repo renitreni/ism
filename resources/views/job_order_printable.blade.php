@@ -13,7 +13,7 @@
         <div class="d-flex justify-content-center">
             <div>
                 <h1>Job Order</h1>
-                <div class="text-center fs-1">{{ $jobOrder->job_no }}</div>
+                <div class="text-center fs-3">{{ $jobOrder->job_no }}</div>
             </div>
         </div>
         {{-- PURCHASE ORDER --}}
