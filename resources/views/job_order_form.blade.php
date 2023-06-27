@@ -116,8 +116,8 @@
                                                 v-model="product.qty"></div>
                                         <div class="col-md-2"><input type="text" class="form-control"
                                                 v-model="product.serial_number"></div>
-                                        <div class="col-md-3"><input type="text" class="form-control"
-                                                v-model="product.physical_appearance"></div>
+                                        <div class="col-md-3"><textarea type="text" class="form-control"
+                                                v-model="product.physical_appearance"></textarea></div>
                                         <div class="col-md-2"><textarea type="text" class="form-control"
                                                 v-model="product.product_status"></textarea></div>
                                         <div class="col-md-1">
