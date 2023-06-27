@@ -18,60 +18,52 @@
             </div>
         </div>
         {{-- PURCHASE ORDER --}}
-        <table style="width: 100%" class="ms-5">
-            <tbody>
-                <tr>
-                    <td>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Customer Name:</td>
-                                    <td class="header-content">{{ $jobOrder->customer_name }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Process Type:</td>
-                                    <td class="header-content">{{ $jobOrder->process_type }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Date Of Purchased:</td>
-                                    <td class="header-content">{{ $jobOrder->date_of_purchased }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Contact Person:</td>
-                                    <td class="header-content">{{ $jobOrder->contact_person }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Mobile Number:</td>
-                                    <td class="header-content">{{ $jobOrder->mobile_no }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Agent:</td>
-                                    <td class="header-content">{{ $jobOrder->agent }}</td>
-                                </tr>
-                                <tr>
-                                    <td>SO No.:</td>
-                                    <td class="header-content">{{ $jobOrder->so_no }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Remarks:</td>
-                                    <td class="header-content">{{ $jobOrder->remarks }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                    <td>
-                        <img src="{{ asset('app/public/logo/logo.jpg') }}" width="150" height="150">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="d-flex justify-content-between mx-2">
+            <div class="d-flex flex-column">
+                <div>
+                    <label>Customer Name:</label>
+                    <label class="fw-bold">{{ $jobOrder->customer_name }}</label>
+                </div>
+                <div>
+                    <label>Process Type:</label>
+                    <label class="fw-bold">{{ $jobOrder->process_type }}</label>
+                </div>
+                <div>
+                    <label>Date Of Purchased:</label>
+                    <label class="fw-bold">{{ $jobOrder->date_of_purchased }}</label>
+                </div>
+                <div>
+                    <label>Contact Person:</label>
+                    <label class="fw-bold">{{ $jobOrder->contact_person }}</label>
+                </div>
+                <div>
+                    <label>Mobile Number:</label>
+                    <label class="fw-bold">{{ $jobOrder->mobile_no }}</label>
+                </div>
+                <div>
+                    <label>Agent:</label>
+                    <label class="fw-bold">{{ $jobOrder->agent }}</label>
+                </div>
+                <div>
+                    <label>SO No.:</label>
+                    <label class="fw-bold">{{ $jobOrder->so_no }}</label>
+                </div>
+                <div>
+                    <label>Remarks:</label>
+                    <label class="fw-bold">{{ $jobOrder->remarks }}</label>
+                </div>
+            </div>
+            <div>
+                <img src="{{ asset('app/public/logo/logo.jpg') }}" width="150" height="150">
+            </div>
+        </div>
         {{-- PRODUCT DETAILS --}}
         <table class="table table-bordered mt-3">
             <thead class="bg-aliceblue">
                 <tr>
                     <th scope="col">Product</th>
                     <th scope="col">Quantity</th>
-                    <th scope="col">Erial Number</th>
+                    <th scope="col">Serial Number</th>
                     <th scope="col">Physical Appearance</th>
                     <th scope="col">Status</th>
                 </tr>
@@ -92,11 +84,13 @@
 
     {{-- CONFORME --}}
     <div class="d-flex justify-content-between mt-5">
-        <div class="ms-5">
-            Agent: <span class="fw-bold">{{ $jobOrder->agent }}</span>
+        <div class="ms-5 d-flex flex-column">
+            <div>Agent: <span class="fw-bold">{{ $jobOrder->agent }}</span></div>
+            <div>Date: <span class="fw-bold">{{ \Carbon\Carbon::now()->format('F j, Y') }}</span></div>
         </div>
-        <div class="me-5">
-            Date: <span class="fw-bold">{{ \Carbon\Carbon::now()->format('F j, Y') }}</span>
+        <div class="me-5 d-flex flex-column">
+            <div>_____________________________</div>
+            <div class="text-center">Customer Signature</div>
         </div>
     </div>
 
