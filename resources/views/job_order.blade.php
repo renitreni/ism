@@ -105,8 +105,8 @@
                                 edit = '<a href="/job-order/edit/' + value.id +
                                     '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
-                                    '<a href="/job-order/download/' + value.id +
-                                    '" class="btn btn-primary btn-view" target="_blank"><i class="fa fa-download"></i></a>' +
+                                    '<a href="/job-order/preview/' + value.id +
+                                    '" target="_blank" class="btn btn-primary btn-view" target="_blank"><i class="fa fa-download"></i></a>' +
                                     edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
                                     '</div>'

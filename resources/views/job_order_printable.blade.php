@@ -6,10 +6,7 @@
 </head>
 
 <body>
-
-<div class="container">
-
-    <body>
+    <div class="container">
         {{-- STATEMENT TTILE --}}
         <div class="d-flex justify-content-center">
             <div>
@@ -80,19 +77,29 @@
                 @endforeach
             </tbody>
         </table>
-    </body>
 
-    {{-- CONFORME --}}
-    <div class="d-flex justify-content-between mt-5">
-        <div class="ms-5 d-flex flex-column">
-            <div>Agent: <span class="fw-bold">{{ $jobOrder->agent }}</span></div>
-            <div>Date: <span class="fw-bold">{{ \Carbon\Carbon::now()->format('F j, Y') }}</span></div>
-        </div>
-        <div class="me-5 d-flex flex-column">
-            <div>_____________________________</div>
-            <div class="text-center">Customer Signature</div>
+        {{-- CONFORME --}}
+        <div class="d-flex justify-content-between mt-5">
+            <div class="ms-5 d-flex flex-column">
+                <div>Agent: <span class="fw-bold">{{ $jobOrder->agent }}</span></div>
+                <div>Date: <span class="fw-bold">{{ \Carbon\Carbon::now()->format('F j, Y') }}</span></div>
+            </div>
+            <div class="me-5 d-flex flex-column">
+                <div>_____________________________</div>
+                <div class="text-center">Customer Signature</div>
+            </div>
         </div>
     </div>
+    <style>
+        @media print {
+            #printPageButton {
+                display: none;
+            }
+        }
+    </style>
+    <div class="d-flex justify-content-center mt-5">
+        <button id="printPageButton" class="btn btn-primary" onClick="window.print();">Print</button>
+    </div>
+</body>
 
-</div>
 </html>
