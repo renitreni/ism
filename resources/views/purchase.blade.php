@@ -340,18 +340,12 @@
                         },
                         {
                             data: function(value) {
-                                if (value.status === 'Ordered') {
-                                    return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                        '<a href="#" class="btn btn-warning btn-status">' +
-                                        value.status + '</a>' +
-                                        '</div>'
-                                } else {
-                                    return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                        '<a href="#" class="btn btn-success">' +
-                                        value.status + '</a>' +
-                                        '</div>'
-
-                                }
+                                var $class_color = value.status === 'Ordered' ? 'btn-warning' :
+                                    'btn-success';
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
+                                    '<a href="#" class="btn ' + $class_color + ' btn-status">' +
+                                    value.status + '</a>' +
+                                    '</div>'
                             },
                             name: 'status',
                             title: 'Status'
