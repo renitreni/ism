@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum JobOrderStatusEnum: string
 {
-    case RECEVED = 'recevied';
+    case RECEIVED = 'received';
     case ONGOING = 'ongoing';
     case RELEASING = 'releasing';
     case COMPLETED = 'completed';
