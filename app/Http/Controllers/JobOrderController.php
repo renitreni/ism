@@ -58,7 +58,7 @@ class JobOrderController extends Controller
             'status_date' => $request->get('status_date'),
         ]);
 
-        foreach ($request->get('products') as $item) {
+        foreach ($request->get('products') ?? [] as $item) {
             JobOrderProduct::create([
                 'job_order_id' => $jobOrder->id,
                 "product" => $item['product'],
@@ -119,7 +119,7 @@ class JobOrderController extends Controller
         );
 
         JobOrderProduct::query()->where('job_order_id', $jobOrder->id)->delete();
-        foreach ($request->get('products') as $item) {
+        foreach ($request->get('products') ?? [] as $item) {
             JobOrderProduct::create([
                 'job_order_id' => $jobOrder->id,
                 "product" => $item['product'],
