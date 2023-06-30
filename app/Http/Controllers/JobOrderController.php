@@ -21,7 +21,7 @@ class JobOrderController extends Controller
 
     public function table()
     {
-        return DataTables::of(JobOrder::all())->make(true);
+        return DataTables::of(JobOrder::with('jobOrderStatus'))->make(true);
     }
 
     public function create()
@@ -145,7 +145,7 @@ class JobOrderController extends Controller
 
     public function download(JobOrder $jobOrder)
     {
-        $pdf = SnappyPdf::loadView('job_order_printable',$this->getDowloadDetails($jobOrder));
+        $pdf = SnappyPdf::loadView('job_order_printable', $this->getDowloadDetails($jobOrder));
 
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())
@@ -161,7 +161,8 @@ class JobOrderController extends Controller
     {
         return [
             'jobOrder' => $jobOrder,
-            'products' => $jobOrder->jobOrderProducts
+            'products' => $jobOrder->jobOrderProducts,
+            'statusHistory' => $jobOrder->jobOrderStatus
         ];
     }
 }

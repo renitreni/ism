@@ -46,6 +46,36 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="statusHistoryMdl" tabindex="-1" aria-labelledby="statusHistoryMdlLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="statusHistoryMdlLabel">Job Order Status History</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 row">
+                                <div class="col-6 font-weight-bold">Status</div>
+                                <div class="col-6 font-weight-bold">Date</div>
+                            </div>
+                            <div class="col-md-12 row" v-for="item in statusHistory">
+                                <div class="col-6">@{{ item.status }}</div>
+                                <div class="col-6">@{{ item.status_date }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -55,7 +85,9 @@
             el: '#app',
             data() {
                 return {
+                    overview: null,
                     dt: null,
+                    statusHistory: null
                 }
             },
             methods: {
@@ -104,10 +136,14 @@
                             data: function(value) {
                                 edit = '<a href="/job-order/edit/' + value.id +
                                     '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
+                                statusHistory = '<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#statusHistoryMdl">' +
+                                    '<i class="fas fa-receipt"></i>' +
+                                    '</button>';
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
                                     '<a href="/job-order/preview/' + value.id +
                                     '" target="_blank" class="btn btn-primary btn-view" target="_blank"><i class="fa fa-download"></i></a>' +
                                     edit +
+                                    statusHistory +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
                                     '</div>'
                             },
@@ -166,6 +202,7 @@
                             let data = $(this).parent().parent().parent();
                             let hold = $this.dt.row(data).data();
                             $this.overview = hold;
+                            $this.statusHistory = hold.job_order_status;
                             console.log(hold);
                         });
                         $('.btn-destroy').on('click', function() {

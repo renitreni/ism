@@ -55,6 +55,7 @@
             </div>
         </div>
         {{-- PRODUCT DETAILS --}}
+        <h3 class="mt-4">Product Details</h3>
         <table class="table table-bordered mt-3">
             <thead class="bg-aliceblue">
                 <tr>
@@ -78,6 +79,24 @@
             </tbody>
         </table>
 
+        {{-- STATUS HISTORY --}}
+        <h3 class="mt-4">Status History</h3>
+        <table class="table table-bordered mt-3">
+            <thead class="bg-aliceblue">
+                <tr>
+                    <th scope="col">Status</th>
+                    <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($statusHistory as $history)
+                    <tr>
+                        <td>{{ $history->status }}</td>
+                        <td>{{ $history->status_date }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
         {{-- CONFORME --}}
         <div class="d-flex justify-content-between mt-5">
             <div class="ms-5 d-flex flex-column">
