@@ -200,7 +200,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/job-order/store', [JobOrderController::class, 'store'])->name('job-order.store')->middleware('can:jobordercreate');
     Route::get('/job-order/edit/{jobOrder}', [JobOrderController::class, 'edit'])->name('job-order.edit')->middleware('can:joborderretrieve');
     Route::post('/job-order/update', [JobOrderController::class, 'update'])->name('job-order.update')->middleware('can:joborderupdate');
-    Route::post('/job-order/destroy', [JobOrderController::class, 'destroy'])->name('job-order.destroy')->middleware('can:quotedestroy');
+    Route::post('/job-order/destroy', [JobOrderController::class, 'destroy'])->name('job-order.destroy')->middleware('can:joborderdestroy');
     Route::get('/job-order/download/{jobOrder}', [JobOrderController::class, 'download'])->name('job-order.download');
     Route::get('/job-order/preview/{jobOrder}', [JobOrderController::class, 'preview'])->name('job-order.preview');
 });

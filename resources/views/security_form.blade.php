@@ -1040,12 +1040,12 @@
                                         <div class="form-group row">
                                             <div class="col-md-auto">
                                                 <label class="switch">
-                                                    <input type="checkbox" v-model="abilities.quotedestroy">
+                                                    <input type="checkbox" v-model="abilities.joborderdestroy">
                                                     <span class="slider"></span>
                                                 </label>
                                             </div>
                                             <div class="col-md-auto">
-                                                <label class="switch-label">Quote Delete</label>
+                                                <label class="switch-label">Job Order Delete</label>
                                             </div>
                                         </div>
                                     </div>
