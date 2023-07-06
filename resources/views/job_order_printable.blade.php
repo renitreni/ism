@@ -108,6 +108,13 @@
                 <div class="text-center">Customer Signature</div>
             </div>
         </div>
+        {{-- RMA TEAM --}}
+        <div class="d-flex mt-5">
+            <div class="me-5 d-flex flex-column">
+                <div class="text-center">RECEIVED BY: ______________________</div>
+                <div class="text-center" style="margin-left: 84px;">RMA TEAM</div>
+            </div>
+        </div>
     </div>
     <style>
         @media print {
