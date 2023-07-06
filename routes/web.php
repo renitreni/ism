@@ -194,13 +194,13 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/quote/detail/{id}', 'SalesOrderController@show')->name('quote.detail')->middleware('can:quoteupdate');
     Route::post('/quote/destroy', 'SalesOrderController@destroy')->name('quote.destroy')->middleware('can:quotedestroy');
 
-    Route::get('/job-order', [JobOrderController::class, 'index'])->name('job-order');
+    Route::get('/job-order', [JobOrderController::class, 'index'])->name('job-order')->middleware('can:joborder');
     Route::post('/job-order/table', [JobOrderController::class, 'table'])->name('job-order.table');
-    Route::get('/job-order/create', [JobOrderController::class, 'create'])->name('job-order.create');
-    Route::post('/job-order/store', [JobOrderController::class, 'store'])->name('job-order.store');
-    Route::get('/job-order/edit/{jobOrder}', [JobOrderController::class, 'edit'])->name('job-order.edit');
-    Route::post('/job-order/update', [JobOrderController::class, 'update'])->name('job-order.update');
-    Route::post('/job-order/destroy', [JobOrderController::class, 'destroy'])->name('job-order.destroy');
+    Route::get('/job-order/create', [JobOrderController::class, 'create'])->name('job-order.create')->middleware('can:jobordercreate');
+    Route::post('/job-order/store', [JobOrderController::class, 'store'])->name('job-order.store')->middleware('can:jobordercreate');
+    Route::get('/job-order/edit/{jobOrder}', [JobOrderController::class, 'edit'])->name('job-order.edit')->middleware('can:joborderretrieve');
+    Route::post('/job-order/update', [JobOrderController::class, 'update'])->name('job-order.update')->middleware('can:joborderupdate');
+    Route::post('/job-order/destroy', [JobOrderController::class, 'destroy'])->name('job-order.destroy')->middleware('can:quotedestroy');
     Route::get('/job-order/download/{jobOrder}', [JobOrderController::class, 'download'])->name('job-order.download');
     Route::get('/job-order/preview/{jobOrder}', [JobOrderController::class, 'preview'])->name('job-order.preview');
 });

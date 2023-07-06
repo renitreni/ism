@@ -976,6 +976,80 @@
                                         </div>
                                     </div>
                                 </div>
+
+
+                                {{-- Job Order --}}
+                                <div class="col-md-12 row">
+                                    <div class="col-md-12 mt-4">
+                                        <h3>Job Order</h3>
+                                        <hr>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.joborder">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.jobordercreate">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order Create</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.joborderretrieve">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order Retrieve</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.joborderupdate">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order Update</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.quotedestroy">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Quote Delete</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @endif
 
                             <div class="col-md-12">
