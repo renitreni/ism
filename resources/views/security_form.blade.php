@@ -266,7 +266,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    {{-- <div class="col-md-3">
                                         <div class="form-group row">
                                             <div class="col-md-auto">
                                                 <label class="switch">
@@ -278,7 +278,7 @@
                                                 <label class="switch-label">Status Vat</label>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-md-3">
                                         <div class="form-group row">
                                             <div class="col-md-auto">
