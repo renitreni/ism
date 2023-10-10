@@ -16,7 +16,6 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <button class="btn btn-danger" id="delete" @click="deleteLogs">Delete Logs</button>
-
                             </div>
                             <div class="col-md-auto">
                             </div>

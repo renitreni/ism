@@ -51,6 +51,7 @@ class AuditLogController extends Controller
                 return $result;
             }
         }
+         
     }
 
 }
