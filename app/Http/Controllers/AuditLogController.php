@@ -17,19 +17,13 @@ class AuditLogController extends Controller
         return $dataTables->queryBuilder(DB::table('audit_logs'))->make(true);
     }
 
-    public function delete(){
-        
-        $result = array();
-        $deletedRows = DB::table('audit_logs')->delete();
+    public function delete()
+    {
+        DB::table('audit_logs')->delete();
 
-        $checkifEmpty = DB::table('audit_logs')->select('*')->get();
+        $countAuditLogs = DB::table('audit_logs')->select('*')->count();
         
-        if(count($checkifEmpty) === 0){
-            return 'deleted';
-        }else{
-            return 'not_deleted';
-        }
-         
+        return $countAuditLogs === 0 ? 'deleted' : 'not_deleted';
     }
 
 }
