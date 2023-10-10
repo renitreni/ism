@@ -21,9 +21,7 @@ class AuditLogController extends Controller
     {
         DB::table('audit_logs')->delete();
 
-        $countAuditLogs = DB::table('audit_logs')->select('*')->count();
-        
-        return $countAuditLogs === 0 ? 'deleted' : 'not_deleted';
+        return DB::table('audit_logs')->count() === 0 ? 'deleted' : 'not_deleted';
     }
 
 }
