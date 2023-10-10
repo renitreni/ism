@@ -45,7 +45,6 @@
                 }
             },
             methods: {
-
                 deleteLogs() {
                     Swal.fire({
                         title: 'Do you want to delete all Audit Logs Data?',

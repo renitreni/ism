@@ -18,9 +18,10 @@ class AuditLogController extends Controller
     }
 
     public function delete(){
+        
         $result = array();
         $deletedRows = DB::table('audit_logs')->delete();
-        
+
         $checkifEmpty = DB::table('audit_logs')->select('*')->get();
         
         if(count($checkifEmpty) === 0){
