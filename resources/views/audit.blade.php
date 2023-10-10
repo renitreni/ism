@@ -14,10 +14,15 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-danger" id="delete" @click="deleteLogs">Delete Logs</button>
+
+                            </div>
                             <div class="col-md-auto">
                             </div>
                             <div class="col-md-12 mt-3">
-                                <table id="table-product" class="table table-striped  table-general nowrap" style="width:100%"></table>
+                                <table id="table-product" class="table table-striped  table-general nowrap"
+                                    style="width:100%"></table>
                             </div>
                         </div>
                     </div>
@@ -42,6 +47,41 @@
             },
             methods: {
 
+                deleteLogs() {
+                    Swal.fire({
+                        title: 'Do you want to delete all Audit Logs Data?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Confirm',
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '{{ route('audit.delete') }}',
+                                method: 'POST',
+                                success: function(value) {
+                                    if(value["message"] == "deleted"){
+                                        Swal.fire(
+                                            'Deleted!',
+                                            'Operation is successful.',
+                                            'success'
+                                        ).then((result) => {
+                                            if (result.value) {
+                                                window.location = '{{ route('audit') }}'
+                                            }
+                                        })
+                                    }
+                                    if(value["message"] == "not_empty"){
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: 'Operation not success.',
+                                        })
+                                    }
+                                }
+                            })
+                        } 
+                    })
+                },
             },
             mounted() {
                 var $this = this;
@@ -51,18 +91,27 @@
                     scrollX: true,
                     responsive: true,
                     pageLength: 100,
-                    order: [[0, 'desc']],
+                    order: [
+                        [0, 'desc']
+                    ],
                     ajax: {
                         url: "{{ route('audit.table') }}",
                         method: "POST",
                     },
-                    columns: [
-                        {data: 'created_at', title: 'Timestamp'},
-                        {data: 'user', title: 'User'},
-                        {data: 'url', title: 'URL'},
+                    columns: [{
+                            data: 'created_at',
+                            title: 'Timestamp'
+                        },
+                        {
+                            data: 'user',
+                            title: 'User'
+                        },
+                        {
+                            data: 'url',
+                            title: 'URL'
+                        },
                     ],
-                    drawCallback: function () {
-                    }
+                    drawCallback: function() {}
                 });
             }
         });

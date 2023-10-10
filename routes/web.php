@@ -166,6 +166,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
 
     Route::get('/audit', 'AuditLogController@index')->name('audit')->middleware('can:auditlogs');
     Route::post('/audit/table', 'AuditLogController@table')->name('audit.table');
+    Route::post('/audit/delete', 'AuditLogController@delete')->name('audit.delete');
 
     Route::get('/override', 'OverrideController@index')->name('override')->middleware('can:override');
     Route::post('/override/restore/point', 'OverrideController@backupSQL')->name('restore.point');
