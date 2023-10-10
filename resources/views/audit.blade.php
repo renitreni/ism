@@ -52,13 +52,12 @@
                         showCancelButton: true,
                         confirmButtonText: 'Confirm',
                     }).then((result) => {
-                        /* Read more about isConfirmed, isDenied below */
                         if (result.isConfirmed) {
                             $.ajax({
                                 url: '{{ route('audit.delete') }}',
                                 method: 'POST',
                                 success: function(value) {
-                                    if(value["message"] == "deleted"){
+                                    if(value == "deleted"){
                                         Swal.fire(
                                             'Deleted!',
                                             'Operation is successful.',
@@ -69,7 +68,7 @@
                                             }
                                         })
                                     }
-                                    if(value["message"] == "not_empty"){
+                                    if(value == "not_deleted"){
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Oops...',
