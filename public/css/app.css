@@ -7205,7 +7205,7 @@ body {
   max-width: 150px;
   min-width: 10px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  /* text-overflow: ellipsis; */
   white-space: nowrap;
   font-size: 13px;
 }

@@ -18,6 +18,40 @@
                                 <a href="{{ route('sales.create') }}" class="btn btn-sm btn-success"><i
                                         class="fa fa-plus"></i> New Sales Order</a>
                             </div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-md-12 mt-3 d-flex justify-content-center">
+                                <div class="form-group" style="padding-right: 11px;">
+                                    <label class="control-label">Filter Payment</label>
+                                    <select class="form-control" name="filter_payment" id="filter_payment">
+                                        <option value="" selected>-- Select Options --</option>
+                                        <option value="PAID">PAID</option>
+                                        <option value="UNPAID">UNPAID</option>
+                                        <option value="PAID WITH BALANCE">PAID WITH BALANCE</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="padding-right: 11px;">
+                                    <label class="control-label">Filter status</label>
+                                    <select class="form-control" name="filter_status" id="filter_status">
+                                        <option value="" selected>-- Select Options --</option>
+                                        <option value="Quote">Quote</option>
+                                        <option value="Waiting For PO Approved">Waiting For PO Approved</option>
+                                    </select>
+                                </div>     
+                                <div class="form-group" style="padding-right: 11px;">
+                                    <label class="control-label">Filter Delivery Status</label>
+                                    <select class="form-control" name="filter_delivery_status" id="filter_delivery_status">
+                                        <option value="" selected>-- Select Options --</option>
+                                        <option value="Not Shipped">Not Shipped</option>
+                                        <option value="Shipped">Shipped</option>
+                                    </select>
+                                </div>                             
+                                <div class="form-group" style="padding-top:32px;">
+                                    <button class="btn btn-info" id="filter_search" > Search </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-12 mt-3">
                                 <table id="table-sales" class="table table-striped nowrap table-general"
                                        style="width:100%"></table>
@@ -306,6 +340,11 @@
                     order: [[1, 'desc']],
                     ajax: {
                         url: "{{ route('quote.table') }}",
+                        data: function(data) {
+                            data.filter_payment = $("#filter_payment").val();
+                            data.filter_status = $("#filter_status").val();
+                            data.filter_delivery_status = $("#filter_delivery_status").val();
+                        },
                         method: "POST",
                     },
                     columns: [
@@ -396,6 +435,9 @@
                             $('#deliveryStatusModal').modal('show');
                         });
                     }
+                });
+                $( document ).on('click', '#filter_search', function() {
+                    $this.dt.draw();
                 });
             }
         });
