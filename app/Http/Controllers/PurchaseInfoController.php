@@ -6,6 +6,7 @@ use PDF;
 use App\Supply;
 use App\Product;
 use App\Summary;
+use App\AuditLog;
 use Carbon\Carbon;
 use App\Preference;
 use App\PurchaseInfo;
@@ -25,7 +26,7 @@ class PurchaseInfoController extends Controller
         return view('purchase');
     }
 
-    public function table()
+    public function table(Request $request)
     {
         Supply::recalibrate();
         $purchase_info = PurchaseInfo::query()
@@ -37,6 +38,13 @@ class PurchaseInfoController extends Controller
             ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
             ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
             ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to');
+
+            if ($request->filled('filter_payment')) {
+                $purchase_info->where('purchase_infos.payment_status', $request->input('filter_payment'));
+            }
+            if ($request->filled('filter_status')) {
+                $purchase_info->where('purchase_infos.status', $request->input('filter_status'));
+            }
 
         return DataTables::of($purchase_info)->setTransformer(function ($data) {
             $data               = $data->toArray();
@@ -153,6 +161,20 @@ class PurchaseInfoController extends Controller
 
         DB::table('summaries')->insert($data['summary']);
 
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $data['overview']['po_no'],
+                'current' => $data['overview']['status'],
+                'method' => "CREATED"
+            ]);
+        }
+
         return ['success' => true];
     }
 
@@ -167,6 +189,20 @@ class PurchaseInfoController extends Controller
         if ($data['overview']['payment_method'] != 'Check') {
             $data['overview']['check_number'] = '';
             $data['overview']['check_writer'] = '';
+        }
+
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $data['overview']['po_no'],
+                'current' => $data['overview']['status'],
+                'method' => "UPDATED"
+            ]);
         }
 
         // Update Purchase Order Info
@@ -218,7 +254,8 @@ class PurchaseInfoController extends Controller
     }
 
     public function destroy(Request $request)
-    {
+    {    
+
         // Reset supply count based on current product details
         $product_details = ProductDetail::fetchDataPO($request->id);
         foreach ($product_details as $item) {
@@ -229,9 +266,24 @@ class PurchaseInfoController extends Controller
             }
         }
 
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $request->po_no,
+                // 'current' => $current,
+                'method' => "DELETED"
+            ]);
+        }
+
         ProductDetail::query()->where('purchase_order_id', $request->id)->delete();
         DB::table('purchase_infos')->where('id', $request->id)->delete();
         DB::table('summaries')->where('purchase_order_id', $request->id)->delete();
+
 
         return ['success' => true];
     }
@@ -243,6 +295,21 @@ class PurchaseInfoController extends Controller
 
         if ($purchase_info->status != $data['status']) {
 
+            // Record Action in Audit Log 
+            $name = auth()->user()->name;
+
+            if($name != 'Super Admin') {
+                \App\AuditLog::record([
+                    'name' => $name,
+                    'inputs' => $request->input(),
+                    'url' => $request->url(),
+                    'action_id' => $data['po_no'],
+                    'current' => $data['status'],
+                    'method' => "UPDATED"
+                ]);
+            }
+
+
             $purchase = PurchaseInfo::find($data['id']);
             $purchase->received_date = null;
             $purchase->status = $data['status'];
@@ -251,6 +318,7 @@ class PurchaseInfoController extends Controller
             }
 
             $purchase->save();
+            
 
             return ['success' => true];
         }
@@ -261,7 +329,7 @@ class PurchaseInfoController extends Controller
 
             return ['success' => true];
         }
-
+        
 
         if ($purchase_info->received_date != $data['received_date']) {
             DB::table('purchase_infos')->where('id', $data['id'])
@@ -276,9 +344,24 @@ class PurchaseInfoController extends Controller
     public function updatePaymentStatus(Request $request)
     {
         $data = $request->input();
+        
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+            
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $data['po_no'],
+                'current' => $data['payment_status'],
+                'method' => "UPDATED"
+            ]);
+        }
 
         DB::table('purchase_infos')->where('id', $data['id'])
             ->update(['payment_status' => $data['payment_status']]);
+
 
         return ['success' => true];
     }
