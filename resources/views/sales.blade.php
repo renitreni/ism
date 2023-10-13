@@ -40,6 +40,40 @@
                                     data-target="#salesReportMdl">
                                     <i class="fas fa-download"></i> Sales Report</a>
                             </div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-md-12 mt-3 d-flex justify-content-center">
+                                <div class="form-group" style="padding-right: 11px;">
+                                    <label class="control-label">Filter Payment</label>
+                                    <select class="form-control" name="filter_payment" id="filter_payment">
+                                        <option value="" selected>-- Select Options --</option>
+                                        <option value="PAID">PAID</option>
+                                        <option value="UNPAID">UNPAID</option>
+                                        <option value="PAID WITH BALANCE">PAID WITH BALANCE</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="padding-right: 11px;">
+                                    <label class="control-label">Filter status</label>
+                                    <select class="form-control" name="filter_status" id="filter_status">
+                                        <option value="" selected>-- Select Options --</option>
+                                        <option value="Sales">Sales</option>
+                                        <option value="Project">Project</option>
+                                    </select>
+                                </div>     
+                                <div class="form-group" style="padding-right: 11px;">
+                                    <label class="control-label">Filter Delivery Status</label>
+                                    <select class="form-control" name="filter_delivery_status" id="filter_delivery_status">
+                                        <option value="" selected>-- Select Options --</option>
+                                        <option value="Not Shipped">Not Shipped</option>
+                                        <option value="Shipped">Shipped</option>
+                                    </select>
+                                </div>                             
+                                <div class="form-group" style="padding-top:32px;">
+                                    <button class="btn btn-info" id="filter_search" > Search </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-12 mt-3">
                                 <table id="table-sales" class="table table-striped nowrap table-general" style="width:100%">
                                 </table>
@@ -359,6 +393,11 @@
                     ],
                     ajax: {
                         url: "{{ route('sales.table') }}",
+                        data: function(data) {
+                            data.filter_payment = $("#filter_payment").val();
+                            data.filter_status = $("#filter_status").val();
+                            data.filter_delivery_status = $("#filter_delivery_status").val();
+                        },
                         method: "POST",
                     },
                     columns: [{
@@ -493,6 +532,9 @@
                             $('#shippedDateModal').modal('show');
                         });
                     }
+                });
+                $( document ).on('click', '#filter_search', function() {
+                    $this.dt.draw();
                 });
             }
         });
