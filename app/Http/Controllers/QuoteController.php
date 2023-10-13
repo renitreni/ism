@@ -22,8 +22,9 @@ class QuoteController extends Controller
         return view('quote');
     }
 
-    public function table()
-    {
+    public function table(Request $request)
+    {   
+
         $vendors = SalesOrder::query()
             ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
                              summaries.grand_total')
@@ -31,6 +32,16 @@ class QuoteController extends Controller
             ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
             ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
             ->whereNotIn('sales_orders.status', ['Sales', 'Project']);
+
+            if ($request->filled('filter_payment')) {
+                $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));
+            }
+            if ($request->filled('filter_status')) {
+                $vendors->where('sales_orders.status', $request->input('filter_status'));
+            }
+            if ($request->filled('filter_delivery_status')) {
+                $vendors->where('sales_orders.delivery_status', $request->input('filter_delivery_status'));
+            }
 
         return DataTables::of($vendors)->setTransformer(function ($data) {
             $data                   = $data->toArray();

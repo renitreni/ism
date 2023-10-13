@@ -28,8 +28,9 @@ class SalesOrderController extends Controller
         return view('sales');
     }
 
-    public function table()
-    {
+    public function table(Request $request)
+    {   
+
         $vendors = SalesOrder::query()
             ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
                              summaries.grand_total')
@@ -37,6 +38,16 @@ class SalesOrderController extends Controller
             ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
             ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
             ->whereIn('sales_orders.status', ['Sales', 'Project']);
+
+            if ($request->filled('filter_payment')) {
+                $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));
+            }
+            if ($request->filled('filter_status')) {
+                $vendors->where('sales_orders.status', $request->input('filter_status'));
+            }
+            if ($request->filled('filter_delivery_status')) {
+                $vendors->where('sales_orders.delivery_status', $request->input('filter_delivery_status'));
+            }
 
         return DataTables::of($vendors)->setTransformer(function ($data) {
             $data                   = $data->toArray();
@@ -139,6 +150,20 @@ class SalesOrderController extends Controller
         $data['summary']['sales_order_id'] = $id;
         DB::table('summaries')->insert($data['summary']);
 
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $data['overview']['so_no'],
+                'current' => $data['overview']['status'],
+                'method' => "CREATED"
+            ]);
+        }
+
         return ['success' => true];
     }
 
@@ -148,6 +173,20 @@ class SalesOrderController extends Controller
 
         unset($data['overview']['unit']);
         unset($data['overview']['customer_name']);
+
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $data['overview']['so_no'],
+                'current' => $data['overview']['status'],
+                'method' => "UPDATED"
+            ]);
+        }
 
         // Update Sales Order Info
         SalesOrder::updateInfo($data['overview']);
@@ -203,6 +242,20 @@ class SalesOrderController extends Controller
             }
         }
 
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $request->so_no,
+                // 'current' => $current,
+                'method' => "DELETED"
+            ]);
+        }
+        
         ProductDetail::query()->where('sales_order_id', $request->id)->delete();
         DB::table('sales_orders')->where('id', $request->id)->delete();
         DB::table('summaries')->where('sales_order_id', $request->id)->delete();
@@ -213,6 +266,21 @@ class SalesOrderController extends Controller
     public function updatePaymentStatus(Request $request)
     {
         $data = $request->input();
+
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+    
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $data['so_no'],
+                'current' => $data['payment_status'],
+                'method' => "UPDATED"
+            ]);
+        }
+
         DB::table('sales_orders')->where('id', $data['id'])
             ->update(['payment_status' => $data['payment_status']]);
 
@@ -232,6 +300,20 @@ class SalesOrderController extends Controller
     {
         $data = $request->input();
 
+        // Record Action in Audit Log 
+        $name = auth()->user()->name;
+    
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $data['so_no'],
+                'current' => $data['delivery_status'],
+                'method' => "UPDATED"
+            ]);
+        }
+
         DB::table('sales_orders')->where('id', $data['id'])
             ->update([
                 'delivery_status' => $data['delivery_status'],
@@ -244,6 +326,21 @@ class SalesOrderController extends Controller
     public function updateStatus(Request $request)
     {
         $data = $request->input();
+
+         // Record Action in Audit Log 
+         $name = auth()->user()->name;
+    
+         if($name != 'Super Admin') {
+             \App\AuditLog::record([
+                 'name' => $name,
+                 'inputs' => $request->input(),
+                 'url' => $request->url(),
+                 'action_id' => $data['so_no'],
+                 'current' => $data['status'],
+                 'method' => "UPDATED"
+             ]);
+         }
+
         DB::table('sales_orders')->where('id', $data['id'])
             ->update([
                 'status' => $data['status'],
