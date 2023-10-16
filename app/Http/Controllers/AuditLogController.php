@@ -20,17 +20,17 @@ class AuditLogController extends Controller
         // Apply filters
         if ($request->filled('filter_so_po') && $request->input('filter_so_po') == 'SO') {
             if ($request->filled('filter_ship1')) {
-                $query->where('current', $request->input('filter_ship1'));
+                $query->where('previous', $request->input('filter_ship1'));
             }
             if ($request->filled('filter_ship2')) {
-                $query->where('previous', $request->input('filter_ship2'));
+                $query->where('current', $request->input('filter_ship2'));
             }
         }else{
             if ($request->filled('filter_status1')) {
-                $query->where('current', $request->input('filter_status1'));
+                $query->where('previous', $request->input('filter_status1'));
             }
             if ($request->filled('filter_status2')) {
-                $query->where('previous', $request->input('filter_status2'));
+                $query->where('current', $request->input('filter_status2'));
             }
         }
         
