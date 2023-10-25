@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\DB;
 class AuditLog extends Model
 {
     public static function record($request)
-    {   
+    {
+
         $previous = "";
         $log_sentence = "";
-        
+
         if (!isset($request['method'])) {
             $request['method'] = '';
         }
@@ -21,6 +22,7 @@ class AuditLog extends Model
 
             if($module == "PO"){
                 $getPreviousLogs = DB::table('purchase_infos')->where('po_no', $request['action_id'])->first();
+
                 if(in_array($request['current'], ["Ordered", "Received"])){
                   $previous =  $getPreviousLogs->status;
                }elseif(in_array($request['current'], ["PAID", "UNPAID", "PAID WITH BALANCE"])){
@@ -29,13 +31,29 @@ class AuditLog extends Model
             }
 
             if($module == "SO"){
-                $getPreviousLogs = DB::table('sales_orders')->where('so_no', $request['action_id'])->first();
+                $getPreviousLogs = DB::table('sales_orders')->where('so_no', $request['action_id'])->get(); // Change first to get then i apply isset condition . maybe on a null i need it to set as an empty string
                 if(in_array($request['current'], ["Sales", "Quote", "Project"])){
-                    $previous =  $getPreviousLogs->status;
+                    // $previous =  $getPreviousLogs[0]->status;
+                    // $previous =  $getPreviousLogs->status;
+                    if (isset($getPreviousLogs[0]->status) && !empty($getPreviousLogs[0]->status)) {
+                        $previous = $getPreviousLogs[0]->status;
+                    } else {
+                        $previous = '';
+                    }
                 }elseif(in_array($request['current'], ["Not Shipped", "Shipped"])){
-                    $previous =  $getPreviousLogs->delivery_status;
+                    // $previous =  $getPreviousLogs[0]->delivery_status;
+                    if (isset($getPreviousLogs[0]->delivery_status) && !empty($getPreviousLogs[0]->delivery_status)) {
+                        $previous = $getPreviousLogs[0]->delivery_status;
+                    } else {
+                        $previous = '';
+                    }
                 }elseif(in_array($request['current'], ["PAID", "UNPAID", "PAID WITH BALANCE"])){
-                    $previous =  $getPreviousLogs->payment_status;
+                    // $previous =  $getPreviousLogs[0]->payment_status;
+                    if (isset($getPreviousLogs[0]->payment_status) && !empty($getPreviousLogs[0]->payment_status)) {
+                        $previous = $getPreviousLogs[0]->payment_status;
+                    } else {
+                        $previous = '';
+                    }
                 }
             }
 
@@ -58,7 +76,7 @@ class AuditLog extends Model
                 $getPreviousLogs = DB::table('sales_orders')->where('so_no', $request['action_id'])->get();
                 $current = $getPreviousLogs[0]->status;
             }
-            
+
             $log_sentence = $request['name'] . " - DELETED - " . $request['action_id'] . " - Current : " . $current;
         }
 
