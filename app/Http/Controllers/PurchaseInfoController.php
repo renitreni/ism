@@ -45,7 +45,9 @@ class PurchaseInfoController extends Controller
             if ($request->filled('filter_status')) {
                 $purchase_info->where('purchase_infos.status', $request->input('filter_status'));
             }
-
+            if ($request->filled('filter_vat')) {
+                $purchase_info->where('purchase_infos.vat_type', $request->input('filter_vat'));
+            }
         return DataTables::of($purchase_info)->setTransformer(function ($data) {
             $data               = $data->toArray();
             $data['created_at'] = Carbon::parse($data['created_at'])->format('F j, Y');
@@ -161,7 +163,7 @@ class PurchaseInfoController extends Controller
 
         DB::table('summaries')->insert($data['summary']);
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -191,7 +193,7 @@ class PurchaseInfoController extends Controller
             $data['overview']['check_writer'] = '';
         }
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -254,7 +256,7 @@ class PurchaseInfoController extends Controller
     }
 
     public function destroy(Request $request)
-    {    
+    {
 
         // Reset supply count based on current product details
         $product_details = ProductDetail::fetchDataPO($request->id);
@@ -266,7 +268,7 @@ class PurchaseInfoController extends Controller
             }
         }
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -295,7 +297,7 @@ class PurchaseInfoController extends Controller
 
         if ($purchase_info->status != $data['status']) {
 
-            // Record Action in Audit Log 
+            // Record Action in Audit Log
             $name = auth()->user()->name;
 
             if($name != 'Super Admin') {
@@ -318,7 +320,7 @@ class PurchaseInfoController extends Controller
             }
 
             $purchase->save();
-            
+
 
             return ['success' => true];
         }
@@ -329,7 +331,7 @@ class PurchaseInfoController extends Controller
 
             return ['success' => true];
         }
-        
+
 
         if ($purchase_info->received_date != $data['received_date']) {
             DB::table('purchase_infos')->where('id', $data['id'])
@@ -344,10 +346,10 @@ class PurchaseInfoController extends Controller
     public function updatePaymentStatus(Request $request)
     {
         $data = $request->input();
-        
-        // Record Action in Audit Log 
+
+        // Record Action in Audit Log
         $name = auth()->user()->name;
-            
+
         if($name != 'Super Admin') {
             \App\AuditLog::record([
                 'name' => $name,

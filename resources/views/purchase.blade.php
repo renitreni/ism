@@ -60,7 +60,15 @@
                                         <option value="Ordered">Ordered</option>
                                         <option value="Received">Received</option>
                                     </select>
-                                </div>                                
+                                </div>
+                                <div class="form-group" style="padding-right: 11px;">
+                                    <label class="control-label">Filter VAT</label>
+                                    <select class="form-control" name="filter_vat" id="filter_vat">
+                                        <option value="" selected>-- Select Options --</option>
+                                        <option value="VAT EX">VE</option>
+                                        <option value="VAT INC">VI</option>
+                                    </select>
+                                </div>
                                 <div class="form-group" style="padding-top:32px;">
                                     <button class="btn btn-info" id="filter_search" > Search </button>
                                 </div>
@@ -69,7 +77,7 @@
                         <div class="row">
                             <div class="col-md-12 mt-3">
                                 <table id="table-inquiry" class="table table-striped nowrap table-general"
-                                    style="width:100%"></table>
+                                    style="width:100%;text-align: center;"></table>
                             </div>
                         </div>
                     </div>
@@ -150,9 +158,21 @@
                                 <div class="form-group">
                                     <label class="control-label">Pick a status</label>
                                     <select class="form-control" v-model="overview.status">
-                                        <option value="Ordered">Ordered</option>
-                                        <option value="Received">Received</option>
+                                        @can('purchasestatusupdate')
+                                            @can('statusUpdateToOrdered')
+                                                <option value="Ordered">Ordered</option>
+                                            @endcan
+                                            @can('statusUpdateToReceived')
+                                                <option value="Received">Received</option>
+                                            @endcan
+                                        @endcan
                                     </select>
+                                    @cannot('statusUpdateToOrdered')
+                                        <label for="">You dont have permission to Ordered please contact the administrator</label>
+                                    @endcannot
+                                    @cannot('statusUpdateToReceived')
+                                        <label for="">You dont have permission to Received please contact the administrator</label>
+                                    @endcannot
                                 </div>
                             </div>
                         </div>
@@ -330,6 +350,8 @@
                         data: function(data) {
                             data.filter_payment = $("#filter_payment").val();
                             data.filter_status = $("#filter_status").val();
+                            data.filter_vat = $("#filter_vat").val();
+
                         },
                         method: "POST",
                     },
@@ -380,6 +402,24 @@
                             },
                             name: 'status',
                             title: 'Status'
+                        },
+                        {
+                            data: function(value) {
+                                var $class_color = 'btn-success';
+                                if (["VAT EX"].includes(value.vat_type)) {
+                                    $class_color = 'btn-info';
+                                    $name = "VE"
+                                } else if (["VAT INC"].includes(value.vat_type)) {
+                                    $class_color = 'btn-primary';
+                                    $name = "VI"
+                                }
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                    '<a href="#" class="btn ' + $class_color + ' value="'+value.vat_type+'" btn-vat">' +
+                                        $name + '</a>' +
+                                    '</div>'
+                            },
+                            name: 'vat_type',
+                            title: 'Vat'
                         },
                         {
                             data: 'subject',

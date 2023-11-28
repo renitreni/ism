@@ -38,7 +38,7 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             discount_item,
             ((qty * selling_price) + discount_item) as subtotal,
             so.payment_status,
-            so.payment_method')
+            so.payment_method , so.vat_type')
             ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
             ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
             ->whereIn('so.status', ['Sales', 'Project'])
@@ -62,6 +62,7 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             'H' => 12,
             'J' => 15,
             'K' => 15,
+            'L' => 15,
         ];
     }
 
@@ -81,6 +82,7 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             'Sub Total',
             'Payment Status',
             'Form Of Payment',
+            'Vat Type',
         ];
     }
 

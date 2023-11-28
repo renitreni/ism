@@ -167,6 +167,26 @@
                                                 <label class="switch-label">Status Update</label>
                                             </div>
                                         </div>
+                                        <div class="row" v-if="abilities.purchasestatusupdate">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.statusUpdateToShipped">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Status Update to Shipped</label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.statusUpdateToUnshipped">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Status Update to Unshipped</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 {{-- Sales Order --}}
@@ -250,6 +270,26 @@
                                             </div>
                                             <div class="col-md-auto">
                                                 <label class="switch-label">Status Update</label>
+                                            </div>
+                                            <div class="row ml-1" v-if="abilities.salesstatusupdate">
+                                                <div class="col-md-auto">
+                                                    <label class="switch">
+                                                        <input type="checkbox" v-model="abilities.statusUpdateToReceived">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-auto">
+                                                    <label class="switch-label">Status Update to Received</label>
+                                                </div>
+                                                <div class="col-md-auto">
+                                                    <label class="switch">
+                                                        <input type="checkbox" v-model="abilities.statusUpdateToOrdered">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-auto">
+                                                    <label class="switch-label">Status Update to Ordered</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1073,11 +1113,16 @@
                     viewType: 0,
                     role: '{!! $role !!}',
                     abilities: {!! $abilities !!},
+                    statusUpdateToShipped: false,
+                    statusUpdateToUnshipped: false,
+                    statusUpdateToReceived: false,
+                    statusUpdateToOrdered: false,
                 }
             },
             methods: {
                 store() {
                     var $this = this;
+
                     $.ajax({
                         url: '{{ route('role.store') }}',
                         method: 'POST',
@@ -1102,26 +1147,43 @@
                 update() {
                     var $this = this;
                     $.ajax({
-                        url: '{{ route('role.abilities') }}',
-                        method: 'POST',
-                        data: {
-                            role: $this.role,
-                            abilities: $this.abilities
-                        },
-                        success: function(value) {
-                            Swal.fire(
-                                'Good job!',
-                                'Operation is successful.',
-                                'success'
-                            ).then((result) => {
-                                if (result.value) {
-                                    window.location = '{{ route('role') }}'
-                                }
+                    url: '{{ route('role.abilities') }}',
+                    method: 'POST',
+                    data: {
+                    role: $this.role,
+                    abilities: $this.abilities
+                    },
+                    success: function(value) {
+                    Swal.fire(
+                    'Good job!',
+                    'Operation is successful.',
+                    'success'
+                    ).then((result) => {
+                    if (result.value) {
+                    window.location = '{{ route('role') }}'
+                    }
                             })
-                        }
+                    }
                     })
                 },
             },
+            watch: {
+                'abilities.purchasestatusupdate': function(newVal) {
+                    // If purchasestatusupdate is false, reset the other checkboxes to false
+                    if (!newVal) {
+                        this.abilities.statusUpdateToShipped = false;
+                        this.abilities.statusUpdateToUnshipped = false;
+                    }
+                }
+                'abilities.salesstatusupdate': function(newVal) {
+                    // If salesstatusupdate is false, reset the other checkboxes to false
+                    if (!newVal) {
+                        this.abilities.statusUpdateToReceived = false;
+                        this.abilities.statusUpdateToOrdered = false;
+                    }
+                }
+            }, : false,
+                    : false,
             mounted() {
                 var $this = this;
 

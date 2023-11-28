@@ -59,7 +59,7 @@
                                         <option value="Sales">Sales</option>
                                         <option value="Project">Project</option>
                                     </select>
-                                </div>     
+                                </div>
                                 <div class="form-group" style="padding-right: 11px;">
                                     <label class="control-label">Filter Delivery Status</label>
                                     <select class="form-control" name="filter_delivery_status" id="filter_delivery_status">
@@ -67,7 +67,15 @@
                                         <option value="Not Shipped">Not Shipped</option>
                                         <option value="Shipped">Shipped</option>
                                     </select>
-                                </div>                             
+                                </div>
+                                <div class="form-group" style="padding-right: 11px;">
+                                    <label class="control-label">Filter VAT</label>
+                                    <select class="form-control" name="filter_vat" id="filter_vat">
+                                        <option value="" selected>-- Select Options --</option>
+                                        <option value="VAT EX">VE</option>
+                                        <option value="VAT INC">VI</option>
+                                    </select>
+                                </div>
                                 <div class="form-group" style="padding-top:32px;">
                                     <button class="btn btn-info" id="filter_search" > Search </button>
                                 </div>
@@ -75,7 +83,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 mt-3">
-                                <table id="table-sales" class="table table-striped nowrap table-general" style="width:100%">
+                                <table id="table-sales" class="table table-striped nowrap table-general" style="width:100%; text-align:center;">
                                 </table>
                             </div>
                         </div>
@@ -158,11 +166,21 @@
                                     <label>Delivery Status</label>
                                     <select type="text" class="form-control form-control-sm"
                                         v-model="overview.delivery_status">
-                                        <option value="Not Shipped">Not Shipped</option>
                                         @can('salesstatusupdate')
-                                            <option value="Shipped">Shipped</option>
+                                            @can('statusUpdateToUnshipped')
+                                                <option value="Not Shipped">Not Shipped</option>
+                                            @endcan
+                                            @can('statusUpdateToShipped')
+                                                <option value="Shipped">Shipped</option>
+                                            @endcan
                                         @endcan
                                     </select>
+                                        @cannot('statusUpdateToUnshipped')
+                                            <label for="">You dont have permission to Not Shipped please contact the administrator</label>
+                                        @endcannot
+                                        @cannot('statusUpdateToUnshipped')
+                                            <label for="">You dont have permission to Shipped please contact the administrator</label>
+                                        @endcannot
                                 </div>
                             </div>
                         </div>
@@ -397,6 +415,7 @@
                             data.filter_payment = $("#filter_payment").val();
                             data.filter_status = $("#filter_status").val();
                             data.filter_delivery_status = $("#filter_delivery_status").val();
+                            data.filter_vat = $("#filter_vat").val();
                         },
                         method: "POST",
                     },
@@ -469,6 +488,24 @@
                             title: 'Delivery Status'
                         },
                         {
+                            data: function(value) {
+                                var $class_color = 'btn-success';
+                                if (["VAT EX"].includes(value.vat_type)) {
+                                    $class_color = 'btn-info';
+                                    $name = "VE";
+                                } else if (["VAT INC"].includes(value.vat_type)) {
+                                    $class_color = 'btn-primary';
+                                    $name = "VI";
+                                }
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                    '<a href="#" class="btn ' + $class_color + ' value="'+value.vat_type+'" btn-vat">' +
+                                    $name + '</a>' +
+                                    '</div>'
+                            },
+                            name: 'vat_type',
+                            title: 'Vat'
+                        },
+                        {
                             data: 'customer_name',
                             name: 'customers.name',
                             title: 'Customer'
@@ -536,7 +573,7 @@
                 $( document ).on('click', '#filter_search', function() {
                     $this.dt.draw();
                 });
-            }
+                            }
         });
     </script>
 @endsection
