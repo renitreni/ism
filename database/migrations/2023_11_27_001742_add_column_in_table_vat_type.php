@@ -28,6 +28,7 @@ class AddColumnInTableVatType extends Migration
     {
         Schema::table('expenses', function (Blueprint $table) {
             //
+            $table->dropColumn('vat_type');
         });
     }
 }
