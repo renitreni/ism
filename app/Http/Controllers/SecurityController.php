@@ -79,6 +79,10 @@ class SecurityController extends Controller
         "quotecreate",
         "quoteupdate",
         "quotedestroy",
+        "statusUpdateToShipped",
+        "statusUpdateToUnshipped",
+        "statusUpdateToReceived",
+        "statusUpdateToOrdered",
     ];
 
     public function roles()

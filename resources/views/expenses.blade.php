@@ -110,7 +110,25 @@
                         {data: 'description', title: 'Description'},
                         {data: 'person_assigned', title: 'Person Assigned'},
                         {data: 'total_amount', title: 'Total Amount'},
-                        {data: 'expense_date', title: 'expenses'},
+                        {
+                            data: function(value) {
+                                var $class_color = 'btn-success';
+                                if (["VAT EX"].includes(value.vat_type)) {
+                                    $class_color = 'btn-info';
+                                    $name = "VE";
+                                } else if (["VAT INC"].includes(value.vat_type)) {
+                                    $class_color = 'btn-primary';
+                                    $name = "VI";
+                                }
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                    '<a href="#" class="btn ' + $class_color + ' value="'+value.vat_type+'" btn-vat">' +
+                                    $name + '</a>' +
+                                    '</div>'
+                            },
+                            name: 'vat_type',
+                            title: 'Vat'
+                        },
+                        {data: 'expense_date', title: 'Expenses'},
                         {data: 'si_no', title: 'SI Number'},
                         {data: 'dr_no', title: 'DR Number'},
                         {data: 'remarks', title: 'Remarks'},

@@ -70,6 +70,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/sales/deliver/{id}', 'SalesOrderController@deliver')->name('sales.deliver');
     Route::get('/sales/preview/{id}', 'SalesOrderController@previewSO')->name('sales.preview');
     Route::post('/sales/shipped/list', 'SalesOrderController@getListShipped')->name('sales.shipped.list');
+    Route::get('/sales/shipped/get_permission', 'SalesOrderController@get_permission')->name('sales.get_permission_roles');
     Route::post('/sales/payment/update', 'SalesOrderController@updatePaymentStatus')->name('sales.payment.update')->middleware('can:salespaymentupdate');
     Route::post('/sales/vat/update', 'SalesOrderController@updateVatStatus')->name('sales.vat.update')->middleware('can:salesvatupdate');
     Route::post('/sales/delivery/update', 'SalesOrderController@updateDeliveryStatus')->name('sales.delivery.update')->middleware('can:salesdeliveryupdate');
@@ -174,7 +175,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/audit', 'AuditLogController@index')->name('audit')->middleware('can:auditlogs');
     Route::post('/audit/table', 'AuditLogController@table')->name('audit.table');
     Route::post('/audit/delete', 'AuditLogController@delete')->name('audit.delete');
-    
+
     Route::get('/override', 'OverrideController@index')->name('override')->middleware('can:override');
     Route::post('/override/restore/point', 'OverrideController@backupSQL')->name('restore.point');
     Route::post('/override/restore/sql', 'OverrideController@restoreSQL')->name('restore.sql');

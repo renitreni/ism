@@ -11,6 +11,9 @@ use App\ProductDetail;
 use App\SalesOrder;
 use App\Summary;
 use App\Supply;
+use App\Abilities;
+use App\Permission;
+use App\Assigned_Role;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use Carbon\Carbon;
@@ -26,13 +29,14 @@ class SalesOrderController extends Controller
 
     public function index()
     {
+
         return view('sales');
     }
 
     public function table(Request $request)
-    {   
+    {
         Supply::recalibrate();
-        $vendors = SalesOrder::query()
+                $vendors = SalesOrder::query()
             ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
             shipped_date,summaries.grand_total')
             ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
@@ -49,8 +53,11 @@ class SalesOrderController extends Controller
             if ($request->filled('filter_delivery_status')) {
                 $vendors->where('sales_orders.delivery_status', $request->input('filter_delivery_status'));
             }
+            if ($request->filled('filter_vat')) {
+                $vendors->where('sales_orders.vat_type', $request->input('filter_vat'));
+            }
 
-        return DataTables::of($vendors)->setTransformer(function ($data) {
+        return DataTables::of($vendors)->setTransformer(function ($data)  {
             $data                   = $data->toArray();
             $data['created_at']     = Carbon::parse($data['created_at'])->format('F j, Y');
             $data['shipped_date_display'] = $data['shipped_date'] ? Carbon::parse($data['shipped_date'])->format('F j, Y') : 'No Date';
@@ -152,7 +159,7 @@ class SalesOrderController extends Controller
         $data['summary']['sales_order_id'] = $id;
         DB::table('summaries')->insert($data['summary']);
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -176,7 +183,7 @@ class SalesOrderController extends Controller
         unset($data['overview']['unit']);
         unset($data['overview']['customer_name']);
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -244,7 +251,7 @@ class SalesOrderController extends Controller
             }
         }
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -257,7 +264,7 @@ class SalesOrderController extends Controller
                 'method' => "DELETED"
             ]);
         }
-        
+
         ProductDetail::query()->where('sales_order_id', $request->id)->delete();
         DB::table('sales_orders')->where('id', $request->id)->delete();
         DB::table('summaries')->where('sales_order_id', $request->id)->delete();
@@ -269,9 +276,9 @@ class SalesOrderController extends Controller
     {
         $data = $request->input();
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
-    
+
         if($name != 'Super Admin') {
             \App\AuditLog::record([
                 'name' => $name,
@@ -302,9 +309,9 @@ class SalesOrderController extends Controller
     {
         $data = $request->input();
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
-    
+
         if($name != 'Super Admin') {
             \App\AuditLog::record([
                 'name' => $name,
@@ -331,10 +338,10 @@ class SalesOrderController extends Controller
         $salesOrder = DB::table('sales_orders')->where('id', $data['id'])->get()[0];
 
         if ($salesOrder->status != $data['status']) {
-    
-         // Record Action in Audit Log 
+
+         // Record Action in Audit Log
          $name = auth()->user()->name;
-    
+
          if($name != 'Super Admin') {
              \App\AuditLog::record([
                  'name' => $name,

@@ -39,6 +39,7 @@ class ExpensesTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, Wi
                 'si_no',
                 'dr_no',
                 'remarks',
+                'vat_type',
             ]);
     }
 
@@ -50,13 +51,14 @@ class ExpensesTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, Wi
             'B' => 40,
             'C' => 20,
             'D' => 20,
+            'E' => 15,
         ];
     }
 
     public function headings()
     : array
     {
-        return ['EXP #', 'Cost Center', 'Description', 'Person Assigned', 'Total Amount', 'Expense Date', 'SI No', 'DR No', 'Remarks'];
+        return ['EXP #', 'Cost Center', 'Description', 'Person Assigned', 'Total Amount', 'Expense Date', 'SI No', 'DR No', 'Remarks', 'Vat Type'];
     }
 
     public function styles(Worksheet $sheet)

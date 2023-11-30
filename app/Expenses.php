@@ -17,6 +17,7 @@ class Expenses extends Model
         'dr_no',
         'remarks',
         'created_by',
+        'vat_type',
     ];
 
     public function newExpenseNo()

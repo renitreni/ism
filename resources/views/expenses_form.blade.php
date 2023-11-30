@@ -47,7 +47,17 @@
                                 <label>Description</label>
                                 <input class="form-control" name="description" v-model='overview.description'/>
                             </div>
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-3 mb-2">
+                                <div class="form-group">
+                                    <label>VAT Type</label>
+                                    <select type="text" class="form-control form-control-sm" v-model="overview.vat_type">
+                                        <option value="">-- Select Options --</option>
+                                        <option value="VAT EX">VAT EX</option>
+                                        <option value="VAT INC">VAT INC</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
                                 <label>Remarks</label>
                                 <input class="form-control" name="remarks" v-model='overview.remarks'/>
                             </div>
@@ -86,6 +96,7 @@
                             si_no: "",
                             dr_no: "",
                             remarks: "",
+                            vat_type: "",
                             created_by: {{ auth()->id() }}
                         }
                     @endisset
@@ -121,6 +132,7 @@
                 },
                 save() {
                     var $this = this;
+
                     $.ajax({
                         url: '{{ route('expenses.store') }}',
                         method: 'POST',
