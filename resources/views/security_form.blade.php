@@ -1113,10 +1113,6 @@
                     viewType: 0,
                     role: '{!! $role !!}',
                     abilities: {!! $abilities !!},
-                    statusUpdateToShipped: false,
-                    statusUpdateToUnshipped: false,
-                    statusUpdateToReceived: false,
-                    statusUpdateToOrdered: false,
                 }
             },
             methods: {
@@ -1167,23 +1163,7 @@
                     })
                 },
             },
-            watch: {
-                'abilities.purchasestatusupdate': function(newVal) {
-                    // If purchasestatusupdate is false, reset the other checkboxes to false
-                    if (!newVal) {
-                        this.abilities.statusUpdateToShipped = false;
-                        this.abilities.statusUpdateToUnshipped = false;
-                    }
-                }
-                'abilities.salesstatusupdate': function(newVal) {
-                    // If salesstatusupdate is false, reset the other checkboxes to false
-                    if (!newVal) {
-                        this.abilities.statusUpdateToReceived = false;
-                        this.abilities.statusUpdateToOrdered = false;
-                    }
-                }
-            }, : false,
-                    : false,
+
             mounted() {
                 var $this = this;
 
