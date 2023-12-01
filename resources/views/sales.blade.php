@@ -178,7 +178,7 @@
                                         @cannot('statusUpdateToUnshipped')
                                             <label for="">You dont have permission to Not Shipped please contact the administrator</label>
                                         @endcannot
-                                        @cannot('statusUpdateToUnshipped')
+                                        @cannot('statusUpdateToShipped')
                                             <label for="">You dont have permission to Shipped please contact the administrator</label>
                                         @endcannot
                                 </div>
@@ -209,8 +209,8 @@
                                     <label class="control-label">Pick a type</label>
                                     <select class="form-control" v-model="overview.vat_type">
                                         <option value="">-- Select Options --</option>
-                                        <option value="VAT EX">VAT EX</option>
-                                        <option value="VAT INC">VAT INC</option>
+                                        <option value="VAT EX">VE</option>
+                                        <option value="VAT INC">VI</option>
                                     </select>
                                 </div>
                             </div>
@@ -498,13 +498,14 @@
                                     $name = "VI";
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
-                                    '<a href="#" class="btn ' + $class_color + ' value="'+value.vat_type+'" btn-vat">' +
+                                    '<a href="#" value="'+value.vat_type+'" class="btn ' + $class_color + ' btn-vat">' +
                                     $name + '</a>' +
                                     '</div>'
                             },
                             name: 'vat_type',
                             title: 'Vat'
                         },
+
                         {
                             data: 'customer_name',
                             name: 'customers.name',
