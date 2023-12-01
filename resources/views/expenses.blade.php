@@ -113,6 +113,7 @@
                         {
                             data: function(value) {
                                 var $class_color = 'btn-success';
+                                var $name = '';
                                 if (["VAT EX"].includes(value.vat_type)) {
                                     $class_color = 'btn-info';
                                     $name = "VE";
