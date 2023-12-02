@@ -271,26 +271,6 @@
                                             <div class="col-md-auto">
                                                 <label class="switch-label">Status Update</label>
                                             </div>
-                                            <div class="row ml-0" v-if="abilities.salesstatusupdate">
-                                                <div class="col-md-6 col-lg-3">
-                                                    <label class="switch">
-                                                        <input type="checkbox" v-model="abilities.statusUpdateToReceived">
-                                                        <span class="slider"></span>
-                                                    </label>
-                                                </div>
-                                                <div class="col-md-6 col-lg-9">
-                                                    <label class="switch-label ml-md-3">Shipped</label>
-                                                </div>
-                                                <div class="col-md-6 col-lg-3">
-                                                    <label class="switch">
-                                                        <input type="checkbox" v-model="abilities.statusUpdateToUnshipped">
-                                                        <span class="slider"></span>
-                                                    </label>
-                                                </div>
-                                                <div class="col-md-6 col-lg-9">
-                                                    <label class="switch-label ml-md-3">Unshipped</label>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
@@ -330,6 +310,26 @@
                                             </div>
                                             <div class="col-md-auto">
                                                 <label class="switch-label">Status Delivery</label>
+                                            </div>
+                                            <div class="row ml-0" v-if="abilities.salesdeliveryupdate">
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label class="switch">
+                                                        <input type="checkbox" v-model="abilities.statusUpdateToReceived">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-9">
+                                                    <label class="switch-label ml-md-3">Shipped</label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label class="switch">
+                                                        <input type="checkbox" v-model="abilities.statusUpdateToUnshipped">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-9">
+                                                    <label class="switch-label ml-md-3">Unshipped</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
