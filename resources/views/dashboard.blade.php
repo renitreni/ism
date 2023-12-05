@@ -17,16 +17,16 @@
         <div class="row">
             <!-- Total Expenses -->
             <livewire:component.total-expenses-component />
-
+            <div></div>
             <!-- Total Po -->
             <livewire:component.total-p-o-component />
-
+            <div></div>
             <!-- Total So -->
             <livewire:component.total-s-o-component />
-
+            <div></div>
             <!-- Total Project -->
             <livewire:component.total-project-component />
-            
+
             <!-- Total Assets -->
             <div class="col-6 col-md-4 mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
