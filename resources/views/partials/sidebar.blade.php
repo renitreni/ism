@@ -1,11 +1,13 @@
 <ul class="navbar-nav bg-gradient-warning sidebar sidebar-dark accordion" id="accordionSidebar">
-
+    @php
+        $logoData = \App\PrintSetting::find(1); // Adjust the query as needed
+    @endphp
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home') }}">
         <div class="sidebar-brand-icon">
             <div class="row">
                 <div class="col-md-12">
-                    <img src="{{ asset('app/public/logo/logo.jpg') }}" style="max-width: 95%;" height="100">
+                    <img src="{{ asset(''.$logoData['system_logo_path'] . $logoData['system_logo']) }}" style="max-width: 95%;" height="100">
                 </div>
             </div>
         </div>
@@ -24,20 +26,53 @@
     <!-- Nav Item - Pages Collapse Menu -->
     @if(env('SECTION_INVENTORY') == 'show')
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('purchase') }}">
-                <i class="fas fa-fw fa-cash-register"></i>
-                <span>Purchase Order</span></a>
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne">
+                <i class="fas fa-fw fa-dolly-flatbed"></i>
+                <span>P.O</span>
+            </a>
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+                <ul style="padding:0; list-style:none">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('purchase') }}">
+                            <i class="fas fa-fw fa-cash-register"></i>
+                            <span>Purchase Order</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('purchase_stockin') }}">
+                            <i class="fas fa-fw fa-cash-register"></i>
+                            <span>Stock In</span></a>
+                    </li>
+                </ul>
+            </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('quote') }}">
-                <i class="fas fa-fw fa-certificate"></i>
-                <span>Quotes</span></a>
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-dolly-flatbed"></i>
+                <span>Sales</span>
+            </a>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+                <ul style="padding:0; list-style:none">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('quote') }}">
+                            <i class="fas fa-fw fa-certificate"></i>
+                            <span>Quotes</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('sales') }}">
+                            <i class="fas fa-fw fa-money-check-alt"></i>
+                            <span>Sales Order</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('sales.stockout') }}">
+                            <i class="fas fa-fw fa-cash-register"></i>
+                            <span>Stock Out</span></a>
+                    </li>
+                </ul>
+            </div>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('sales') }}">
-                <i class="fas fa-fw fa-money-check-alt"></i>
-                <span>Sales Order</span></a>
-        </li>
+
         <li class="nav-item">
             <a class="nav-link" href="{{ route('expenses') }}">
                 <i class="fas fa-fw fa-money-bill"></i>
@@ -128,6 +163,10 @@
                     <a class="collapse-item" href="{{ route('preference') }}">
                         <i class="fas fa-fw fa-stream"></i>
                         <span>Preferences</span>
+                    </a>
+                    <a class="collapse-item" href="{{ route('print.setting') }}">
+                        <i class="fas fa-fw fa-stream"></i>
+                        <span>Print Setting</span>
                     </a>
                     <a class="collapse-item" href="{{ route('override') }}">
                         <i class="fas fa-exclamation-triangle"></i>

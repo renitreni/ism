@@ -42,11 +42,13 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/home/expenses', 'DashboardController@expensesPrintable')->name('home.expenses.printable');
 
     Route::get('/purchase', 'PurchaseInfoController@index')->name('purchase')->middleware('can:purchaseorder');
+    Route::get('/purchase_stockin', 'PurchaseInfoController@purchase_stockin')->name('purchase_stockin')->middleware('can:purchaseorder');
     Route::get('/purchase/create', 'PurchaseInfoController@create')->name('purchase.create')->middleware('can:purchaseordercreate');
     Route::get('/purchase/view/{id}', 'PurchaseInfoController@show')->name('purchase.view')->middleware('can:purchaseorderretrieve');
     Route::get('/purchase/detail/{id}', 'PurchaseInfoController@show')->name('purchase.detail')->middleware('can:purchaseorderupdate');
     Route::post('/purchase/destroy', 'PurchaseInfoController@destroy')->name('purchase.destroy')->middleware('can:purchaseorderdestroy');
     Route::post('/purchase/table', 'PurchaseInfoController@table')->name('purchase.table');
+    Route::post('/purchase/table/stockin', 'PurchaseInfoController@table_stock_in')->name('purchase.table.stockIn');
     Route::post('/purchase/update', 'PurchaseInfoController@update')->name('purchase.update');
     Route::post('/purchase/store', 'PurchaseInfoController@store')->name('purchase.store');
     Route::post('/purchase/status/update', 'PurchaseInfoController@updateStatus')->name('purchase.status.update')->middleware('can:purchasestatusupdate');
@@ -57,11 +59,13 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/purchase/report/all', 'PurchaseInfoController@downloadPurchaseReportAll')->name('purchase.report.all');
 
     Route::get('/sales', 'SalesOrderController@index')->name('sales')->middleware('can:salesorder');
+    Route::get('/sales/stock_out', 'SalesOrderController@stock_out')->name('sales.stockout')->middleware('can:salesorder');
     Route::get('/sales/create', 'SalesOrderController@create')->name('sales.create')->middleware('can:salesordercreate');
     Route::get('/sales/view/{id}', 'SalesOrderController@show')->name('sales.view')->middleware('can:salesorderretrieve');
     Route::get('/sales/detail/{id}', 'SalesOrderController@show')->name('sales.detail')->middleware('can:salesorderupdate');
     Route::post('/sales/destroy', 'SalesOrderController@destroy')->name('sales.destroy')->middleware('can:salesorderdestroy');
     Route::post('/sales/table', 'SalesOrderController@table')->name('sales.table');
+    Route::post('/sales/table/stockout', 'SalesOrderController@table_stockout')->name('stock_out.table');
     Route::post('/sales/update', 'SalesOrderController@update')->name('sales.update');
     Route::post('/sales/store', 'SalesOrderController@store')->name('sales.store');
     Route::post('/sales/status/update', 'SalesOrderController@updateStatus')->name('sales.status.update')->middleware('can:salesstatusupdate');
@@ -155,6 +159,10 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
 
     Route::get('/preference', 'PreferenceController@index')->name('preference')->middleware('can:preference');
     Route::post('/preference/update', 'PreferenceController@update')->name('preference.update');
+
+    Route::get('/print_setting', 'PrintSettingController@index')->name('print.setting')->middleware('can:preference');
+    Route::post('/print_setting/update', 'PrintSettingController@update')->name('print_setting.update');
+
 
     Route::get('/return', 'ProductReturnController@index')->name('return')->middleware('can:productreturn');
     Route::post('/return/table', 'ProductReturnController@table')->name('return.table');

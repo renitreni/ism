@@ -198,10 +198,10 @@
                                                     <input type="number" class="form-control form-control-sm"
                                                         style="width: 100px;" v-model="product.selling_price">
                                                 </td>
-                                                <td v-if="product.product_name">
+                                                {{-- <td v-if="product.product_name">
                                                     <input type="text" class="form-control form-control-sm"
                                                         style="width: 100px;" v-model="product.discount_item">
-                                                </td>
+                                                </td> --}}
                                                 <td v-if="product.product_name">
                                                     <input type="text" class="form-control form-control-sm"
                                                         style="width: 100px;" v-model="product.notes">
@@ -222,7 +222,43 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="offset-md-9 col-md-4">
+                            <div class="col-md-4">
+                                <div class="form-group row">
+                                    <div class="col-md-auto">
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="displayDiscount">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <label class="switch-label">Discount</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-auto">
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="displayVat">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <label class="switch-label">Vat</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-auto">
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="displayShipping">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <label class="switch-label">Shipping</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
                                 <div class="form-group row">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Sub Total</label>
                                     <div class="col-md-4">
@@ -230,32 +266,32 @@
                                             v-model="summary.sub_total">
                                     </div>
                                 </div>
-                                {{--                                <div class="form-group row"> --}}
-                                {{--                                    <label class="col-form-label col-md-4 col-form-label-sm">Discount</label> --}}
-                                {{--                                    <div class="col-md-4"> --}}
-                                {{--                                        <input type="number" class="form-control form-control-sm" --}}
-                                {{--                                               v-model="summary.discount"> --}}
-                                {{--                                    </div> --}}
-                                {{--                                </div> --}}
-                                <div class="form-group row" v-show="overview.vat_type == 'VAT INC'">
+                                <div class="form-group row"  v-show="displayDiscount">
+                                 <label class="col-form-label col-md-4 col-form-label-sm">Discount</label>
+                                    <div class="col-md-4">
+                                        <input type="number" class="form-control form-control-sm"
+                                                v-model="summary.discount">
+                                    </div>
+                                </div>
+                                <div class="form-group row" v-show="displayVat">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax %</label>
                                     <div class="input-group col-md-4">
-                                        <input type="number" class="form-control form-control-sm"
+                                        <input type="number"class="form-control form-control-sm"
                                             v-model="summary.sales_tax">
                                         <div class="input-group-append">
-                                            <span class="input-group-text" id="basic-addon2"><i
+                                            <span class="input-group-text"  id="basic-addon2"><i
                                                     class="fa fa-percentage"></i></span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group row" v-show="overview.vat_type == 'VAT INC'">
+                                {{-- <div class="form-group row" v-show="displayVat">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax</label>
                                     <div class="col-md-4">
                                         <input type="text" class="form-control-plaintext form-control-sm"
                                             v-bind:value="summary.sales_actual">
                                     </div>
-                                </div>
-                                <div class="form-group row">
+                                </div> --}}
+                                <div class="form-group row"  v-show="displayShipping">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Shipping</label>
                                     <div class="col-md-4">
                                         <input type="number" class="form-control form-control-sm"
@@ -286,7 +322,7 @@
                                 <button class="btn btn-info" v-if="viewType == 1" @click="store">Save New</button>
                                 <button class="btn btn-primary" v-if="viewType == 0" @click="update">Update Now</button>
                                 <a href="{{ route('sales.print', isset($sales_order->id) ? $sales_order->id : '') }}"
-                                    class="btn btn-primary" v-if="viewType == 2">Sales Order</a>
+                                    class="btn btn-primary" v-if="viewType == 2">Warranty Slip</a>
                                 <a href="{{ route('sales.quote', isset($sales_order->id) ? $sales_order->id : '') }}"
                                     class="btn btn-info" v-if="viewType == 2">Quote</a>
                                 <a href="{{ route('sales.deliver', isset($sales_order->id) ? $sales_order->id : '') }}"
@@ -369,10 +405,13 @@
             el: '#app',
             data() {
                 return {
+                    displayDiscount: false,
+                    displayShipping: false,
+                    displayVat: false,
                     loading: false,
                     viewType: 0,
                     columns: [
-                        'Product', 'Stock', 'Qty', 'Unit Cost', 'Discount', 'Serial No.', 'Total Cost', 'Action'
+                        'Product', 'Stock', 'Qty', 'Unit Cost', 'Serial No.', 'Total Cost', 'Action'
                     ],
                     sub_total: 0,
                     overview: {!! $sales_order !!},
@@ -387,6 +426,7 @@
                     deep: true,
                     handler(products) {
                         console.log(products);
+
                         var $this = this;
                         var hold = 0;
                         $.each(products, function(x, product) {
@@ -400,10 +440,27 @@
                         this.grandTotal()
                     }
                 },
+                displayDiscount(newValue) {
+                    if (!newValue) {
+                        this.summary.discount = 0;
+                    }
+                },
+
+                displayShipping(newValue) {
+                    if (!newValue) {
+                        this.summary.shipping = 0;
+                    }
+                },
+                displayVat(newValue) {
+                    if (!newValue) {
+                        this.summary.sales_tax = 0;
+                    }
+                },
                 'summary.discount': function(value) {
                     this.grandTotal()
                 },
                 'summary.sales_tax': function(value) {
+
                     this.grandTotal()
                 },
                 'summary.shipping': function(value) {
@@ -411,6 +468,7 @@
                 },
             },
             methods: {
+
                 grandTotal() {
 
                     var $this = this;
@@ -437,6 +495,7 @@
                         return false;
                     }
                     $this.loading = true;
+
                     $.ajax({
                         url: '{{ route('sales.store') }}',
                         method: 'POST',
@@ -561,6 +620,17 @@
             mounted() {
                 var $this = this;
 
+                if(this.summary.discount != 0){
+                    this.displayDiscount = true;
+                }
+
+                if(this.summary.shipping != 0){
+                    this.displayShipping = true;
+                }
+
+                if(this.summary.sales_tax != 0){
+                    this.displayVat = true;
+                }
                 //$this.grandTotal();
                 $('.select2-category').select2({
                     width: '100%',

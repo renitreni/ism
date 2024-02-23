@@ -29,17 +29,18 @@
                 <!-- Approach -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Sales Overview</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Stock In Overview</h6>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12">
-                                <a href="{{ route('sales.create') }}" class="btn btn-sm btn-success"><i
-                                        class="fa fa-plus"></i> New Sales Order</a>
+                                <a href="{{ route('purchase.create') }}" class="btn btn-sm btn-success"><i
+                                        class="fa fa-plus"></i> New Purchase Order</a>
                                 <a href="#!" class="btn btn-sm btn-info" data-toggle="modal"
-                                    data-target="#salesReportMdl">
-                                    <i class="fas fa-download"></i> Sales Report</a>
+                                    data-target="#purchaseReportMdl">
+                                    <i class="fas fa-download"></i> Purchase Report</a>
                             </div>
+
                         </div>
                         <div class="row text-center">
                             <div class="col-md-12 mt-3 d-flex justify-content-center">
@@ -50,24 +51,14 @@
                                         <option value="PAID">PAID</option>
                                         <option value="UNPAID">UNPAID</option>
                                         <option value="PAID WITH BALANCE">PAID WITH BALANCE</option>
-                                        <option value="STOCK OUT">STOCK OUT</option>
-
                                     </select>
                                 </div>
                                 <div class="form-group" style="padding-right: 11px;">
                                     <label class="control-label">Filter status</label>
                                     <select class="form-control" name="filter_status" id="filter_status">
                                         <option value="" selected>-- Select Options --</option>
-                                        <option value="Sales">Sales</option>
-                                        <option value="Project">Project</option>
-                                    </select>
-                                </div>
-                                <div class="form-group" style="padding-right: 11px;">
-                                    <label class="control-label">Filter Delivery Status</label>
-                                    <select class="form-control" name="filter_delivery_status" id="filter_delivery_status">
-                                        <option value="" selected>-- Select Options --</option>
-                                        <option value="Not Shipped">Not Shipped</option>
-                                        <option value="Shipped">Shipped</option>
+                                        <option value="Ordered">Ordered</option>
+                                        <option value="Received">Received</option>
                                     </select>
                                 </div>
                                 <div class="form-group" style="padding-right: 11px;">
@@ -85,8 +76,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 mt-3">
-                                <table id="table-sales" class="table table-striped nowrap table-general" style="width:100%; text-align:center;">
-                                </table>
+                                <table id="table-inquiry" class="table table-striped nowrap table-general"
+                                    style="width:100%;text-align: center;"></table>
                             </div>
                         </div>
                     </div>
@@ -94,11 +85,41 @@
             </div>
         </div>
 
-        <div id="shippedDateModal" class="modal fade" tabindex="-1" role="dialog">
+        <!-- Modal -->
+        <div class="modal fade" id="purchaseReportMdl" tabindex="-1" role="dialog" aria-labelledby="purchaseReportMdl"
+            aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Status</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Download Purchase Report </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Set Date Range</label>
+                                <input type="text" id="purchase_report" class="form-control" name="daterange" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <a v-bind:href="'/purchase/report/'+ purchase_report.start_date +'/'+ purchase_report.end_date"
+                            type="button" class="btn btn-primary">DOWNLOAD</a>
+                        <a v-bind:href="'/purchase/report/all'"
+                            type="button" class="btn btn-primary">DOWNLOAD ALL</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="receivedDateModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Received Date</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -107,8 +128,9 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label class="control-label">Pick a status</label>
-                                    <input type="date" class="form-control" v-model="overview.shipped_date">
+                                    <label class="control-label">Received Date</label>
+                                    <input type="date" class="form-control form-control-sm"
+                                        v-model="overview.received_date">
                                 </div>
                             </div>
                         </div>
@@ -136,11 +158,21 @@
                                 <div class="form-group">
                                     <label class="control-label">Pick a status</label>
                                     <select class="form-control" v-model="overview.status">
-                                        <option value="Quote">Quote</option>
-                                        <option value="Sales">Sales</option>
-                                        <option value="Project">Project</option>
-                                        <option value="Stock Out">Stock Out</option>
+                                        @can('purchasestatusupdate')
+                                            @can('statusUpdateToOrdered')
+                                                <option value="Ordered">Ordered</option>
+                                            @endcan
+                                            @can('statusUpdateToReceived')
+                                                <option value="Received">Received</option>
+                                            @endcan
+                                        @endcan
                                     </select>
+                                    @cannot('statusUpdateToOrdered')
+                                        <label for="">You dont have permission to Ordered please contact the administrator</label>
+                                    @endcannot
+                                    @cannot('statusUpdateToReceived')
+                                        <label for="">You dont have permission to Received please contact the administrator</label>
+                                    @endcannot
                                 </div>
                             </div>
                         </div>
@@ -148,49 +180,6 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" @click="update">Save changes</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="deliveryStatusModal" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Delivery Status</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Delivery Status</label>
-                                    <select type="text" class="form-control form-control-sm"
-                                        v-model="overview.delivery_status">
-                                        @can('salesstatusupdate')
-                                            @can('statusUpdateToUnshipped')
-                                                <option value="Not Shipped">Not Shipped</option>
-                                            @endcan
-                                            @can('statusUpdateToShipped')
-                                                <option value="Shipped">Shipped</option>
-                                            @endcan
-                                        @endcan
-                                    </select>
-                                        @cannot('statusUpdateToUnshipped')
-                                            <label for="">You dont have permission to Not Shipped please contact the administrator</label>
-                                        @endcannot
-                                        @cannot('statusUpdateToShipped')
-                                            <label for="">You dont have permission to Shipped please contact the administrator</label>
-                                        @endcannot
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="updateDelivery">Save changes</button>
                     </div>
                 </div>
             </div>
@@ -209,13 +198,12 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label class="control-label">Pick a Status</label>
+                                    <label class="control-label">Pick a status</label>
                                     <select class="form-control" v-model="overview.payment_status">
                                         <option value="">-- Select Options --</option>
                                         <option value="PAID">PAID</option>
                                         <option value="UNPAID">UNPAID</option>
                                         <option value="PAID WITH BALANCE">PAID WITH BALANCE</option>
-                                        <option value="STOCK OUT">STOCK OUT</option>
                                     </select>
                                 </div>
                             </div>
@@ -229,11 +217,11 @@
             </div>
         </div>
 
-        <div id="printModal" class="modal fade" tabindex="-1" role="dialog">
+        <div id="vatTypeModal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Sales Print</h5>
+                        <h5 class="modal-title">Edit Vat Type</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -241,64 +229,56 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="row" style="text-align: center">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Warranty Slip</label>
-                                            <a href="/sales/print/" id="print_warranty" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> WS</a>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Quote</label>
-                                            <a href="/sales/quote/" id="print_quote" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> QN</a>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Delivery Receipt</label>
-                                            <a href="/sales/deliver/" id="print_delivery" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> DR</a>
-                                        </div>
-                                    </div>
+                                <div class="form-group">
+                                    <label class="control-label">Pick a type</label>
+                                    <select class="form-control" v-model="overview.vat_type">
+                                        <option value="">-- Select Options --</option>
+                                        <option value="VAT EX">VE</option>
+                                        <option value="VAT INC">VI</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="update">Save changes</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="salesReportMdl" tabindex="-1" role="dialog" aria-labelledby="salesReportMdl"
-            aria-hidden="true">
+        <div id="poTypeModal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Download Sales Report </h5>
+                        <h5 class="modal-title">Edit PO Status</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-6">
-                                <label>Set Date Range</label>
-                                <input type="text" id="sales_report" class="form-control" name="daterange" />
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">Pick a type</label>
+                                    <select class="form-control" v-model="overview.po_status">
+                                        <option value="">-- Select Options --</option>
+                                        <option value="PO">Purchase Order</option>
+                                        <option value="SI">Stock In</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <a v-bind:href="'/sales/report/'+ sales_report.start_date +'/'+ sales_report.end_date"
-                            type="button" class="btn btn-primary">DOWNLOAD</a>
-                        <a v-bind:href="'/sales/report/all'" type="button" class="btn btn-primary">DOWNLOAD ALL</a>
+                        <button type="button" class="btn btn-primary" @click="update">Save changes</button>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 @endsection
 
@@ -309,71 +289,44 @@
             data() {
                 return {
                     dt: null,
-                    overview: {
-                        id: "",
-                        status: ""
-                    },
-                    sales_report: {
+                    purchase_report: {
                         start_date: '0',
                         end_date: '0'
+                    },
+                    overview: {
+                        id: "",
+                        status: "",
                     }
-
                 }
             },
             methods: {
-                update() {
-                    var $this = this;
-                    $.ajax({
-                        url: '{{ route('sales.status.update') }}',
-                        method: 'POST',
-                        data: $this.overview,
-                        success: function(value) {
-                            Swal.fire('Updated!', 'Status has been updated.', 'success');
-                            $this.dt.draw();
-                            $('#deliveryStatusModal').modal('hide');
-                            $('#statusModal').modal('hide');
-                            $('#vatTypeModal').modal('hide');
-                            $('#paymentModal').modal('hide');
-                            $('#shippedDateModal').modal('hide');
-                        }
-                    });
-                },
                 updatePayment() {
                     var $this = this;
                     $.ajax({
-                        url: '{{ route('sales.payment.update') }}',
+                        url: '{{ route('purchase.payment.status.update') }}',
                         method: 'POST',
                         data: $this.overview,
                         success: function(value) {
-                            Swal.fire('Updated!', 'Status has been updated.', 'success');
+                            Swal.fire('Updated!', 'Payment Status has been updated.', 'success');
                             $this.dt.draw();
                             $('#paymentModal').modal('hide');
                         }
-                    });
+                    })
                 },
-                updateVat() {
+                update() {
                     var $this = this;
                     $.ajax({
-                        url: '{{ route('sales.vat.update') }}',
+                        url: '{{ route('purchase.status.update') }}',
                         method: 'POST',
                         data: $this.overview,
                         success: function(value) {
                             Swal.fire('Updated!', 'Status has been updated.', 'success');
                             $this.dt.draw();
+                            $('#statusModal').modal('hide');
                             $('#vatTypeModal').modal('hide');
-                        }
-                    });
-                },
-                updateDelivery() {
-                    var $this = this;
-                    $.ajax({
-                        url: '{{ route('sales.delivery.update') }}',
-                        method: 'POST',
-                        data: $this.overview,
-                        success: function(value) {
-                            Swal.fire('Updated!', 'Status has been updated.', 'success');
-                            $this.dt.draw();
-                            $('#deliveryStatusModal').modal('hide');
+                            $('#poTypeModal').modal('hide');
+                            $('#paymentModal').modal('hide');
+                            $('#receivedDateModal').modal('hide');
                         }
                     });
                 },
@@ -390,7 +343,7 @@
                     }).then((result) => {
                         if (result.value) {
                             $.ajax({
-                                url: "{{ route('sales.destroy') }}",
+                                url: "{{ route('purchase.destroy') }}",
                                 method: 'POST',
                                 data: $this.overview,
                                 success(value) {
@@ -405,17 +358,18 @@
             mounted() {
                 var $this = this;
 
-                $('#sales_report').daterangepicker({
+                $('#purchase_report').daterangepicker({
                     opens: 'left',
                 }, function(start, end, label) {
-                    $this.sales_report.start_date = start.format('YYYY-MM-DD');
-                    $this.sales_report.end_date = end.format('YYYY-MM-DD');
-                    $('#sales_report').val(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+                    $this.purchase_report.start_date = start.format('YYYY-MM-DD');
+                    $this.purchase_report.end_date = end.format('YYYY-MM-DD');
+                    $('#purchase_report').val(start.format('YYYY-MM-DD') + ' - ' + end.format(
+                        'YYYY-MM-DD'));
+                    console.log(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'))
                 });
 
-                $('#sales_report').val('');
 
-                $this.dt = $('#table-sales').DataTable({
+                $this.dt = $('#table-inquiry').DataTable({
                     processing: true,
                     serverSide: true,
                     scrollX: true,
@@ -425,28 +379,26 @@
                         [1, 'desc']
                     ],
                     ajax: {
-                        url: "{{ route('sales.table') }}",
+                        url: "{{ route('purchase.table.stockIn') }}",
                         data: function(data) {
                             data.filter_payment = $("#filter_payment").val();
                             data.filter_status = $("#filter_status").val();
-                            data.filter_delivery_status = $("#filter_delivery_status").val();
                             data.filter_vat = $("#filter_vat").val();
+
                         },
                         method: "POST",
                     },
                     columns: [{
                             data: function(value) {
-                                if (value.delivery_status !== 'Shipped') {
-                                    edit = '<a href="/sales/detail/' + value.id +
+                                if (value.status == 'Ordered') {
+                                    edit = '<a href="/purchase/detail/' + value.id +
                                         '" class="btn btn-info btn-view"><i class="fa fa-pen"></i></a>';
                                 } else {
                                     edit = '';
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
-                                    '<a href="/sales/view/' + value.id +
-                                    '" class="btn btn-primary btn-view">' +
-                                    '<i class="fa fa-eye"></i></a>' +
-                                    '<a class="btn btn-primary display_print" data="' + value.id +'"><i class="fa fa-print" aria-hidden="true"></i></a>' +
+                                    '<a href="/purchase/view/' + value.id +
+                                    '" class="btn btn-primary btn-view"><i class="fa fa-eye"></i></a>' +
                                     edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
                                     '</div>'
@@ -456,31 +408,27 @@
                             title: 'Action'
                         },
                         {
-                            data: 'so_no',
-                            name: 'sales_orders.so_no',
-                            title: 'SO NO.'
+                            data: 'po_no',
+                            name: 'purchase_infos.po_no',
+                            title: 'PO NO.'
                         },
                         {
                             data: function(value) {
                                 var $class_color = value.payment_status === 'UNPAID' ?
                                     'btn-warning' : 'btn-success';
-                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
                                     '<a href="#" class="btn ' + $class_color + ' btn-payment">' +
                                     value.payment_status + '</a>' +
                                     '</div>'
                             },
-                            name: 'sales_orders.payment_status',
+                            name: 'payment_status',
                             title: 'Payment'
                         },
                         {
                             data: function(value) {
-                                var $class_color = 'btn-success';
-                                if (["Quote"].includes(value.status)) {
-                                    $class_color = 'btn-warning';
-                                } else if (["Project"].includes(value.status)) {
-                                    $class_color = 'btn-primary';
-                                }
-                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                var $class_color = value.status === 'Ordered' ? 'btn-warning' :
+                                    'btn-success';
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
                                     '<a href="#" class="btn ' + $class_color + ' btn-status">' +
                                     value.status + '</a>' +
                                     '</div>'
@@ -490,47 +438,52 @@
                         },
                         {
                             data: function(value) {
-                                if (value.can_be_shipped || value.delivery_status == 'Shipped') {
-                                    var $class_color = value.delivery_status === 'Not Shipped' ?
-                                        'btn-warning' : 'btn-success';
-                                    return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
-                                        '<a href="#" class="btn ' + $class_color +
-                                        ' btn-delivery-status">' + value.delivery_status + '</a>' +
-                                        '</div>'
+                                var $class_color = 'btn-success';
+                                var $name; "";
+                                console.log(value);
+                                if (["PO"].includes(value.po_status)) {
+                                    $class_color = 'btn-info';
+                                    $name = "Purchase Order"
+                                } else if (["SI"].includes(value.po_status)) {
+                                    $class_color = 'btn-primary';
+                                    $name = "Stock In"
+                                }else{
+                                    $name = "Select Options"
                                 }
-                                return 'Check Inventory';
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                    '<a href="#" value="'+value.po_status+'" class="btn ' + $class_color + '  btn-po-status">' +
+                                        $name + '</a>' +
+                                    '</div>'
                             },
-                            name: 'status',
-                            title: 'Delivery Status'
+                            name: 'po_status',
+                            title: 'PO Status'
                         },
                         {
                             data: function(value) {
                                 var $class_color = 'btn-success';
                                 if (["VAT EX"].includes(value.vat_type)) {
                                     $class_color = 'btn-info';
-                                    $name = "VE";
+                                    $name = "VE"
                                 } else if (["VAT INC"].includes(value.vat_type)) {
                                     $class_color = 'btn-primary';
-                                    $name = "VI";
+                                    $name = "VI"
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
-                                    '<a href="#" value="'+value.vat_type+'" class="btn ' + $class_color + ' btn-vat">' +
-                                    $name + '</a>' +
+                                    '<a href="#" value="'+value.vat_type+'" class="btn ' + $class_color + '  btn-vat">' +
+                                        $name + '</a>' +
                                     '</div>'
                             },
                             name: 'vat_type',
                             title: 'Vat'
                         },
-
-                        {
-                            data: 'customer_name',
-                            name: 'customers.name',
-                            title: 'Customer'
-                        },
                         {
                             data: 'subject',
-                            name: 'subject',
-                            title: 'Subject'
+                            title: 'DR/SI'
+                        },
+                        {
+                            data: 'vendor_name',
+                            name: 'vendors.name',
+                            title: 'Vendor'
                         },
                         {
                             data: 'grand_total',
@@ -538,27 +491,27 @@
                             title: 'Total'
                         },
                         {
-                            data: 'agent',
-                            name: 'agent',
+                            data: 'name',
+                            name: 'users.name',
                             title: 'Assigned'
                         },
                         {
                             data: function(value) {
-                                if (value.shipped_date_display == 'No Date')
-                                    return value.shipped_date_display
+                                if (value.received_date_display == 'No Date')
+                                    return value.received_date_display
 
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group" aria-label="Basic example">' +
-                                    '<a href="#" class="btn btn-info btn-shipped-date">' +
-                                    value.shipped_date_display + '</a>' +
+                                    '<a href="#" class="btn btn-info btn-received-date">' +
+                                    value.received_date_display + '</a>' +
                                     '</div>'
                             },
-                            name: 'shipped_date',
-                            title: 'Shipped Date',
+                            name: 'purchase_infos.received_date',
+                            title: 'Received Date'
                         },
                         {
                             data: 'due_date',
                             name: 'due_date',
-                            title: 'Date of Purchased'
+                            title: 'Due Date'
                         },
                     ],
                     drawCallback: function() {
@@ -566,6 +519,7 @@
                             let data = $(this).parent().parent().parent();
                             let hold = $this.dt.row(data).data();
                             $this.overview = hold;
+                            console.log(hold);
                         });
                         $('.btn-destroy').on('click', function() {
                             $this.destroy();
@@ -573,31 +527,26 @@
                         $('.btn-status').on('click', function() {
                             $('#statusModal').modal('show');
                         });
-                        $('.btn-vat').on('click', function() {
-                            $('#vatTypeModal').modal('show');
-                        });
                         $('.btn-payment').on('click', function() {
                             $('#paymentModal').modal('show');
                         });
-                        $('.btn-delivery-status').on('click', function() {
-                            $('#deliveryStatusModal').modal('show');
+                        $('.btn-vat').on('click', function() {
+                            $('#vatTypeModal').modal('show');
                         });
-                        $('.btn-shipped-date').on('click', function() {
-                            $('#shippedDateModal').modal('show');
+                        $('.btn-po-status').on('click', function() {
+                            $('#poTypeModal').modal('show');
                         });
-                        $('.display_print').on('click', function(e) {
-                            var id = $(this).attr('data');
-                            $("#print_warranty").attr("href", "/sales/print/"+id);
-                            $("#print_quote").attr("href", "/sales/quote/"+id);
-                            $("#print_delivery").attr("href", "/sales/deliver/"+id);
-                            $('#printModal').modal('show');
+                        $('.btn-received-date').on('click', function() {
+                            $('#receivedDateModal').modal('show');
                         });
                     }
                 });
+
                 $( document ).on('click', '#filter_search', function() {
                     $this.dt.draw();
                 });
-                            }
+
+            }
         });
     </script>
 @endsection

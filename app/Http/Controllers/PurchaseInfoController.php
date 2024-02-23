@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Preference;
 use App\PurchaseInfo;
 use App\ProductDetail;
+use App\PrintSetting;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -26,18 +27,59 @@ class PurchaseInfoController extends Controller
         return view('purchase');
     }
 
+    public function purchase_stockin()
+    {
+        return view('purchase_stock_in');
+    }
     public function table(Request $request)
     {
         Supply::recalibrate();
         $purchase_info = PurchaseInfo::query()
             ->selectRaw('purchase_infos.id, purchase_infos.subject,purchase_infos.received_date,
-                                     purchase_infos.vat_type,purchase_infos.payment_status,
+            purchase_infos.vat_type,purchase_infos.po_status,purchase_infos.payment_status,
             vendors.name as vendor_name, purchase_infos.tracking_number, purchase_infos.po_no,
             purchase_infos.requisition_no, users.name, purchase_infos.status, purchase_infos.created_at,
             purchase_infos.updated_at, grand_total, purchase_infos.due_date')
             ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
             ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
-            ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to');
+            ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to')
+            ->where(function ($purchase_info) {
+                $purchase_info->where('purchase_infos.po_status', '<>', 'SI')
+                      ->orWhereNull('purchase_infos.po_status');
+            });
+
+            if ($request->filled('filter_payment')) {
+                $purchase_info->where('purchase_infos.payment_status', $request->input('filter_payment'));
+            }
+            if ($request->filled('filter_status')) {
+                $purchase_info->where('purchase_infos.status', $request->input('filter_status'));
+            }
+            if ($request->filled('filter_vat')) {
+                $purchase_info->where('purchase_infos.vat_type', $request->input('filter_vat'));
+            }
+        return DataTables::of($purchase_info)->setTransformer(function ($data) {
+            $data               = $data->toArray();
+            $data['created_at'] = Carbon::parse($data['created_at'])->format('F j, Y');
+            $data['received_date_display'] = $data['received_date'] ? Carbon::parse($data['received_date'])->format('F j, Y') : 'No Date';
+            $data['due_date']   = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
+
+            return $data;
+        })->make(true);
+    }
+
+    public function table_stock_in(Request $request)
+    {
+        Supply::recalibrate();
+        $purchase_info = PurchaseInfo::query()
+            ->selectRaw('purchase_infos.id, purchase_infos.subject,purchase_infos.received_date,
+            purchase_infos.vat_type,purchase_infos.po_status,purchase_infos.payment_status,
+            vendors.name as vendor_name, purchase_infos.tracking_number, purchase_infos.po_no,
+            purchase_infos.requisition_no, users.name, purchase_infos.status, purchase_infos.created_at,
+            purchase_infos.updated_at, grand_total, purchase_infos.due_date')
+            ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
+            ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
+            ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to')
+            ->where('purchase_infos.po_status', 'SI');
 
             if ($request->filled('filter_payment')) {
                 $purchase_info->where('purchase_infos.payment_status', $request->input('filter_payment'));
@@ -332,6 +374,12 @@ class PurchaseInfoController extends Controller
             return ['success' => true];
         }
 
+        if ($purchase_info->po_status != $data['po_status']) {
+            DB::table('purchase_infos')->where('id', $data['id'])
+                ->update(['po_status' => $data['po_status']]);
+
+            return ['success' => true];
+        }
 
         if ($purchase_info->received_date != $data['received_date']) {
             DB::table('purchase_infos')->where('id', $data['id'])
@@ -387,6 +435,8 @@ class PurchaseInfoController extends Controller
         $summary         = $data['summary'];
         $sections        = [];
         $cnt             = -1;
+        $print_setting   = PrintSetting::query()->first();
+
         foreach ($product_details as $key => $value) {
             if (count($value) == 1) {
                 $sections[] = [
@@ -415,6 +465,8 @@ class PurchaseInfoController extends Controller
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
+                'print_setting' => $print_setting,
+
             ]
         );
 
