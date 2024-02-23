@@ -14,6 +14,7 @@ use App\ProductDetail;
 use App\PurchaseInfo;
 use App\SalesOrder;
 use App\Supply;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -115,9 +116,16 @@ class DashboardController extends Controller
         return (new PurchaseInfo())->total($request->start, $request->end)->sum('grand_total');
     }
 
-    public function poTotalPrintable($start, $end): BinaryFileResponse
+    public function poTotalPrintable(Request $request): BinaryFileResponse
     {
         $date = now()->format('Y-m-d_H:i:s');
+        $start = 0;
+        $end = 0;
+        if ($request->filled('daterange')) {
+            $dateRange = explode(' - ', $request->get('daterange'));
+            $start = Carbon::parse($dateRange[0])->format('Y-m-d');
+            $end = Carbon::parse($dateRange[1])->format('Y-m-d');
+        }
 
         return Excel::download(new POTotalExcel($start, $end), "PO_AUDIT-$date.xlsx");
     }

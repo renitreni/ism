@@ -67,9 +67,71 @@
 </head>
 
 <body>
-    {{-- STATEMENT TTILE --}}
-    <table style="width: 100%">
-        <tbody>
+
+{{--STATEMENT TTILE--}}
+<table style="width: 100%">
+    <tbody>
+    <tr>
+        <td class="title">Sales Order</td>
+    </tr>
+    <tr>
+        <td class="iden">{{ $sales_order->so_no }}</td>
+    </tr>
+    </tbody>
+</table>
+{{--SALES ORDER--}}
+<table style="width: 100%">
+    <tbody>
+    <tr>
+        <td>
+            <table>
+                <tbody>
+                <tr>
+                    <td>Subject:</td>
+                    <td class="header-content">{{ $sales_order->subject }}</td>
+                </tr>
+                <tr>
+                    <td>Customer Name:</td>
+                    <td class="header-content">{{ $sales_order->customer_name }}</td>
+                </tr>
+                <tr>
+                    <td>Address:</td>
+                    <td class="header-content">{{ $sales_order->address }}</td>
+                </tr>
+                <tr>
+                    <td>Mobile Number:</td>
+                    <td class="header-content">{{ $sales_order->phone }}</td>
+                </tr>
+                <tr>
+                    <td>Date:</td>
+                    <td class="header-content">{{ \Carbon\Carbon::parse($sales_order->due_date)->format('F j, Y') }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+        <td width="20%">
+            <img src="{{ public_path('app/public/logo/logo.jpg') }}" height="150">
+        </td>
+    </tr>
+    </tbody>
+</table>
+{{--PRODUCT DETAILS--}}
+<table class="table table-bordered">
+    <thead class="bg-aliceblue">
+    <tr>
+        <th scope="col">Description</th>
+        <th scope="col">Product Model</th>
+        <th scope="col">Serial No.</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Unit</th>
+        <th scope="col">(Material)<br> Unit Cost</th>
+        <th scope="col">(Material)<br> Total Cost</th>
+        <th scope="col">Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach($product_details as $product)
+        @if(isset($product['product_name']))
             <tr>
                 {{-- change SO to WR --}}
                 {{-- <td class="title">Sales Order</td> --}}

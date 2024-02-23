@@ -34,7 +34,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/home/total/po', 'DashboardController@totalPO')->name('home.total.po');
     Route::post('/home/total/expenses', 'DashboardController@totalExpenses')->name('home.total.expenses');
     Route::get('/home/assets/printable', 'DashboardController@assetsPrintable')->name('home.assets.printable');
-    Route::get('/home/po/printable/{start}/{end}', 'DashboardController@poTotalPrintable')->name('home.po.printable');
+    Route::post('/home/po/printable', 'DashboardController@poTotalPrintable')->name('home.po.printable');
     Route::get('/home/so/printable/{start}/{end}', 'DashboardController@soTotalPrintable')->name('home.so.printable');
     Route::get('/home/qtn/printable/{start}/{end}', 'DashboardController@qtnTotalPrintable')->name('home.qtn.printable');
     Route::get('/home/labor', 'DashboardController@totalLaborPrintable')->name('home.labor.printable');
