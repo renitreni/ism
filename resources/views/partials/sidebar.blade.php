@@ -1,13 +1,22 @@
 <ul class="navbar-nav bg-gradient-warning sidebar sidebar-dark accordion" id="accordionSidebar">
     @php
         $logoData = \App\PrintSetting::find(1); // Adjust the query as needed
+        if($logoData){
+            $logoData = $logoData;
+        }else{
+            $logoData = "empty";
+        }
     @endphp
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home') }}">
         <div class="sidebar-brand-icon">
             <div class="row">
                 <div class="col-md-12">
-                    <img src="{{ asset(''.$logoData['system_logo_path'] . $logoData['system_logo']) }}" style="max-width: 95%;" height="100">
+                    @if ($logoData == "empty")
+                        <img src="" style="max-width: 95%;" height="100" alt="logo" class="img-responsive" />
+                    @else
+                        <img src="{{ asset(''.$logoData['system_logo_path'] . $logoData['system_logo']) }}" style="max-width: 95%;" height="100">
+                    @endif
                 </div>
             </div>
         </div>
