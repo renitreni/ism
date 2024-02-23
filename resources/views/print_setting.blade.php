@@ -66,7 +66,19 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Header Logo</label>
-                                        <img src="{{ asset(''.$build['header_logo_path'] . $build['header_logo']) }}" style="width: auto; height: 86px;">
+                                              @php
+                                                $logoData = \App\PrintSetting::find(1); // Adjust the query as needed
+                                                if($logoData){
+                                                    $logoData = $logoData;
+                                                }else{
+                                                    $logoData = "empty";
+                                                }
+                                            @endphp
+                                            @if ($logoData == "empty")
+                                                <img src="" style="max-width: 95%;" height="100" alt="logo" class="img-responsive" />
+                                            @else
+                                                <img src="{{ asset(''.$logoData['header_logo_path'] . $logoData['header_logo']) }}" style="width: auto; height: 86px;">
+                                            @endif
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +96,20 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>System Logo</label>
-                                        <img src="{{ asset(''.$build['system_logo_path'] . $build['system_logo']) }}" style="width: auto; height: 110px;">
+                                            @php
+                                                $logoData = \App\PrintSetting::find(1); // Adjust the query as needed
+                                                if($logoData){
+                                                    $logoData = $logoData;
+                                                }else{
+                                                    $logoData = "empty";
+                                                }
+                                            @endphp
+                                            @if ($logoData == "empty")
+                                                <img src="" style="max-width: 95%;" height="100" alt="logo" class="img-responsive" />
+                                            @else
+                                                <img src="{{ asset(''.$logoData['system_logo_path'] . $logoData['system_logo']) }}" style="width: auto; height: 110px;">
+                                            @endif
+
                                     </div>
                                 </div>
                             </div>
@@ -123,6 +148,7 @@
                         contentType: false, // Prevent jQuery from automatically setting the Content-Type
                         success: function (value) {
                             // Handle success
+                            Swal.fire('Success!', 'Updated Print Setting.', 'success');
                         },
                         error: function (xhr, status, error) {
                             // Handle error
