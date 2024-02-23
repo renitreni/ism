@@ -247,6 +247,38 @@
                 </div>
             </div>
         </div>
+
+        <div id="poTypeModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit PO Status</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">Pick a type</label>
+                                    <select class="form-control" v-model="overview.po_status">
+                                        <option value="">-- Select Options --</option>
+                                        <option value="PO">Purchase Order</option>
+                                        <option value="SI">Stock In</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="update">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 @endsection
 
@@ -292,6 +324,7 @@
                             $this.dt.draw();
                             $('#statusModal').modal('hide');
                             $('#vatTypeModal').modal('hide');
+                            $('#poTypeModal').modal('hide');
                             $('#paymentModal').modal('hide');
                             $('#receivedDateModal').modal('hide');
                         }
@@ -366,7 +399,9 @@
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
                                     '<a href="/purchase/view/' + value.id +
                                     '" class="btn btn-primary btn-view"><i class="fa fa-eye"></i></a>' +
-                                    edit +
+                                    '<a href="/purchase/print/' + value.id +
+                                    '" class="btn btn-primary btn-view"><i class="fa fa-print" aria-hidden="true"></i></a>' +
+edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
                                     '</div>'
                             },
@@ -402,6 +437,28 @@
                             },
                             name: 'status',
                             title: 'Status'
+                        },
+                        {
+                            data: function(value) {
+                                var $class_color = 'btn-success';
+                                var $name; "";
+                                console.log(value);
+                                if (["PO"].includes(value.po_status)) {
+                                    $class_color = 'btn-info';
+                                    $name = "Purchase Order"
+                                } else if (["SI"].includes(value.po_status)) {
+                                    $class_color = 'btn-primary';
+                                    $name = "Stock In"
+                                }else{
+                                    $name = "Select Options"
+                                }
+                                return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
+                                    '<a href="#" value="'+value.po_status+'" class="btn ' + $class_color + '  btn-po-status">' +
+                                        $name + '</a>' +
+                                    '</div>'
+                            },
+                            name: 'po_status',
+                            title: 'PO Status'
                         },
                         {
                             data: function(value) {
@@ -477,6 +534,9 @@
                         });
                         $('.btn-vat').on('click', function() {
                             $('#vatTypeModal').modal('show');
+                        });
+                        $('.btn-po-status').on('click', function() {
+                            $('#poTypeModal').modal('show');
                         });
                         $('.btn-received-date').on('click', function() {
                             $('#receivedDateModal').modal('show');

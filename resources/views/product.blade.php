@@ -61,9 +61,11 @@
                                     <li v-for="(category, idx) in categories"
                                         class="list-group-item d-flex justify-content-between align-items-center bg-dark">
                                         @{{ category }}
-                                        <button class="btn btn-sm btn-danger" @click="deleteCategory(idx)"><i
-                                                    class="fa fa-times"></i>
-                                        </button>
+                                        @can('productsdestroy')
+                                            <button class="btn btn-sm btn-danger" @click="deleteCategory(idx)"><i
+                                                        class="fa fa-times"></i>
+                                            </button>
+                                        @endcan
                                     </li>
                                 </ul>
                             </div>

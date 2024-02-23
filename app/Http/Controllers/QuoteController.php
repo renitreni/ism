@@ -23,7 +23,7 @@ class QuoteController extends Controller
     }
 
     public function table(Request $request)
-    {   
+    {
 
         $vendors = SalesOrder::query()
             ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
@@ -31,7 +31,8 @@ class QuoteController extends Controller
             ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
             ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
             ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
-            ->whereNotIn('sales_orders.status', ['Sales', 'Project']);
+            // ->whereNotIn('sales_orders.status', ['Sales', 'Project' ]);
+            ->where('sales_orders.status', 'Quote');
 
             if ($request->filled('filter_payment')) {
                 $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));

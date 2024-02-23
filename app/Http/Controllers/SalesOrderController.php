@@ -9,6 +9,7 @@ use App\Preference;
 use App\Product;
 use App\ProductDetail;
 use App\SalesOrder;
+use App\PrintSetting;
 use App\Summary;
 use App\Supply;
 use App\Abilities;
@@ -31,6 +32,11 @@ class SalesOrderController extends Controller
     {
 
         return view('sales');
+    }
+    public function stock_out()
+    {
+
+        return view('sales_stock_out');
     }
 
     public function table(Request $request)
@@ -76,6 +82,51 @@ class SalesOrderController extends Controller
             return $data;
         })->make(true);
     }
+
+    public function table_stockout(Request $request)
+    {
+        Supply::recalibrate();
+                $vendors = SalesOrder::query()
+            ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
+            shipped_date,summaries.grand_total')
+            ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
+            ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
+            ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
+            ->where('sales_orders.status', 'Stock Out');
+
+            if ($request->filled('filter_payment')) {
+                $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));
+            }
+            if ($request->filled('filter_status')) {
+                $vendors->where('sales_orders.status', $request->input('filter_status'));
+            }
+            if ($request->filled('filter_delivery_status')) {
+                $vendors->where('sales_orders.delivery_status', $request->input('filter_delivery_status'));
+            }
+            if ($request->filled('filter_vat')) {
+                $vendors->where('sales_orders.vat_type', $request->input('filter_vat'));
+            }
+
+        return DataTables::of($vendors)->setTransformer(function ($data)  {
+            $data                   = $data->toArray();
+            $data['created_at']     = Carbon::parse($data['created_at'])->format('F j, Y');
+            $data['shipped_date_display'] = $data['shipped_date'] ? Carbon::parse($data['shipped_date'])->format('F j, Y') : 'No Date';
+            $data['due_date']       = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
+            $data['can_be_shipped'] = 1;
+
+            $product_details = $this->getProductDetail($data['id']);
+            foreach ($product_details as $products) {
+                $diff = $products->quantity - $products->qty;
+
+                if ($diff < 0 && $products->type == 'limited') {
+                    $data['can_be_shipped'] = 0;
+                }
+            }
+
+            return $data;
+        })->make(true);
+    }
+
 
     public function create()
     {
@@ -393,6 +444,11 @@ class SalesOrderController extends Controller
         $summary         = $data['summary'];
         $sections        = [];
         $cnt             = -1;
+        $print_setting   = PrintSetting::query()->first();
+
+        $sales_order->so_no = str_replace('SO', 'WR', $sales_order->so_no);
+        $sales_order->tac = preg_replace('/ADDRESS:(.*?)(\bEmail\b.*?$)/s', '---',$sales_order->tac);
+
         foreach ($product_details as $key => $value) {
             if (count($value) == 1) {
                 $sections[] = [
@@ -423,9 +479,11 @@ class SalesOrderController extends Controller
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
+                'print_setting' => $print_setting,
             ]
         );
 
+        // return view('sales_printable', compact('sales_order', 'product_details', 'summary', 'sections', 'print_setting'));
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())
             ->download('SO ' . $sales_order["so_no"] . ' ' . $sales_order["customer_name"] . '.pdf');
@@ -439,6 +497,10 @@ class SalesOrderController extends Controller
         $summary         = $data['summary'];
         $sections        = [];
         $cnt             = -1;
+        $print_setting   = PrintSetting::query()->first();
+
+        $sales_order->tac = preg_replace('/ADDRESS:(.*?)(\bEmail\b.*?$)/s', '---',$sales_order->tac);
+
         foreach ($product_details as $key => $value) {
             if (count($value) == 1) {
                 $sections[] = [
@@ -465,8 +527,11 @@ class SalesOrderController extends Controller
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
+                'print_setting' => $print_setting,
+
             ]
         );
+        // return view('quote_printable', compact('sales_order', 'product_details', 'summary', 'sections', 'print_setting'));
 
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())
@@ -481,6 +546,9 @@ class SalesOrderController extends Controller
         $summary         = $data['summary'];
         $sections        = [];
         $cnt             = -1;
+        $print_setting   = PrintSetting::query()->first();
+
+        $sales_order->tac = preg_replace('/ADDRESS:(.*?)(\bEmail\b.*?$)/s', '---',$sales_order->tac);
         foreach ($product_details as $key => $value) {
             if (count($value) == 1) {
                 $sections[] = [
@@ -508,8 +576,10 @@ class SalesOrderController extends Controller
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
+                'print_setting' => $print_setting,
             ]
         );
+        // return view('dr_printable', compact('sales_order', 'product_details', 'summary', 'sections', 'print_setting'));
 
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())

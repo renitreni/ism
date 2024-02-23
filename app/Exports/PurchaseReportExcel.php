@@ -41,7 +41,8 @@ class PurchaseReportExcel implements FromQuery, WithHeadings, WithStylesAlias, W
             po.payment_status,
             po.payment_method,
             users.name as assigend_name,
-            po.vat_type')
+            po.vat_type,
+            po.po_status')
             ->join('purchase_infos as po', 'po.id', '=', 'product_details.purchase_order_id')
             ->leftJoin('vendors as c', 'c.id', '=', 'po.vendor_id')
             ->leftJoin('users', 'users.id', '=', 'po.assigned_to')
@@ -71,6 +72,7 @@ class PurchaseReportExcel implements FromQuery, WithHeadings, WithStylesAlias, W
             'N' => 20,
             'O' => 15,
             'P' => 15,
+            'Q' => 15,
         ];
     }
 
@@ -93,6 +95,7 @@ class PurchaseReportExcel implements FromQuery, WithHeadings, WithStylesAlias, W
             'Form Of Payment',
             'Assigned To',
             'Vat Type',
+            'PO Status',
         ];
     }
 

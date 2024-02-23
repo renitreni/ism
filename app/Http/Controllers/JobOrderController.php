@@ -19,9 +19,48 @@ class JobOrderController extends Controller
         return view('job_order');
     }
 
-    public function table()
+    public function table(Request $request)
     {
-        return DataTables::of(JobOrder::with('jobOrderStatus'))->make(true);
+        // return DataTables::of(JobOrder::with('jobOrderStatus'))->make(true);
+
+        // $jobOrderQuery = JobOrder::query()->with('jobOrderStatus');
+
+        // // Check if 'filter_status' is present in the request
+        // if ($request->filled('filter_status')) {
+        //     $jobOrderQuery->whereHas('jobOrderStatus', function ($query) use ($request) {
+        //         $query->where('status', $request->input('filter_status'));
+        //     });
+        // }
+
+        // return DataTables::of($jobOrderQuery)->make(true);
+
+
+
+        return DataTables::of(JobOrder::with('jobOrderStatus'))
+        ->filter(function ($query) use ($request) {
+            // Check if 'filter_status' is present in the request
+            if ($request->filled('filter_status')) {
+                if($request->input('filter_status') != 'all') {
+                    $query->whereHas('jobOrderStatus', function ($subquery) use ($request) {
+                        $subquery->where('job_orders.status', $request->input('filter_status'));
+                    });
+                }else{
+                    $query->whereHas('jobOrderStatus', function ($subquery) {
+                        $subquery->where('job_orders.status', '!=', ' ');
+                    });
+                }
+                // $query->whereHas('jobOrderStatus', function ($subquery) use ($request) {
+                //     $subquery->where('job_orders.status', $request->input('filter_status'));
+                // });
+            } else {
+                // If no filter status, hide the completed status
+                $query->whereHas('jobOrderStatus', function ($subquery) {
+                    $subquery->where('job_orders.status', '!=', 'completed');
+                });
+            }
+        })
+        ->make(true);
+
     }
 
     public function create()
