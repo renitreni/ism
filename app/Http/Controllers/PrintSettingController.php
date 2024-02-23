@@ -29,6 +29,7 @@ class PrintSettingController extends Controller
         $files2 = $request->file('file_system');
 
         if($files){
+
             try {
                 $filename = 1 . '_' . $files->getClientOriginalName();
                 $filePath = $files->storeAs('/print/header', $filename);
