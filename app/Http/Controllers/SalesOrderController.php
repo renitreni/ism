@@ -474,14 +474,14 @@ class SalesOrderController extends Controller
         $sections = $hold_section;
 
         $pdf = PDF::loadView(
-            'sales_printable',
-            [
+        'sales_printable',
+        [
                 'sales_order'     => $sales_order,
-                'product_details' => $product_details,
-                'summary'         => $summary,
-                'sections'        => $sections,
-                'print_setting' => $print_setting,
-            ]
+        'product_details' => $product_details,
+        'summary'         => $summary,
+        'sections'        => $sections,
+        'print_setting' => $print_setting,
+        ]
         );
 
         // return view('sales_printable', compact('sales_order', 'product_details', 'summary', 'sections', 'print_setting'));
