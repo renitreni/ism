@@ -336,7 +336,7 @@
 
                 <tbody>
                     <tr>
-                        <td style="padding-bottom: 5px;"><strong>Warranty</strong></td>
+                        <td style="padding-bottom: 5px;"><strong>Warranty Policy</strong></td>
                     </tr>
                     <tr>
                         <td>{!! nl2br(e($sales_order->warranty)) !!}</td>
