@@ -92,6 +92,12 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
+                                        <label>Warranty Policy</label>
+                                        <textarea class="form-control" v-model="overview.warranty"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
                                         <label>Account Name</label>
                                         <textarea class="form-control" v-model="overview.account_name"></textarea>
                                     </div>

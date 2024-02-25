@@ -6,6 +6,8 @@ use App\PrintSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 class PrintSettingController extends Controller
 {
     public function index()
@@ -28,14 +30,18 @@ class PrintSettingController extends Controller
 
         $files2 = $request->file('file_system');
 
+        // print_r($files);
+
         if($files){
 
             try {
                 $filename = 1 . '_' . $files->getClientOriginalName();
+                $filename = str_replace(' ', '_', $filename);
                 $filePath = $files->storeAs('/print/header', $filename);
                 $PrintSetting = PrintSetting::updateOrInsert(
                             ['id' => 1],
                             [
+                                'header_logo' => $filename,
                                 'header_logo_path' => "app/public/print/header/",
                             ]
                         );
@@ -49,11 +55,14 @@ class PrintSettingController extends Controller
         if($files2){
             try {
                 $filename2 = 1 . '_' . $files2->getClientOriginalName();
+                $filename2 = str_replace(' ', '_', $filename2);
+
                 $filePath = $files2->storeAs('/print/system_logo', $filename2);
                 $PrintSetting = PrintSetting::updateOrInsert(
                             ['id' => 1],
                             [
-                                'system_logo_path' => "app/public/print/system_logo/" ,
+                                 'system_logo' => $filename2,
+                                'system_logo_path' => "app/public/print/system_logo/",
                             ]
                         );
             } catch (\Exception $e) {
@@ -71,8 +80,6 @@ class PrintSettingController extends Controller
                 'sales1' => $data['sales1'],
                 'sales2' => $data['sales2'],
                 'email' => $data['email'],
-                'header_logo' => $filename,
-                'system_logo' => $filename2,
             ]
         );
 
