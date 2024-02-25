@@ -17,11 +17,21 @@
             font-weight: bold;
         }
         .footer {
-            background-color: #f3c927;
+            position: fixed;
+            border-top: 1px solid black;
+            background-color: white;
             padding: 10px;
             bottom: 0;
             width: 100%;
-            margin-top: 390px;
+            /* margin-top: 390px; */
+        }
+        .TC{
+            background-color: white;
+            padding: 10px;
+            bottom: 0;
+            width: 100%;
+            margin-top: 300px;
+            margin-bottom: 200px;
         }
         .bg-aliceblue {
             background-color: #c4ddf3;
@@ -96,7 +106,7 @@
             </table>
         </td>
         <td width="20%">
-            <img src="{{ asset(''.$print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
+            <img src="{{ asset($print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
         </td>
     </tr>
     </tbody>
@@ -133,11 +143,42 @@
                 <td colspan="9"><strong>{{ $product['category'] }}</strong></td>
             </tr>
         @endif @endforeach
-    <tr class="bg-aliceblue">
-        <td colspan="6"></td>
-        <td><strong>Sub-Total</strong></td>
-        <td>&#8369; {{ number_format($summary->sub_total,2) }}</td>
-    </tr>
+        <tr class="bg-aliceblue">
+            <td colspan="6"></td>
+            <td><strong>Sub-Total</strong></td>
+            <td>&#8369; {{ number_format($summary->sub_total,2) }}</td>
+        </tr>
+        @if ($summary->shipping)
+            <tr class="bg-aliceblue">
+                <td colspan="6"></td>
+                <td><strong>Shipping</strong></td>
+                <td style="text-align: right">&#8369; {{ number_format($summary->shipping, 2) }}</td>
+            </tr>
+        @endif
+        @if ($summary->discount)
+            <tr class="bg-aliceblue">
+                <td colspan="6"></td>
+                <td><strong style="color:red">Discount</strong></td>
+                <td style="text-align: right; color:red">&#8369; - {{ number_format($summary->discount, 2) }}</td>
+            </tr>
+        @endif
+        {{-- <tr class="bg-aliceblue">
+            <td colspan="6"></td>
+            <td><strong>Sales %</strong></td>
+            <td style="text-align: right"> {{ $summary->sales_tax }} %</td>
+        </tr> --}}
+        @if ($summary->sales_actual)
+            <tr class="bg-aliceblue">
+                <td colspan="6"></td>
+                <td><strong>Sales TAX</strong></td>
+                <td style="text-align: right">&#8369; {{ number_format($summary->sales_actual, 2) }}</td>
+            </tr>
+        @endif
+        <tr class="bg-aliceblue">
+            <td colspan="6"></td>
+            <td><strong>Grand Total</strong></td>
+            <td style="text-align: right">&#8369; {{ number_format($summary->grand_total, 2) }}</td>
+        </tr>
     </tbody>
 </table>
 {{--SUMMARY--}}
@@ -181,7 +222,7 @@
                 </tbody>
             </table>
         </td>
-        <td>
+        {{-- <td>
             <table
                 style="border: 1px solid black; padding-left: 5%; width: 100%">
                 <tbody>
@@ -224,7 +265,7 @@
                 </tr>
                 </tbody>
             </table>
-        </td>
+        </td> --}}
     </tr>
     </tbody>
 </table>
@@ -263,7 +304,20 @@
     </tr>
     </tbody>
 </table>
+<div class="TC">
+    <table style="width: 100%; text-align: center;">
+        <table>
 
+            <tbody>
+                <tr>
+                    <td style="padding-bottom: 5px;"><strong>Warranty</strong></td>
+                </tr>
+                <tr>
+                    <td>{!! nl2br(e($sales_order->warranty)) !!}</td>
+                </tr>
+            </tbody>
+    </table>
+</div>
 <div class="footer">
     <table style="width: 100%; text-align: center;">
         <table>

@@ -14,11 +14,21 @@
         }
 
         .footer {
-            background-color: #f3c927;
+            position: fixed;
+            border-top: 1px solid black;
+            background-color: white;
             padding: 10px;
             bottom: 0;
             width: 100%;
-            margin-top: 390px;
+            /* margin-top: 390px; */
+        }
+        .TC{
+            background-color: white;
+            padding: 10px;
+            bottom: 0;
+            width: 100%;
+            margin-top: 300px;
+            margin-bottom: 200px;
         }
         .header-content {
             font-weight: bold;
@@ -98,7 +108,7 @@
         </td>
         <td width="20%">
             {{-- <img src="{{ public_path('app/public/logo/logo.jpg') }}" style="height: 150px;"> --}}
-            <img src="{{ asset(''.$print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
+            <img src="{{ asset($print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
         </td>
     </tr>
     </tbody>
@@ -108,8 +118,8 @@
     <thead class="bg-aliceblue">
     <tr>
         <th scope="col">Description</th>
-        <th scope="col">Product Model</th>
-        <th scope="col">Serial No.</th>
+        {{-- <th scope="col">Product Model</th> --}}
+        <th scope="col" colspan="2">Serial No.</th>
         <th scope="col">Quantity</th>
         <th scope="col">Unit</th>
         <th scope="col">(Material)<br> Unit Cost</th>
@@ -122,8 +132,8 @@
         @if(isset($product['product_name']))
             <tr>
                 <td>{{ $product['product_name'] }}</td>
-                <td>{{ $product['code'] }}</td>
-                <td>{{ $product['notes'] }}</td>
+                {{-- <td>{{ $product['code'] }}</td> --}}
+                <td colspan="2">{{ $product['notes'] }}</td>
                 <td>{{ $product['qty'] }}</td>
                 <td>{{ $product['unit'] }}</td>
                 <td>{{ number_format($product['selling_price'], 2) }}</td>
@@ -135,11 +145,42 @@
                 <td colspan="9"><strong>{{ $product['category'] }}</strong></td>
             </tr>
         @endif @endforeach
-    <tr class="bg-aliceblue">
-        <td colspan="6"></td>
-        <td><strong>Sub-Total</strong></td>
-        <td>&#8369; {{ number_format($summary->sub_total,2) }}</td>
-    </tr>
+        <tr class="bg-aliceblue">
+            <td colspan="6"></td>
+            <td><strong>Sub-Total</strong></td>
+            <td>&#8369; {{ number_format($summary->sub_total,2) }}</td>
+        </tr>
+        @if ($summary->shipping)
+            <tr class="bg-aliceblue">
+                <td colspan="6"></td>
+                <td><strong>Shipping</strong></td>
+                <td style="text-align: right">&#8369; {{ number_format($summary->shipping, 2) }}</td>
+            </tr>
+        @endif
+        @if ($summary->discount)
+            <tr class="bg-aliceblue">
+                <td colspan="6"></td>
+                <td><strong style="color:red">Discount</strong></td>
+                <td style="text-align: right; color:red">&#8369; - {{ number_format($summary->discount, 2) }}</td>
+            </tr>
+        @endif
+        {{-- <tr class="bg-aliceblue">
+            <td colspan="6"></td>
+            <td><strong>Sales %</strong></td>
+            <td style="text-align: right"> {{ $summary->sales_tax }} %</td>
+        </tr> --}}
+        @if ($summary->sales_actual)
+            <tr class="bg-aliceblue">
+                <td colspan="6"></td>
+                <td><strong>Sales TAX</strong></td>
+                <td style="text-align: right">&#8369; {{ number_format($summary->sales_actual, 2) }}</td>
+            </tr>
+        @endif
+        <tr class="bg-aliceblue">
+            <td colspan="6"></td>
+            <td><strong>Grand Total</strong></td>
+            <td style="text-align: right">&#8369; {{ number_format($summary->grand_total, 2) }}</td>
+        </tr>
     </tbody>
 </table>
 {{--SUMMARY--}}
@@ -150,82 +191,89 @@
         <td style="width: 50%;">
             <table>
                 <tbody>
-                <tr>
-                    <td style="padding-bottom: 5px;"><strong>Terms and Conditions</strong></td>
-                </tr>
-                <tr>
-                    <td>{!! nl2br(e($sales_order->tac)) !!}</td>
-                </tr>
-                <tr>
-                    <td>
-                        <table>
-                            <tbody>
-                            <tr>
-                                <td style="padding-bottom: 5px;" colspan="2"><strong>Payment
-                                        Details</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Payment Method:</td>
-                                <td>{{ $sales_order->payment_method }}</td>
-                            </tr>
-                            <tr>
-                                <td>Account Name:</td>
-                                <td>{{ $sales_order->account_name }}</td>
-                            </tr>
-                            <tr>
-                                <td>Account No:</td>
-                                <td>{{ $sales_order->account_no }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
+                    <tr>
+                        <td style="padding-bottom: 5px;"><strong>Terms and Conditions</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{!! nl2br(e($sales_order->tac)) !!}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td style="padding-bottom: 5px;" colspan="2"><strong>Payment
+                                            Details</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Payment Method:</td>
+                                    <td>{{ $sales_order->payment_method }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Account Name:</td>
+                                    <td>{{ $sales_order->account_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Account No:</td>
+                                    <td>{{ $sales_order->account_no }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </td>
-        <td>
+        {{-- <td>
             <table
                 style="border: 1px solid black; padding-left: 5%; width: 100%">
                 <tbody>
                 <tr>
                     <td colspan="2" style="padding-bottom: 8px"><strong>SUMMARY:</strong></td>
                 </tr>
-                @foreach($sections as $section) @foreach($section as $key =>
-							$value)
+                    @foreach($sections as $section) @foreach($section as $key =>
+                                $value)
+                        <tr>
+                            <td>{{ $key }}</td>
+                            <td style="padding-left: 10px !important;">{{ number_format($value,2) }}</td>
+                        </tr>
+                    @endforeach @endforeach
                     <tr>
-                        <td>{{ $key }}</td>
-                        <td style="padding-left: 10px !important;">{{ number_format($value,2) }}</td>
+                        <td align="right"><strong>SUB-TOTAL</strong></td>
+                        <td style="padding-left: 10px !important;">
+                            {{ number_format($summary->sub_total,2) }}
+                        </td>
                     </tr>
-                @endforeach @endforeach
-                <tr>
-                    <td align="right"><strong>SUB-TOTAL</strong></td>
-                    <td style="padding-left: 10px !important;">
-                        {{ number_format($summary->sub_total,2) }}
-                    </td>
-                </tr>
-                <tr>
-                    <td align="right"><strong>SHIPPING</strong></td>
-                    <td style="padding-left: 10px !important">{{ number_format($summary->shipping,2) }}</td>
-                </tr>
-                @if($sales_order->vat_type == 'VAT INC')
-                    <tr>
-                        <td align="right"><strong>SALES %</strong></td>
-                        <td style="padding-left: 10px !important">{{ $summary->sales_tax }}</td>
-                    </tr>
-                    <tr>
-                        <td align="right"><strong>SALES TAX</strong></td>
-                        <td style="padding-left: 10px !important">{{ number_format($summary->sales_actual,2) }}</td>
+                    @if ($summary->shipping)
+                    <tr class="bg-aliceblue">
+                        <td colspan="6"></td>
+                        <td><strong>Shipping</strong></td>
+                        <td style="text-align: right">&#8369; {{ number_format($summary->shipping, 2) }}</td>
                     </tr>
                 @endif
-                <tr>
-                    <td align="right"><strong>GRAND TOTAL</strong></td>
-                    <td style="padding-left: 10px !important">
-                        &#8369; {{ number_format($summary->grand_total, 2) }}
-                    </td>
+                @if ($summary->discount)
+                    <tr class="bg-aliceblue">
+                        <td colspan="6"></td>
+                        <td><strong style="color:red">Discount</strong></td>
+                        <td style="text-align: right; color:red">&#8369; - {{ number_format($summary->discount, 2) }}</td>
+                    </tr>
+                @endif
+
+                @if ($summary->sales_actual)
+                    <tr class="bg-aliceblue">
+                        <td colspan="6"></td>
+                        <td><strong>Sales TAX</strong></td>
+                        <td style="text-align: right">&#8369; {{ number_format($summary->sales_actual, 2) }}</td>
+                    </tr>
+                @endif
+                <tr class="bg-aliceblue">
+                    <td colspan="6"></td>
+                    <td><strong>Grand Total</strong></td>
+                    <td style="text-align: right">&#8369; {{ number_format($summary->grand_total, 2) }}</td>
                 </tr>
                 </tbody>
             </table>
-        </td>
+        </td> --}}
     </tr>
     </tbody>
 </table>
@@ -264,7 +312,20 @@
     </tr>
     </tbody>
 </table>
+<div class="TC">
+    <table style="width: 100%; text-align: center;">
+        <table>
 
+            <tbody>
+                <tr>
+                    <td style="padding-bottom: 5px;"><strong>Warranty</strong></td>
+                </tr>
+                <tr>
+                    <td>{!! nl2br(e($sales_order->warranty)) !!}</td>
+                </tr>
+            </tbody>
+    </table>
+</div>
 <div class="footer">
     <table style="width: 100%; text-align: center;">
         <table>

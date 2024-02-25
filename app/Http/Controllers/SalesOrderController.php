@@ -148,6 +148,7 @@ class SalesOrderController extends Controller
             "account_name"    => Preference::status('account_name'),
             "account_no"      => Preference::status('account_no'),
             "tac"             => Preference::status('tac_so_fill'),
+            "warranty"        => Preference::status('warranty'),
             "phone"           => "",
             "updated_at"      => Carbon::now()->format('Y-m-d'),
             "vat_type"        => "VAT EX",

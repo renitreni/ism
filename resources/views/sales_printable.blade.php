@@ -12,6 +12,7 @@
         }
 
         .footer {
+            position: fixed;
             border-top: 1px solid black;
             background-color: white;
             padding: 10px;
@@ -24,7 +25,8 @@
             padding: 10px;
             bottom: 0;
             width: 100%;
-            margin-top: 430px;
+            margin-top: 300px;
+            margin-bottom: 200px;
         }
         td,
         th {
@@ -111,7 +113,7 @@
                     </table>
                 </td>
                 <td width="20%">
-                    <img src="{{ asset(''.$print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
+                    <img src="{{ asset($print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
                 </td>
             </tr>
         </tbody>
@@ -121,8 +123,8 @@
         <thead class="bg-aliceblue">
             <tr>
                 <th scope="col">Description</th>
-                <th scope="col">Product Model</th>
-                <th scope="col">Serial No.</th>
+                {{-- <th scope="col">Product Model</th> --}}
+                <th scope="col" colspan="2">Serial No.</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Unit</th>
                 <th scope="col">(Material)<br> Unit Cost</th>
@@ -135,8 +137,8 @@
                 @if (isset($product['product_name']))
                     <tr>
                         <td>{{ $product['product_name'] }}</td>
-                        <td>{{ $product['code'] }}</td>
-                        <td>{{ $product['notes'] }}</td>
+                        {{-- <td>{{ $product['code'] }}</td> --}}
+                        <td colspan="2">{{ $product['notes'] }}</td>
                         <td>{{ $product['qty'] }}</td>
                         <td>{{ $product['unit'] }}</td>
                         <td style="text-align: right">{{ number_format($product['selling_price'], 2) }}</td>
@@ -155,27 +157,32 @@
                 <td><strong>Sub-Total</strong></td>
                 <td style="text-align: right">&#8369; {{ number_format($summary->sub_total, 2) }}</td>
             </tr>
-            <tr class="bg-aliceblue">
-                <td colspan="6"></td>
-                <td><strong>Shipping</strong></td>
-                <td style="text-align: right">&#8369; {{ number_format($summary->shipping, 2) }}</td>
-            </tr>
-            <tr class="bg-aliceblue">
-                <td colspan="6"></td>
-                <td><strong style="color:red">Discount</strong></td>
-                <td style="text-align: right; color:red">&#8369; - {{ number_format($summary->discount, 2) }}</td>
-            </tr>
+            @if ($summary->shipping)
+                <tr class="bg-aliceblue">
+                    <td colspan="6"></td>
+                    <td><strong>Shipping</strong></td>
+                    <td style="text-align: right">&#8369; {{ number_format($summary->shipping, 2) }}</td>
+                </tr>
+            @endif
+            @if ($summary->discount)
+                <tr class="bg-aliceblue">
+                    <td colspan="6"></td>
+                    <td><strong style="color:red">Discount</strong></td>
+                    <td style="text-align: right; color:red">&#8369; - {{ number_format($summary->discount, 2) }}</td>
+                </tr>
+            @endif
             {{-- <tr class="bg-aliceblue">
                 <td colspan="6"></td>
                 <td><strong>Sales %</strong></td>
                 <td style="text-align: right"> {{ $summary->sales_tax }} %</td>
             </tr> --}}
-            <tr class="bg-aliceblue">
-                <td colspan="6"></td>
-                <td><strong>Sales TAX</strong></td>
-                <td style="text-align: right">&#8369; {{ number_format($summary->sales_actual, 2) }}</td>
-            </tr>
-
+            @if ($summary->sales_actual)
+                <tr class="bg-aliceblue">
+                    <td colspan="6"></td>
+                    <td><strong>Sales TAX</strong></td>
+                    <td style="text-align: right">&#8369; {{ number_format($summary->sales_actual, 2) }}</td>
+                </tr>
+            @endif
             <tr class="bg-aliceblue">
                 <td colspan="6"></td>
                 <td><strong>Grand Total</strong></td>
@@ -195,25 +202,40 @@
                                     <table>
                                         <tbody>
                                             <tr>
-                                                <td style="padding-bottom: 5px;" colspan="2"><strong>Payment
-                                                        Details</strong></td>
+                                                <td style="padding-bottom: 5px;"><strong>Terms and Conditions</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Payment Method:</td>
-                                                <td>{{ $sales_order->payment_method }}</td>
+                                                <td>{!! nl2br(e($sales_order->tac)) !!}</td>
                                             </tr>
                                             <tr>
-                                                <td>Account Name:</td>
-                                                <td>{!! nl2br(e($sales_order->account_name)) !!}</td>
+                                                <td>
+                                                    <table>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td style="padding-bottom: 5px;" colspan="2"><strong>Payment
+                                                                        Details</strong></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Payment Method:</td>
+                                                                <td>{{ $sales_order->payment_method }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Account Name:</td>
+                                                                <td>{!! nl2br(e($sales_order->account_name)) !!}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Account No:</td>
+                                                                <td>{!! nl2br(e($sales_order->account_no)) !!}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>TIN No:</td>
+                                                                <td>{{ \App\Preference::status('tin_no') }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
                                             </tr>
-                                            <tr>
-                                                <td>Account No:</td>
-                                                <td>{!! nl2br(e($sales_order->account_no)) !!}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>TIN No:</td>
-                                                <td>{{ \App\Preference::status('tin_no') }}</td>
-                                            </tr>
+
                                         </tbody>
                                     </table>
                                 </td>
@@ -313,10 +335,10 @@
 
                 <tbody>
                     <tr>
-                        <td style="padding-bottom: 5px;"><strong>Terms and Conditions</strong></td>
+                        <td style="padding-bottom: 5px;"><strong>Warranty</strong></td>
                     </tr>
                     <tr>
-                        <td>{!! nl2br(e($sales_order->tac)) !!}</td>
+                        <td>{!! nl2br(e($sales_order->warranty)) !!}</td>
                     </tr>
                 </tbody>
         </table>

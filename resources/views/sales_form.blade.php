@@ -306,16 +306,24 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <h4>Terms & Conditions</h4>
                                 <hr>
-                            </div>
-                            <div class="col-md-12">
                                 <div class="form-group row">
                                     <div class="col-md-12">
                                         <textarea type="text" class="form-control form-control-sm" v-model="overview.tac" rows="8"></textarea>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Warranty Policy</h4>
+                                <hr>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <textarea type="text" class="form-control form-control-sm" v-model="overview.warranty" rows="8"></textarea>
+                                    </div>
+                                </div>
+
                             </div>
                             <div class="col-md-12">
                                 <a href="{{ URL::previous() }}" class="btn btn-warning">Back</a>
