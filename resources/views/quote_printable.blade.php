@@ -108,7 +108,7 @@
         </td>
         <td width="20%">
             {{-- <img src="{{ public_path('app/public/logo/logo.jpg') }}" style="height: 150px;"> --}}
-            <img src="{{ asset($print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
+            {{-- <img src="{{ asset($print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;"> --}}
         </td>
     </tr>
     </tbody>
