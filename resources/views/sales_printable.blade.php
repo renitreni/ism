@@ -113,6 +113,7 @@
                     </table>
                 </td>
                 <td width="20%">
+                    <label for="">{{ asset($print_setting->header_logo_path . $print_setting->header_logo) }}</label>
                     <img src="{{ asset($print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
                 </td>
             </tr>
