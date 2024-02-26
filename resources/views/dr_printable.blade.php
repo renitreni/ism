@@ -112,8 +112,8 @@
     <thead class="bg-aliceblue">
     <tr>
         <th scope="col">Description</th>
-        <th scope="col">Product Model</th>
-        <th scope="col">Serial No.</th>
+        {{-- <th scope="col">Product Model</th> --}}
+        <th scope="col" colspan="2">Serial No.</th>
         <th scope="col">Quantity</th>
         <th scope="col">Unit</th>
         <th scope="col">(Material)<br> Unit Cost</th>
@@ -124,16 +124,16 @@
     <tbody>
     @foreach($product_details as $product)
         @if(isset($product['product_name']))
-            <tr>
-                <td>{{ $product['product_name'] }}</td>
-                <td>{{ $product['code'] }}</td>
-                <td>{{ $product['notes'] }}</td>
-                <td>{{ $product['qty'] }}</td>
-                <td>{{ $product['unit'] }}</td>
-                <td>{{ number_format($product['selling_price'], 2) }}</td>
-                <td>{{ number_format($product['qty'] * $product['selling_price'], 2) }}</td>
-                <td>{{ number_format(($product['qty'] * $product['selling_price']) + $product['discount_item'], 2) }}</td>
-            </tr>
+        <tr>
+            <td>{{ $product['product_name'] }}</td>
+            {{-- <td>{{ $product['code'] }}</td> --}}
+            <td colspan="2">{{ $product['notes'] }}</td>
+            <td>{{ $product['qty'] }}</td>
+            <td>{{ $product['unit'] }}</td>
+            <td>{{ number_format($product['selling_price'], 2) }}</td>
+            <td>{{ number_format($product['qty'] * $product['selling_price'], 2) }}</td>
+            <td>{{ number_format(($product['qty'] * $product['selling_price']) + $product['discount_item'], 2) }}</td>
+        </tr>
         @else
             <tr class="bg-category">
                 <td colspan="9"><strong>{{ $product['category'] }}</strong></td>
