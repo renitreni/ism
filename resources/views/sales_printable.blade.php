@@ -13,20 +13,15 @@
         }
 
         .footer {
-            position: fixed;
-            bottom: 0;
             width: 100%;
             background-color: white;
             border-top: 1px solid black;
-            padding: 10px;
         }
 
         .TC {
             background-color: white;
             padding: 10px;
             margin-top: 50px;
-            margin-bottom: 200px;
-            /* page-break-before: always; */
         }
         td,
         th {

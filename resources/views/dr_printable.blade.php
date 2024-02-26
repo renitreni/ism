@@ -17,21 +17,15 @@
             font-weight: bold;
         }
         .footer {
-            position: fixed;
+            width: 100%;
+            background-color: white;
             border-top: 1px solid black;
-            background-color: white;
-            padding: 10px;
-            bottom: 0;
-            width: 100%;
-            /* margin-top: 390px; */
         }
-        .TC{
+
+        .TC {
             background-color: white;
             padding: 10px;
-            bottom: 0;
-            width: 100%;
-            margin-top: 300px;
-            margin-bottom: 200px;
+            margin-top: 50px;
         }
         .bg-aliceblue {
             background-color: #c4ddf3;
