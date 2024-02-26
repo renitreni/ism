@@ -226,6 +226,17 @@
                                 <div class="form-group row">
                                     <div class="col-md-auto">
                                         <label class="switch">
+                                            <input type="checkbox" v-model="displayShipping">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <label class="switch-label">Shipping</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-auto">
+                                        <label class="switch">
                                             <input type="checkbox" v-model="displayDiscount">
                                             <span class="slider"></span>
                                         </label>
@@ -245,17 +256,7 @@
                                         <label class="switch-label">Vat</label>
                                     </div>
                                 </div>
-                                <div class="form-group row">
-                                    <div class="col-md-auto">
-                                        <label class="switch">
-                                            <input type="checkbox" v-model="displayShipping">
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-                                    <div class="col-md-auto">
-                                        <label class="switch-label">Shipping</label>
-                                    </div>
-                                </div>
+
                             </div>
                             <div class="col-md-4"></div>
                             <div class="col-md-4">
@@ -264,6 +265,13 @@
                                     <div class="col-md-4">
                                         <input type="text" class="form-control-plaintext form-control-sm"
                                             v-model="summary.sub_total">
+                                    </div>
+                                </div>
+                                <div class="form-group row"  v-show="displayShipping">
+                                    <label class="col-form-label col-md-4 col-form-label-sm">Shipping</label>
+                                    <div class="col-md-4">
+                                        <input type="number" class="form-control form-control-sm"
+                                            v-model="summary.shipping">
                                     </div>
                                 </div>
                                 <div class="form-group row"  v-show="displayDiscount">
@@ -291,13 +299,6 @@
                                             v-bind:value="summary.sales_actual">
                                     </div>
                                 </div> --}}
-                                <div class="form-group row"  v-show="displayShipping">
-                                    <label class="col-form-label col-md-4 col-form-label-sm">Shipping</label>
-                                    <div class="col-md-4">
-                                        <input type="number" class="form-control form-control-sm"
-                                            v-model="summary.shipping">
-                                    </div>
-                                </div>
                                 <div class="form-group row">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Grand Total</label>
                                     <div class="col-md-4">
