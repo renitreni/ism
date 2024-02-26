@@ -14,6 +14,7 @@
         }
 
         .footer {
+            margin-top: 50px;
             width: 100%;
             background-color: white;
             border-top: 1px solid black;
@@ -321,7 +322,7 @@
     </table>
 </div>
 <div class="footer">
-    <table style="width: 100%; text-align: center;">
+    <table style="width: 100%; text-align: center;  margin-top:20px;"">
         <table>
             <thead style="text-align: center">
                 <th colspan="3"  style="text-align: center; font-size: 10px !important;"><strong style="font-size: 10px !important;" >Address</strong></th>
