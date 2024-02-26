@@ -108,7 +108,7 @@
         </td>
         <td width="20%">
             {{-- <img src="{{ public_path('app/public/print/header/1_ITR_CORPORATION_LOGO.jpg') }}" height="150"> --}}
-            <img src="{{ public_path('app/public/print/header/'.$print_setting->header_logo) }}" height="150">
+            <img src="{{ public_path('app/public/print/header/'.$print_setting->header_logo) }}" height="100">
         </td>
     </tr>
     </tbody>

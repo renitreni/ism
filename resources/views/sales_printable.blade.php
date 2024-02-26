@@ -3,6 +3,7 @@
 
 <head>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -13,20 +14,19 @@
 
         .footer {
             position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
             border-top: 1px solid black;
-            background-color: white;
             padding: 10px;
-            bottom: 0;
-            width: 100%;
-            /* margin-top: 390px; */
         }
-        .TC{
+
+        .TC {
             background-color: white;
             padding: 10px;
-            bottom: 0;
-            width: 100%;
-            margin-top: 300px;
+            margin-top: 50px;
             margin-bottom: 200px;
+            /* page-break-before: always; */
         }
         td,
         th {
@@ -65,6 +65,7 @@
             font-weight: 900 !important;
             text-align: center;
         }
+
     </style>
 </head>
 
@@ -114,7 +115,7 @@
                 </td>
                 <td width="20%">
                     {{-- <img src="{{ public_path('app/public/print/header/1_ITR_CORPORATION_LOGO.jpg') }}" height="150"> --}}
-                    <img src="{{ public_path('app/public/print/header/'.$print_setting->header_logo) }}" height="150">
+                    <img src="{{ public_path('app/public/print/header/'.$print_setting->header_logo) }}" height="100">
                 </td>
             </tr>
         </tbody>
@@ -370,8 +371,6 @@
                 </tbody>
         </table>
     </div>
-
-
 
 </body>
 
