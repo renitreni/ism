@@ -120,14 +120,14 @@
     <table class="table table-bordered">
         <thead class="bg-aliceblue">
             <tr>
-                <th scope="col">Description</th>
+                <th scope="col" colspan="1">Description</th>
                 {{-- <th scope="col">Product Model</th> --}}
                 <th scope="col" colspan="2">Serial No.</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Unit</th>
                 <th scope="col">(Material)<br> Unit Cost</th>
                 <th scope="col">(Material)<br> Total Cost</th>
-                <th scope="col">Total</th>
+                <th scope="col" colspan="2">Total</th>
             </tr>
         </thead>
         <tbody>
@@ -141,7 +141,7 @@
                         <td>{{ $product['unit'] }}</td>
                         <td style="text-align: right">{{ number_format($product['selling_price'], 2) }}</td>
                         <td style="text-align: right">{{ number_format($product['qty'] * $product['selling_price'], 2) }}</td>
-                        <td style="text-align: right">{{ number_format($product['qty'] * $product['selling_price'] + $product['discount_item'], 2) }}
+                        <td colspan="2" style="text-align: right">{{ number_format($product['qty'] * $product['selling_price'] + $product['discount_item'], 2) }}
                         </td>
                     </tr>
                 @else
@@ -151,22 +151,22 @@
                 @endif
             @endforeach
             <tr class="bg-aliceblue">
-                <td colspan="6"></td>
-                <td><strong>Sub-Total</strong></td>
-                <td style="text-align: right">&#8369; {{ number_format($summary->sub_total, 2) }}</td>
+                <td colspan="5"></td>
+                <td colspan="1" style="text-align: right;"><strong>Sub-Total</strong></td>
+                <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->sub_total, 2) }}</td>
             </tr>
             @if ($summary->shipping)
                 <tr class="bg-aliceblue">
-                    <td colspan="6"></td>
-                    <td><strong>Shipping</strong></td>
-                    <td style="text-align: right">&#8369; {{ number_format($summary->shipping, 2) }}</td>
+                    <td colspan="5"></td>
+                    <td colspan="1" style="text-align: right;"><strong>Shipping</strong></td>
+                    <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->shipping, 2) }}</td>
                 </tr>
             @endif
             @if ($summary->discount)
                 <tr class="bg-aliceblue">
-                    <td colspan="6"></td>
-                    <td><strong style="color:red">Discount</strong></td>
-                    <td style="text-align: right; color:red">&#8369; - {{ number_format($summary->discount, 2) }}</td>
+                    <td colspan="5"></td>
+                    <td colspan="1" style="text-align: right;"><strong style="color:red">Discount</strong></td>
+                    <td colspan="2" style="text-align: right; color:red">&#8369; - {{ number_format($summary->discount, 2) }}</td>
                 </tr>
             @endif
             {{-- <tr class="bg-aliceblue">
@@ -176,15 +176,15 @@
             </tr> --}}
             @if ($summary->sales_actual)
                 <tr class="bg-aliceblue">
-                    <td colspan="6"></td>
-                    <td><strong>Sales TAX</strong></td>
-                    <td style="text-align: right">&#8369; {{ number_format($summary->sales_actual, 2) }}</td>
+                    <td colspan="5"></td>
+                    <td colspan="1" style="text-align: right;"><strong>Sales TAX</strong></td>
+                    <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->sales_actual, 2) }}</td>
                 </tr>
             @endif
             <tr class="bg-aliceblue">
-                <td colspan="6"></td>
-                <td><strong>Grand Total</strong></td>
-                <td style="text-align: right">&#8369; {{ number_format($summary->grand_total, 2) }}</td>
+                <td colspan="5"></td>
+                <td colspan="1" style="text-align: right;"><strong>Grand Total</strong></td>
+                <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->grand_total, 2) }}</td>
             </tr>
         </tbody>
     </table>
