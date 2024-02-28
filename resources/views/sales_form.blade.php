@@ -483,15 +483,15 @@
                     var $this = this;
                     var sales_tax = parseFloat($this.summary.sales_tax);
                     $this.summary.sales_actual = 0;
-                    $this.summary.grand_total = $this.summary.sub_total - $this.summary.discount
+                    $this.summary.grand_total = parseFloat($this.summary.sub_total) + parseFloat($this.summary.shipping) - parseFloat($this.summary.discount) ;
                     if ($this.overview.vat_type == 'VAT INC' || $this.overview.vat_type == 'VAT EX' ) {
                         var hold = 0
-                        hold = ($this.summary.grand_total * (1 + (sales_tax / 100)))
+                        hold = ($this.summary.grand_total  * (1 + (sales_tax / 100)))
                         $this.summary.sales_actual = (hold - $this.summary.grand_total).toFixed(2)
                         $this.summary.grand_total = (hold).toFixed(2)
                     }
-                    $this.summary.grand_total = parseFloat($this.summary.grand_total) + parseFloat($this.summary
-                        .shipping)
+                    // $this.summary.grand_total = parseFloat($this.summary.grand_total) + parseFloat($this.summary.shipping)
+                    $this.summary.grand_total = parseFloat($this.summary.grand_total)
                 },
                 store() {
                     var $this = this;
