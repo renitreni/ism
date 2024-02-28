@@ -281,7 +281,7 @@
                                                 v-model="summary.discount">
                                     </div>
                                 </div>
-                                <div class="form-group row" v-show="displayVat">
+                                {{-- <div class="form-group row" v-show="displayVat">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax %</label>
                                     <div class="input-group col-md-4">
                                         <input type="number"class="form-control form-control-sm"
@@ -291,14 +291,14 @@
                                                     class="fa fa-percentage"></i></span>
                                         </div>
                                     </div>
-                                </div>
-                                {{-- <div class="form-group row" v-show="displayVat">
+                                </div> --}}
+                                <div class="form-group row" v-show="displayVat">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax</label>
                                     <div class="col-md-4">
                                         <input type="text" class="form-control-plaintext form-control-sm"
                                             v-bind:value="summary.sales_actual">
                                     </div>
-                                </div> --}}
+                                </div>
                                 <div class="form-group row">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Grand Total</label>
                                     <div class="col-md-4">
@@ -469,7 +469,6 @@
                     this.grandTotal()
                 },
                 'summary.sales_tax': function(value) {
-
                     this.grandTotal()
                 },
                 'summary.shipping': function(value) {
@@ -481,10 +480,11 @@
                 grandTotal() {
 
                     var $this = this;
-                    var sales_tax = parseFloat($this.summary.sales_tax);
+                    // var sales_tax = parseFloat($this.summary.sales_tax);
+                    var sales_tax = parseFloat(12);
                     $this.summary.sales_actual = 0;
                     $this.summary.grand_total = $this.summary.sub_total - $this.summary.discount
-                    if ($this.overview.vat_type == 'VAT INC') {
+                    if ($this.overview.vat_type == 'VAT INC' || $this.overview.vat_type == 'VAT EX' ) {
                         var hold = 0
                         hold = ($this.summary.grand_total * (1 + (sales_tax / 100)))
                         $this.summary.sales_actual = (hold - $this.summary.grand_total).toFixed(2)
