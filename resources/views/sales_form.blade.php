@@ -481,10 +481,10 @@
 
                     var $this = this;
                     // var sales_tax = parseFloat($this.summary.sales_tax);
-                    var sales_tax = parseFloat(12);
                     $this.summary.sales_actual = 0;
                     $this.summary.grand_total = $this.summary.sub_total - $this.summary.discount
                     if ($this.overview.vat_type == 'VAT INC' || $this.overview.vat_type == 'VAT EX' ) {
+                        var sales_tax = parseFloat(12);
                         var hold = 0
                         hold = ($this.summary.grand_total * (1 + (sales_tax / 100)))
                         $this.summary.sales_actual = (hold - $this.summary.grand_total).toFixed(2)
