@@ -16,6 +16,8 @@
         .header-content {
             font-weight: bold;
         }
+
+
         .footer {
             margin-top: 50px;
             width: 100%;
@@ -59,7 +61,7 @@
 <table style="width: 100%">
     <tbody>
     <tr>
-        <td class="title">Purchase Order</td>
+        <td class="title">Purchase Order </td>
     </tr>
     <tr>
         <td class="iden">{{ $purchase_info->po_no }}</td>
