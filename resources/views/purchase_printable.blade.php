@@ -17,11 +17,10 @@
             font-weight: bold;
         }
         .footer {
-            background-color: #f3c927;
-            padding: 10px;
-            bottom: 0;
+            margin-top: 50px;
             width: 100%;
-            margin-top: 500px;
+            background-color: white;
+            border-top: 1px solid black;
         }
         .bg-aliceblue {
             background-color: #c4ddf3;
