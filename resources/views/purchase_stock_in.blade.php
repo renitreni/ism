@@ -399,7 +399,9 @@
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
                                     '<a href="/purchase/view/' + value.id +
                                     '" class="btn btn-primary btn-view"><i class="fa fa-eye"></i></a>' +
-                                    edit +
+                                    '<a href="/purchase/print/' + value.id +
+                                    '" class="btn btn-primary btn-view"><i class="fa fa-print" aria-hidden="true"></i></a>' +
+edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
                                     '</div>'
                             },
