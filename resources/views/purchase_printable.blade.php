@@ -100,8 +100,8 @@
             </table>
         </td>
         <td width="20%">
-            <img src="{{ asset(''.$print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;">
-
+            {{-- <img src="{{ asset(''.$print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;"> --}}
+            <img src="{{ public_path('app/public/print/header/'.$print_setting->header_logo) }}" height="100">
         </td>
     </tr>
     </tbody>
