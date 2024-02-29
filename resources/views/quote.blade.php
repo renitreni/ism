@@ -192,7 +192,47 @@
                 </div>
             </div>
         </div>
-
+        <div id="printModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Sales Print</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row" style="text-align: center">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Warranty Slip</label>
+                                            <a href="/sales/print/" id="print_warranty" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> WS</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Quote</label>
+                                            <a href="/sales/quote/" id="print_quote" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> QN</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Delivery Receipt</label>
+                                            <a href="/sales/deliver/" id="print_delivery" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> DR</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Modal -->
         <div class="modal fade" id="salesReportMdl" tabindex="-1" role="dialog" aria-labelledby="salesReportMdl"
              aria-hidden="true">
@@ -360,8 +400,10 @@
                                     edit = '';
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
-                                    '<a href="/sales/view/' + value.id + '" class="btn btn-primary btn-view">' +
+                                    '<a href="/sales/view/' + value.id +
+                                    '" class="btn btn-primary btn-view">' +
                                     '<i class="fa fa-eye"></i></a>' +
+                                    '<a class="btn btn-primary display_print" data="' + value.id +'"><i class="fa fa-print" aria-hidden="true"></i></a>' +
                                     edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
                                     '</div>'
@@ -437,6 +479,13 @@
                         });
                         $('.btn-delivery-status').on('click', function () {
                             $('#deliveryStatusModal').modal('show');
+                        });
+                        $('.display_print').on('click', function(e) {
+                            var id = $(this).attr('data');
+                            $("#print_warranty").attr("href", "/sales/print/"+id);
+                            $("#print_quote").attr("href", "/sales/quote/"+id);
+                            $("#print_delivery").attr("href", "/sales/deliver/"+id);
+                            $('#printModal').modal('show');
                         });
                     }
                 });

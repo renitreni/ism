@@ -136,9 +136,9 @@
             </tr>
         @endif @endforeach
     <tr class="bg-aliceblue">
-        <td colspan="4"></td>
-        <td><strong>Sub-Total</strong></td>
-        <td>&#8369; {{ number_format($summary->sub_total, 2) }}</td>
+        <td colspan="2"></td>
+        <td colspan="2" style="text-align: right"><strong>Sub-Total</strong></td>
+        <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->sub_total, 2) }}</td>
     </tr>
     </tbody>
 </table>
