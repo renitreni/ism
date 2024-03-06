@@ -78,6 +78,7 @@ class CustomerController extends Controller
             "results" => DB::table('customers')
                            ->selectRaw("id as id, name as text, mobile_phone as phone, address")
                            ->whereRaw("name LIKE '%{$request->term}%'")
+                           ->where('deleted_at', null)
                            ->get(),
         ];
     }

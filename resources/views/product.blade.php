@@ -171,13 +171,52 @@
                             title: 'Action'
                         },
                         {data: 'name', name: 'products.name', title: 'Name'},
-                        {data: 'code', name: 'products.code', title: 'Product Model'},
+                        // {data: 'code', name: 'products.code', title: 'Product Model'},
                         {data: 'selling_price', name: 'products.selling_price', title: 'Selling Price'},
-                            @if(env('PRODUCT_BATCH_COL') == 'show')
+                        @if(env('PRODUCT_BATCH_COL') == 'show')
                         {data: 'batch', name: 'products.batch', title: 'Batch No.'},
-                            @endif
+                        @endif
                         {data: 'manufacturer', name: 'products.manufacturer', title: 'Brand'},
                         {data: 'category', name: 'products.category', title: 'Category'},
+                        {data: 'username', name: 'users.name', title: 'Created By'},
+                        {
+                            data: 'created_at',
+                            name: 'products.created_at',
+                            title: 'Created At',
+                            render: function (data) {
+                                if (data !== null) {
+                                    return new Date(data).toLocaleString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit'
+                                    });
+                                } else {
+                                    return '';
+                                }
+                            }
+                        },
+                        {
+                            data: 'updated_at',
+                            name: 'products.updated_at',
+                            title: 'Updated At',
+                            render: function (data) {
+                                if (data !== null) {
+                                    return new Date(data).toLocaleString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit'
+                                    });
+                                } else {
+                                    return '';
+                                }
+                            }
+                        },
                     ],
                     drawCallback: function () {
                         $('table .btn').on('click', function () {
