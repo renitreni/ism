@@ -9,6 +9,8 @@ use App\Exports\LaborTotalExcel;
 use App\Exports\POTotalExcel;
 use App\Exports\QTNTotalExcel;
 use App\Exports\SOTotalExcel;
+use App\Exports\POVITotalExcel;
+use App\Exports\SOVITotalExcel;
 use App\Product;
 use App\ProductDetail;
 use App\PurchaseInfo;
@@ -115,7 +117,10 @@ class DashboardController extends Controller
     {
         return (new PurchaseInfo())->total($request->start, $request->end)->sum('grand_total');
     }
-
+    public function totalPOVI(Request $request)
+    {
+        return (new PurchaseInfo())->totalvi($request->month, $request->year)->sum('grand_total');
+    }
     public function poTotalPrintable(Request $request): BinaryFileResponse
     {
         $date = now()->format('Y-m-d_H:i:s');
@@ -129,7 +134,20 @@ class DashboardController extends Controller
 
         return Excel::download(new POTotalExcel($start, $end), "PO_AUDIT-$date.xlsx");
     }
+    public function poviTotalPrintable(Request $request): BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H:i:s');
+        $month = "";
+        $year = date('Y');
+        if ($request->povi_month) {
+            $month = $request->povi_month;
+        }
+        if ($request->povi_year) {
+            $year = $request->povi_year;
+        }
 
+        return Excel::download(new POVITotalExcel($month, $year), "PO_VI-$date.xlsx");
+    }
     public function totalExpenses(Request $request)
     {
         return (new Expenses())->total($request->start, $request->end)->sum('total_amount');
@@ -139,14 +157,32 @@ class DashboardController extends Controller
     {
         return (new SalesOrder())->total($request->start, $request->end)->sum('grand_total');
     }
-
+    public function totalSOVI(Request $request)
+    {
+        return (new SalesOrder())->totalvi($request->month, $request->year)->sum('grand_total');
+    }
     public function soTotalPrintable($start, $end): BinaryFileResponse
     {
         $date = now()->format('Y - m - d_H:i:s');
 
         return Excel::download(new SOTotalExcel($start, $end), "SO_AUDIT-$date.xlsx");
     }
+    public function soviTotalPrintable(Request $request): BinaryFileResponse
+    {
+        $date = now()->format('Y - m - d_H:i:s');
+        $month = "";
+        $year = date('Y');
 
+        if ($request->sovi_month) {
+            $month = $request->sovi_month;
+        }
+        if ($request->sovi_year) {
+            $year = $request->sovi_year;
+        }
+
+
+        return Excel::download(new SOVITotalExcel($month, $year), "SOVI_AUDIT-$date.xlsx");
+    }
     public function qtnTotalPrintable($start, $end)
     {
         $date = now()->format('Y - m - d_H:i:s');

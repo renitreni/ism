@@ -70,6 +70,61 @@ class PurchaseInfo extends Model
             });
     }
 
+    public function totalvi($month, $year)
+    {
+
+        // return $this->selectRaw('purchase_infos.due_date, purchase_infos.po_no,
+        $query = $this->selectRaw('purchase_infos.due_date, purchase_infos.po_no,
+                subject,
+                vendors.name,
+                purchase_infos.payment_status,
+                purchase_infos.vat_type,
+                summaries.grand_total as grand_total')
+            ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
+            ->join('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
+            ->orderBy('purchase_infos.po_no', 'desc')
+            ->where('status', 'Received')
+            ->where('vat_type', 'VAT INC')
+            ->whereNull('sales_order_id');
+
+        // If both $month and $year are provided, filter by the specified month and year
+        if ($month && $year) {
+
+            $startOfMonth = $year . '-' . $month . '-01';
+            $endOfMonth = date('Y-m-t', strtotime($startOfMonth));
+
+
+            $query->whereBetween('purchase_infos.created_at', [$startOfMonth, $endOfMonth]);
+        }
+
+        if ($month && empty($year)) {
+            $year = date('Y');
+            $startOfMonth = $year . '-' . $month . '-01';
+            $endOfMonth = date('Y-m-t', strtotime($startOfMonth));
+
+            $query->whereBetween('purchase_infos.created_at', [$startOfMonth, $endOfMonth]);
+        }
+
+        if (empty($month) && $year) {
+            $start_month = 01;
+            $end_month = 12;
+            $startOfMonth = $year . '-' . $start_month . '-01';
+
+            $endOfMonth = $year . '-' . $end_month . '-31';
+            $endOfMonth = date('Y-m-t', strtotime($endOfMonth));
+
+
+            $query->whereBetween('purchase_infos.created_at', [$startOfMonth, $endOfMonth]);
+
+        }
+
+        // Get the sum of grand_total
+        // $totalGrandTotal = $query->sum('summaries.grand_total');
+
+        return $query;
+
+    }
+
     public function pricesAffected($productId)
     {
         return $this->query()
