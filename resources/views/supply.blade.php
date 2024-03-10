@@ -15,7 +15,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-12 mt-3">
-                                <table id="table-supplies" class="table table-striped nowrap table-general"
+                                <table id="table-supplies" class="table table-striped nowrap"
                                        style="width:100%"></table>
                             </div>
                         </div>
@@ -186,9 +186,9 @@
                             data: function (value) {
                                 return '<input class="form-control" value="'+value.product_name+'">';
                             }
-                            , name: 'products.name', title: 'Product Name', width: '100%'},
-                        {data: 'code', name: 'products.code', title: 'Product Model'},
-                        {data: 'selling_price', name: 'products.selling_price', title: 'Unit Price'},
+                            , name: 'products.name', title: 'Product Name', width: '50%'},
+                        // {data: 'code', name: 'products.code', title: 'Product Model'},
+                        {data: 'selling_price', name: 'products.selling_price', title: 'Unit Price',width: '10%'},
                         {
                             data: function (value) {
                                 if (value.unit == null) {
@@ -196,19 +196,19 @@
                                 }
                                 return '<a href="/supply/versus/' + value.product_id + '" target="_blank" class="btn btn-sm btn-info">' + value.quantity + ' ' + value.unit + '</a>';
                             },
-                            name: 'quantity', title: 'Quantity'
+                            name: 'quantity', title: 'Quantity',width: '10%'
                         },
                         {
                             data: function (value) {
                                 return '<a href="#" class="links-btn-po btn btn-sm btn-primary">' + value.po_count + '</a>';
                             },
-                            name: 'po_sum.total', title: 'PO'
+                            name: 'po_sum.total', title: 'PO',width: '5%'
                         },
                         {
                             data: function (value) {
                                 return '<a href="#" class="links-btn-so btn btn-sm btn-primary">' + value.so_count + '</a>';
                             },
-                            name: 'so_sum.total', title: 'SO'
+                            name: 'so_sum.total', title: 'SO',width: '5%'
                         },
                     ],
                     drawCallback: function () {

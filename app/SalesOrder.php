@@ -67,6 +67,49 @@ class SalesOrder extends Model
             });
     }
 
+    public function totalvi($month, $year)
+    {
+
+        $query =  $this->join('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
+            ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
+            ->where('delivery_status', 'Shipped')
+            ->where('vat_type', 'VAT INC')
+            ->whereNull('purchase_order_id');
+
+            if ($month && $year) {
+
+                $startOfMonth = $year . '-' . $month . '-01';
+                $endOfMonth = date('Y-m-t', strtotime($startOfMonth));
+
+                $query->whereBetween('sales_orders.created_at', [$startOfMonth, $endOfMonth]);
+            }
+
+            if ($month && empty($year)) {
+                $year = date('Y');
+                $startOfMonth = $year . '-' . $month . '-01';
+                $endOfMonth = date('Y-m-t', strtotime($startOfMonth));
+
+                $query->whereBetween('sales_orders.created_at', [$startOfMonth, $endOfMonth]);
+            }
+
+            if (empty($month) && $year) {
+                $start_month = 01;
+                $end_month = 12;
+                $startOfMonth = $year . '-' . $start_month . '-01';
+
+                $endOfMonth = $year . '-' . $end_month . '-31';
+                $endOfMonth = date('Y-m-t', strtotime($endOfMonth));
+
+
+                $query->whereBetween('sales_orders.created_at', [$startOfMonth, $endOfMonth]);
+
+            }
+
+        // $totalGrandTotal = $query->sum('summaries.grand_total');
+
+        return $query;
+    }
+
     public function totalQtn($start, $end)
     {
         return $this->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')

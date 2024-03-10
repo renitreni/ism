@@ -24,7 +24,7 @@
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <table id="table-product" class="table table-striped  table-general nowrap" style="width:100%"></table>
+                                <table id="table-product" class="table table-striped" style="width:100%"></table>
                             </div>
                         </div>
                     </div>
@@ -170,38 +170,19 @@
                             bSortable: false,
                             title: 'Action'
                         },
-                        {data: 'name', name: 'products.name', title: 'Name'},
+                        {data: 'name', name: 'products.name', title: 'Name',width: '30%'},
                         // {data: 'code', name: 'products.code', title: 'Product Model'},
                         {data: 'selling_price', name: 'products.selling_price', title: 'Selling Price'},
                         @if(env('PRODUCT_BATCH_COL') == 'show')
                         {data: 'batch', name: 'products.batch', title: 'Batch No.'},
                         @endif
-                        {data: 'manufacturer', name: 'products.manufacturer', title: 'Brand'},
+                        // {data: 'manufacturer', name: 'products.manufacturer', title: 'Brand'},
                         {data: 'category', name: 'products.category', title: 'Category'},
                         {data: 'username', name: 'users.name', title: 'Created By'},
                         {
                             data: 'created_at',
                             name: 'products.created_at',
                             title: 'Created At',
-                            render: function (data) {
-                                if (data !== null) {
-                                    return new Date(data).toLocaleString('en-US', {
-                                        year: 'numeric',
-                                        month: 'short',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        second: '2-digit'
-                                    });
-                                } else {
-                                    return '';
-                                }
-                            }
-                        },
-                        {
-                            data: 'updated_at',
-                            name: 'products.updated_at',
-                            title: 'Updated At',
                             render: function (data) {
                                 if (data !== null) {
                                     return new Date(data).toLocaleString('en-US', {

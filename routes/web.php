@@ -31,10 +31,14 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/home/po', 'DashboardController@orderedPO')->name('home.po');
     Route::post('/home/so', 'DashboardController@quoteSO')->name('home.so');
     Route::post('/home/total/so', 'DashboardController@totalSO')->name('home.total.so');
+    Route::post('/home/total/sovi', 'DashboardController@totalSOVI')->name('home.total.sovi');
     Route::post('/home/total/po', 'DashboardController@totalPO')->name('home.total.po');
+    Route::post('/home/total/povi', 'DashboardController@totalPOVI')->name('home.total.povi');
     Route::post('/home/total/expenses', 'DashboardController@totalExpenses')->name('home.total.expenses');
     Route::get('/home/assets/printable', 'DashboardController@assetsPrintable')->name('home.assets.printable');
     Route::post('/home/po/printable', 'DashboardController@poTotalPrintable')->name('home.po.printable');
+    Route::post('/home/povi/printable', 'DashboardController@poviTotalPrintable')->name('home.povi.printable');
+    Route::post('/home/sovi/printable', 'DashboardController@soviTotalPrintable')->name('home.sovi.printable');
     Route::get('/home/so/printable/{start}/{end}', 'DashboardController@soTotalPrintable')->name('home.so.printable');
     Route::get('/home/qtn/printable/{start}/{end}', 'DashboardController@qtnTotalPrintable')->name('home.qtn.printable');
     Route::get('/home/labor', 'DashboardController@totalLaborPrintable')->name('home.labor.printable');
