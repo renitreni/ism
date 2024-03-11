@@ -438,11 +438,20 @@
                 mounted() {
                     var $this = this;
 
-                    $this.getSOTotals();
-                    $this.getPOTotals();
-                    $this.getExpenseTotals();
-                    $this.getPOVITotals();
-                    $this.getSOVITotals();
+                    $(document).ready(function(){
+                        var currentDate = new Date();
+                        var currentMonth = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+                        var currentYear = currentDate.getFullYear();
+                        $('#sovi_month').val(currentMonth)
+                        $('#sovi_year').val(currentYear)
+                        $('#povi_month').val(currentMonth)
+                        $('#povi_year').val(currentYear)
+                        $this.getSOTotals();
+                        $this.getPOTotals();
+                        $this.getExpenseTotals();
+                        $this.getPOVITotals();
+                        $this.getSOVITotals();
+                    })
 
                     fetch('https://geolocation-db.com/json/')
                     .then((response) => {
