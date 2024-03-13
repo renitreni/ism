@@ -24,8 +24,9 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
 
     public function query()
     {
+
         return ProductDetail::query()
-            ->selectRaw('
+        ->selectRaw('
             so.status,
             so.due_date,
             so.agent,
@@ -35,18 +36,23 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             qty,
             vendor_price,
             selling_price,
-            discount_item,
-            ((qty * selling_price) + discount_item) as subtotal,
+            CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.discount END AS discount,
+            CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.shipping END AS shipping,
+            CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.sales_tax END AS sales_tax,
+            CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE ((qty * selling_price) + d.shipping + d.sales_tax - d.discount) END as subtotal,
             so.payment_status,
-            so.payment_method , so.vat_type')
-            ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
-            ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
-            ->whereIn('so.status', ['Sales', 'Project'])
-            ->when($this->start && $this->end, function ($q) {
-                return $q->whereBetween('due_date', [$this->start, $this->end]);
-            })
-            ->whereNull('purchase_order_id')
-            ->orderBy('so.so_no', 'desc');
+            so.payment_method,
+            so.vat_type'
+        )
+        ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
+        ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
+        ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
+        ->whereIn('so.status', ['Sales', 'Project'])
+        ->when($this->start && $this->end, function ($q) {
+            return $q->whereBetween('due_date', [$this->start, $this->end]);
+        })
+        // ->whereNull('product_details.purchase_order_id') // Specify the table
+        ->orderBy('so.so_no', 'desc');
     }
 
     public function columnWidths(): array
@@ -63,6 +69,12 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             'J' => 15,
             'K' => 15,
             'L' => 15,
+            'M' => 15,
+            'N' => 15,
+            'O' => 15,
+            'P' => 15,
+            'Q' => 15,
+            'R' => 15,
         ];
     }
 
@@ -79,6 +91,8 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             'Vendor Price',
             'Selling Price',
             'Discount',
+            'Shipping',
+            'Sales Tax',
             'Sub Total',
             'Payment Status',
             'Form Of Payment',
