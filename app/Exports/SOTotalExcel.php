@@ -26,7 +26,7 @@ class SOTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColu
     public function query()
     {
         return (new SalesOrder())->total($this->start, $this->end)
-            ->selectRaw('so_no,customers.name,discount,shipping,sales_tax,grand_total,agent,payment_status,sales_orders.updated_at');
+            ->selectRaw('so_no,customers.name,discount,shipping,sales_actual,grand_total,agent,payment_status,sales_orders.updated_at');
     }
 
     public function headings()
