@@ -39,7 +39,7 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
             CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.discount END AS discount,
             CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.shipping END AS shipping,
             CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.sales_actual END AS sales_tax,
-            CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE ((qty * selling_price) + d.shipping + d.sales_tax - d.discount) END as subtotal,
+            CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE ((qty * selling_price) + d.shipping + d.sales_actual - d.discount) END as subtotal,
             so.payment_status,
             so.payment_method,
             so.vat_type'
