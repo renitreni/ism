@@ -59,6 +59,7 @@ class PurchaseInfo extends Model
         subject,
         vendors.name,
         purchase_infos.payment_status,
+        purchase_infos.vat_type,
         summaries.grand_total')
             ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
             ->join('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
