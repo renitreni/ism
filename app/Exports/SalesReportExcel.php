@@ -107,15 +107,11 @@ $subQuery = ProductDetail::query()->selectRaw('
 
 $results = $mainQuery
     ->unionAll($subQuery)
-    ->groupBy('so_no') // Group by sales order number to ensure unique entries
+    // ->groupBy('so_no') // Group by sales order number to ensure unique entries
     ->orderBy('so_no', 'desc');
 
         return $results;
-        //         ->get();
 
-        // echo("<PRE>");
-        // print_r($results);
-        // die();
 
     }
 
