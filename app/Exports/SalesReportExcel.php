@@ -54,8 +54,7 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
         // // ->whereNull('product_details.purchase_order_id') // Specify the table
         // ->orderBy('so.so_no', 'desc');
 
-        $mainQuery = ProductDetail::query()->selectRaw(
-            '
+        $mainQuery = ProductDetail::query()->selectRaw('
         so.status,
         so.due_date,
         so.agent,
@@ -72,17 +71,16 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
         so.payment_status,
         so.payment_method,
         so.vat_type'
-        )
-            ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
-            ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
-            ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
-            ->whereIn('so.status', ['Sales', 'Project'])
-            ->when($this->start && $this->end, function ($q) {
-                return $q->whereBetween('due_date', [$this->start, $this->end]);
-            });
+    )
+    ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
+    ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
+    ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
+    ->whereIn('so.status', ['Sales', 'Project'])
+    ->when($this->start && $this->end, function ($q) {
+        return $q->whereBetween('due_date', [$this->start, $this->end]);
+    });
 
-        $subQuery = ProductDetail::query()->selectRaw(
-            '
+$subQuery = ProductDetail::query()->selectRaw('
         so.status,
         so.due_date,
         so.agent,
@@ -99,18 +97,18 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
         NULL as payment_status,
         NULL as payment_method,
         NULL as vat_type'
-        )
-            ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
-            ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
-            ->whereIn('so.status', ['Sales', 'Project'])
-            ->groupBy('so.so_no')
-            ->orderByRaw('MAX(grand_total) DESC') // Order by the maximum grand total
-            ->limit(1);
+    )
+    ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
+    ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
+    ->whereIn('so.status', ['Sales', 'Project'])
+    ->groupBy('so.so_no')
+    ->orderByRaw('MAX(grand_total) DESC') // Order by the maximum grand total
+    ->limit(1);
 
-        $results = $mainQuery
-            ->unionAll($subQuery)
-            ->groupBy('so_no') // Group by sales order number to ensure unique entries
-            ->orderBy('so_no', 'desc');
+$results = $mainQuery
+    ->unionAll($subQuery)
+    ->groupBy('so_no') // Group by sales order number to ensure unique entries
+    ->orderBy('so_no', 'desc');
 
         return $results;
         //         ->get();
