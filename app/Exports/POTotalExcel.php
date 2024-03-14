@@ -32,7 +32,7 @@ class POTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColu
     public function headings()
     : array
     {
-        return ['Due Date', 'PO No.', 'DR/SI No.', 'Vendor Name', 'Payment Status', 'Grand Total'];
+        return ['Due Date', 'PO No.', 'DR/SI No.', 'Vendor Name', 'Payment Status','Vat Type', 'Grand Total'];
     }
 
     public function styles(Worksheet $sheet)
@@ -52,6 +52,7 @@ class POTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColu
             'D' => 20,
             'E' => 20,
             'F' => 20,
+            'G' => 20,
         ];
     }
 }
