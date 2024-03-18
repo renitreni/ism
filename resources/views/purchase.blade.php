@@ -263,7 +263,7 @@
                                 <div class="form-group">
                                     <label class="control-label">Pick a type</label>
                                     <select class="form-control" v-model="overview.po_status">
-                                        <option value="">-- Select Options --</option>
+                                        {{-- <option value="">-- Select Options --</option> --}}
                                         <option value="PO">Purchase Order</option>
                                         <option value="SI">Stock In</option>
                                     </select>
