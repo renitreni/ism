@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles as WithStylesAlias;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-
+use Illuminate\Support\Facades\DB;
 class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColumnWidths, WithColumnFormatting
 {
     public $start;
@@ -25,93 +25,34 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
     public function query()
     {
 
-        // return ProductDetail::query()
-        // ->selectRaw('
-        //     so.status,
-        //     so.due_date,
-        //     so.agent,
-        //     so.so_no,
-        //     c.name,
-        //     product_name,
-        //     qty,
-        //     vendor_price,
-        //     selling_price,
-        //     CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.discount END AS discount,
-        //     CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.shipping END AS shipping,
-        //     CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.sales_actual END AS sales_tax,
-        //     CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE ((qty * selling_price) + d.shipping + d.sales_actual - d.discount) END as subtotal,
-        //     so.payment_status,
-        //     so.payment_method,
-        //     so.vat_type'
-        // )
-        // ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
+        return ProductDetail::query()
+        ->selectRaw('
+            so.status,
+            so.due_date,
+            so.agent,
+            so.so_no,
+            c.name,
+            product_name,
+            qty,
+            vendor_price,
+            selling_price,
+            discount,
+            shipping,
+            actual_sales,
+           (qty * selling_price) + shipping + actual_sales - discount as subtotal,
+            so.payment_status,
+            so.payment_method,
+            so.vat_type'
+        )
+        ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
         // ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
-        // ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
-        // ->whereIn('so.status', ['Sales', 'Project'])
-        // ->when($this->start && $this->end, function ($q) {
-        //     return $q->whereBetween('due_date', [$this->start, $this->end]);
-        // })
-        // // ->whereNull('product_details.purchase_order_id') // Specify the table
-        // ->orderBy('so.so_no', 'desc');
-
-        $mainQuery = ProductDetail::query()->selectRaw('
-        so.status,
-        so.due_date,
-        so.agent,
-        so.so_no,
-        c.name,
-        product_name,
-        qty,
-        vendor_price,
-        selling_price,
-        CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.discount END AS discount,
-        CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.shipping END AS shipping,
-        CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE d.sales_actual END AS sales_tax,
-        CASE WHEN qty IS NULL OR qty = 0 THEN NULL ELSE ((qty * selling_price) + d.shipping + d.sales_actual - d.discount) END as subtotal,
-        so.payment_status,
-        so.payment_method,
-        so.vat_type'
-    )
-    ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
-    ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
-    ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
-    ->whereIn('so.status', ['Sales', 'Project'])
-    ->when($this->start && $this->end, function ($q) {
-        return $q->whereBetween('due_date', [$this->start, $this->end]);
-    });
-
-$subQuery = ProductDetail::query()->selectRaw('
-        so.status,
-        so.due_date,
-        so.agent,
-        so.so_no,
-        NULL as name,
-        NULL as product_name,
-        NULL as qty,
-        NULL as vendor_price,
-        NULL as selling_price,
-        SUM(d.discount) AS discount,
-        SUM(d.shipping) AS shipping,
-        SUM(d.sales_actual) AS sales_tax,
-        NULL as subtotal,
-        NULL as payment_status,
-        NULL as payment_method,
-        NULL as vat_type'
-    )
-    ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
-    ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
-    ->whereIn('so.status', ['Sales', 'Project'])
-    ->groupBy('so.so_no')
-    ->orderByRaw('MAX(grand_total) DESC') // Order by the maximum grand total
-    ->limit(1);
-
-$results = $mainQuery
-    ->unionAll($subQuery)
-    // ->groupBy('so_no') // Group by sales order number to ensure unique entries
-    ->orderBy('so_no', 'desc');
-
-        return $results;
-
+        ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
+        ->whereIn('so.status', ['Sales', 'Project'])
+        ->when($this->start && $this->end, function ($q) {
+            return $q->whereBetween('due_date', [$this->start, $this->end]);
+        })
+        // ->whereNull('product_details.purchase_order_id') // Specify the table
+        ->orderBy('so.so_no', 'desc');
 
     }
 

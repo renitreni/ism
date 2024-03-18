@@ -177,30 +177,55 @@ class SalesOrderController extends Controller
         $data['overview']['so_no']       = SalesOrder::generate()->newSONo();
         $data['overview']['assigned_to'] = auth()->id();
         $data['overview']['created_at']  = Carbon::now()->format('Y-m-d');
-
         $id = DB::table('sales_orders')->insertGetId($data['overview']);
 
         // Insert in product Details
         $product_details = [];
         $pd              = false;
+        $count = 0;
         if (isset($data['products'])) {
             foreach ($data['products'] as $item) {
-                if (count($item) > 2) {
-                    $product_details[] = [
-                        //'purchase_order_id' => $id,
-                        'sales_order_id' => $id,
-                        //'product_return_id' => '',
-                        'product_id'     => $item['product_id'],
-                        'product_name'   => $item['product_name'],
-                        'notes'          => $item['notes'],
-                        'qty'            => $item['qty'],
-                        'selling_price'  => $item['selling_price'],
-                        'vendor_price'   => $item['vendor_price'],
-                        'discount_item'  => $item['discount_item'],
-                    ];
-                }
-            }
 
+                // print_r($item);
+
+                if($count == 0){
+                    if (count($item) > 2) {
+                        $product_details[] = [
+                            //'purchase_order_id' => $id,
+                            'sales_order_id' => $id,
+                            //'product_return_id' => '',
+                            'product_id'     => $item['product_id'],
+                            'product_name'   => $item['product_name'],
+                            'notes'          => $item['notes'],
+                            'qty'            => $item['qty'],
+                            'selling_price'  => $item['selling_price'],
+                            'vendor_price'   => $item['vendor_price'],
+                            'discount'  => $data['summary']['discount'],
+                            'shipping'  => $data['summary']['shipping'],
+                            'actual_sales'  => $data['summary']['sales_actual'],
+                        ];
+                    }
+                }else{
+                    if (count($item) > 2) {
+
+                        $product_details[] = [
+                            //'purchase_order_id' => $id,
+                            'sales_order_id' => $id,
+                            //'product_return_id' => '',
+                            'product_id'     => $item['product_id'],
+                            'product_name'   => $item['product_name'],
+                            'notes'          => $item['notes'],
+                            'qty'            => $item['qty'],
+                            'selling_price'  => $item['selling_price'],
+                            'vendor_price'   => $item['vendor_price'],
+                            'discount'  => "0.0",
+                            'shipping'  => "0.0",
+                            'actual_sales'  => "0.0",
+                        ];
+                    }
+                }
+                $count++;
+            }
             $pd = DB::table('product_details')->insert($product_details);
         }
 
