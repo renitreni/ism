@@ -263,7 +263,7 @@
                                 <div class="form-group">
                                     <label class="control-label">Pick a type</label>
                                     <select class="form-control" v-model="overview.po_status">
-                                        <option value="">-- Select Options --</option>
+                                        {{-- <option value="">-- Select Options --</option> --}}
                                         <option value="PO">Purchase Order</option>
                                         <option value="SI">Stock In</option>
                                     </select>
@@ -450,7 +450,7 @@ edit +
                                     $class_color = 'btn-primary';
                                     $name = "Stock In"
                                 }else{
-                                    $name = "Select Options"
+                                    $name = "Purchase Order"
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
                                     '<a href="#" value="'+value.po_status+'" class="btn ' + $class_color + '  btn-po-status">' +
