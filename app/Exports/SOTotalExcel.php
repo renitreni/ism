@@ -32,7 +32,7 @@ class SOTotalExcel implements FromQuery, WithHeadings, WithStylesAlias, WithColu
     public function headings()
     : array
     {
-        return ['SO No.', 'Vendor Name', 'Grand Total', 'Agent', 'Payment Status','Vat Type', 'Date Of Purchased'];
+        return ['SO No.', 'Customer Name', 'Grand Total', 'Agent', 'Payment Status','Vat Type', 'Date Of Purchased'];
     }
 
     public function styles(Worksheet $sheet)
