@@ -450,7 +450,7 @@ edit +
                                     $class_color = 'btn-primary';
                                     $name = "Stock In"
                                 }else{
-                                    $name = "Select Options"
+                                    $name = "Purchase Order"
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
                                     '<a href="#" value="'+value.po_status+'" class="btn ' + $class_color + '  btn-po-status">' +
