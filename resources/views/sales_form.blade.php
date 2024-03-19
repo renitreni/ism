@@ -210,7 +210,7 @@
                                                     <input readonly type="text"
                                                         class="form-control-plaintext form-control-sm total-grid"
                                                         style="width: 100px;"
-                                                        v-bind:value="(product.selling_price * product.qty) + parseFloat(product.discount_item)">
+                                                        v-bind:value="(product.selling_price * product.qty)">
                                                 </td>
                                                 <td v-if="viewType != 2">
                                                     <button class="btn btn-sm btn-block btn-danger"
@@ -440,8 +440,7 @@
                         var hold = 0;
                         $.each(products, function(x, product) {
                             if (product.product_name) {
-                                hold += (product.selling_price * product.qty) + parseFloat(product
-                                    .discount_item)
+                                hold += (product.selling_price * product.qty)
                             }
                         });
 
