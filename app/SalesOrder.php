@@ -23,32 +23,50 @@ class SalesOrder extends Model
             return '';
         }
 
-        $so_no_list = $this->newQuery()
-            ->where('so_no', 'like', '%SO%')
-            ->orderBy('id', 'desc')
-            ->limit(1)
-            ->get()
-            ->toArray();
+        $so_no_list[] = $this->newQuery()
+        ->where('so_no', 'like', '%SO%')
+        ->max('so_no');
+
+        // $so_no_list = $this->newQuery()
+        //     ->where('so_no', 'like', '%SO%')
+        //     ->orderBy('id', 'desc')
+        //     ->limit(1)
+        //     ->get()
+        //     ->toArray();
+
+
         $str_length = 5;
         $year       = Carbon::now()->format('y');
 
-        if (isset($so_no_list[0]["so_no"])) {
-            $so_no = $so_no_list[0]["so_no"];
+        if (isset($so_no_list)) {
+            $so_no = $so_no_list;
         }
 
-        if (count($so_no_list) == 0 || substr(explode('-', $so_no)[0], -2) != $year) {
-            $num = 1;
-            $str = substr("0000{$num}", -$str_length);
+        $numbering = explode('-', $so_no[0])[1];
 
-            return 'SO'.$year.'-'.$str;
-        } else {
-            $numbering = explode('-', $so_no)[1];
-            $year      = Carbon::now()->format('y');
-            $final_num = (int) $numbering + 1;
-            $str       = substr("0000{$final_num}", -$str_length);
+        $year      = Carbon::now()->format('y');
+        $final_num = (int) $numbering + 1;
+        $str       = substr("0000{$final_num}", -$str_length);
 
-            return 'SO'.$year.'-'.$str;
-        }
+        return 'SO'.$year.'-'.$str;
+
+
+        // if (count($so_no_list) == 0 || substr(explode('-', $so_no)[0], -2) != $year) {
+        //     $num = 1;
+        //     $str = substr("0000{$num}", -$str_length);
+        //     print_r($str);
+        //     die();
+        //     return 'SO'.$year.'-'.$str;
+        // } else {
+        //     $numbering = explode('-', $so_no)[1];
+        //     $year      = Carbon::now()->format('y');
+        //     $final_num = (int) $numbering + 1;
+        //     $str       = substr("0000{$final_num}", -$str_length);
+        //     print_r($str);
+        //     die();
+        //     return 'SO'.$year.'-'.$str;
+        // }
+
     }
 
     public static function updateInfo($overview)

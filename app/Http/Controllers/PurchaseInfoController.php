@@ -334,10 +334,164 @@ class PurchaseInfoController extends Controller
 
     public function updateStatus(Request $request)
     {
-        $data          = $request->input();
-        $purchase_info = DB::table('purchase_infos')->where('id', $data['id'])->get()[0];
+        $data  = $request->input('data');
+        $bulk  = $request->input('bulk_id');
 
-        if ($purchase_info->status != $data['status']) {
+        if($bulk){
+            $id = explode(',', $bulk);
+            unset($id[0]);
+            $index = 1;
+
+            for ($x=0; $x < count($id) ; $x++) {
+                $po_id = $id[$index];
+                $purchase_info = DB::table('purchase_infos')->where('id', $po_id)->get()[0];
+
+                // Record Action in Audit Log
+                $name = auth()->user()->name;
+
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $purchase_info->po_no,
+                        'current' => $data['status'],
+                        'method' => "UPDATED"
+                    ]);
+                }
+                if ($purchase_info->status != $data['status']) {
+
+                    $purchase = PurchaseInfo::find($po_id);
+                    $purchase->received_date = null;
+                    $purchase->status = $data['status'];
+                    if ($data['status'] == 'Received') {
+                        $purchase->received_date = Carbon::now()->format('Y-m-d');
+                    }
+                    $purchase->save();
+
+                }
+                if ($purchase_info->vat_type != $data['vat_type']) {
+                    DB::table('purchase_infos')->where('id', $po_id)
+                        ->update(['vat_type' => $data['vat_type']]);
+
+                }
+                if ($purchase_info->po_status != $data['po_status']) {
+                    DB::table('purchase_infos')->where('id', $po_id)
+                        ->update(['po_status' => $data['po_status']]);
+                }
+                if ($purchase_info->received_date != $data['received_date']) {
+                    DB::table('purchase_infos')->where('id', $po_id)
+                        ->update(['received_date' => Carbon::parse($data['received_date'])->format('Y-m-d')]);
+
+                }
+                $index++;
+
+            }
+        Supply::recalibrate();
+
+            return ['success' => true];
+
+        }else{
+
+            $purchase_info = DB::table('purchase_infos')->where('id', $data['id'])->get()[0];
+
+            if ($purchase_info->status != $data['status']) {
+
+                // Record Action in Audit Log
+                $name = auth()->user()->name;
+
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $data['po_no'],
+                        'current' => $data['status'],
+                        'method' => "UPDATED"
+                    ]);
+                }
+
+
+                $purchase = PurchaseInfo::find($data['id']);
+                $purchase->received_date = null;
+                $purchase->status = $data['status'];
+                if ($data['status'] == 'Received') {
+                    $purchase->received_date = Carbon::now()->format('Y-m-d');
+                }
+
+                $purchase->save();
+
+                Supply::recalibrate();
+
+                return ['success' => true];
+            }
+
+            if ($purchase_info->vat_type != $data['vat_type']) {
+                DB::table('purchase_infos')->where('id', $data['id'])
+                    ->update(['vat_type' => $data['vat_type']]);
+                Supply::recalibrate();
+
+                return ['success' => true];
+            }
+
+            if ($purchase_info->po_status != $data['po_status']) {
+                DB::table('purchase_infos')->where('id', $data['id'])
+                    ->update(['po_status' => $data['po_status']]);
+                Supply::recalibrate();
+
+                return ['success' => true];
+            }
+
+            if ($purchase_info->received_date != $data['received_date']) {
+                DB::table('purchase_infos')->where('id', $data['id'])
+                    ->update(['received_date' => Carbon::parse($data['received_date'])->format('Y-m-d')]);
+                Supply::recalibrate();
+
+                return ['success' => true];
+            }
+        }
+
+        return ['success' => false];
+    }
+
+    public function updatePaymentStatus(Request $request)
+    {
+        $data  = $request->input('data');
+        $bulk  = $request->input('bulk_id');
+
+        if($bulk){
+
+            $id = explode(',', $bulk);
+            unset($id[0]);
+            $index = 1;
+
+            for ($x=0; $x < count($id) ; $x++) {
+                $po_id = $id[$index];
+                $purchase_info = DB::table('purchase_infos')->where('id', $po_id)->get()[0];
+                // Record Action in Audit Log
+                $name = auth()->user()->name;
+
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $purchase_info->po_no,
+                        'current' => $data['status'],
+                        'method' => "UPDATED"
+                    ]);
+                }
+
+                DB::table('purchase_infos')->where('id', $po_id)
+                ->update(['payment_status' => $data['payment_status']]);
+
+                $index++;
+
+            }
+
+            return ['success' => true];
+
+        }else{
 
             // Record Action in Audit Log
             $name = auth()->user()->name;
@@ -348,72 +502,19 @@ class PurchaseInfoController extends Controller
                     'inputs' => $request->input(),
                     'url' => $request->url(),
                     'action_id' => $data['po_no'],
-                    'current' => $data['status'],
+                    'current' => $data['payment_status'],
                     'method' => "UPDATED"
                 ]);
             }
 
-
-            $purchase = PurchaseInfo::find($data['id']);
-            $purchase->received_date = null;
-            $purchase->status = $data['status'];
-            if ($data['status'] == 'Received') {
-                $purchase->received_date = Carbon::now()->format('Y-m-d');
-            }
-
-            $purchase->save();
-
-
-            return ['success' => true];
-        }
-
-        if ($purchase_info->vat_type != $data['vat_type']) {
             DB::table('purchase_infos')->where('id', $data['id'])
-                ->update(['vat_type' => $data['vat_type']]);
+                ->update(['payment_status' => $data['payment_status']]);
+
 
             return ['success' => true];
+
         }
 
-        if ($purchase_info->po_status != $data['po_status']) {
-            DB::table('purchase_infos')->where('id', $data['id'])
-                ->update(['po_status' => $data['po_status']]);
-
-            return ['success' => true];
-        }
-
-        if ($purchase_info->received_date != $data['received_date']) {
-            DB::table('purchase_infos')->where('id', $data['id'])
-                ->update(['received_date' => Carbon::parse($data['received_date'])->format('Y-m-d')]);
-
-            return ['success' => true];
-        }
-
-        return ['success' => false];
-    }
-
-    public function updatePaymentStatus(Request $request)
-    {
-        $data = $request->input();
-
-        // Record Action in Audit Log
-        $name = auth()->user()->name;
-
-        if($name != 'Super Admin') {
-            \App\AuditLog::record([
-                'name' => $name,
-                'inputs' => $request->input(),
-                'url' => $request->url(),
-                'action_id' => $data['po_no'],
-                'current' => $data['payment_status'],
-                'method' => "UPDATED"
-            ]);
-        }
-
-        DB::table('purchase_infos')->where('id', $data['id'])
-            ->update(['payment_status' => $data['payment_status']]);
-
-
-        return ['success' => true];
     }
 
     public function show($id)

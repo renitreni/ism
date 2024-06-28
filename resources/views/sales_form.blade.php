@@ -59,7 +59,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Sales Order</label>
-                                    <input type="text" name="so_no" class="form-control form-control-sm"
+                                    <input type="text" name="so_no" readonly class="form-control form-control-sm"
                                         v-model="overview.so_no">
                                 </div>
                                 <div class="form-group">

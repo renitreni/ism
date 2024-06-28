@@ -84,6 +84,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/sales/delivery/update', 'SalesOrderController@updateDeliveryStatus')->name('sales.delivery.update')->middleware('can:salesdeliveryupdate');
     Route::get('/sales/report/{start}/{end}', 'SalesOrderController@downloadSaleReport')->name('sales.report');
     Route::get('/sales/report/all', 'SalesOrderController@downloadSaleReportAll')->name('sales.report.all');
+    Route::post('/sales/clone', 'SalesOrderController@clone_so')->name('sales.clone');
 
     Route::get('/vendors', 'VendorController@index')->name('vendor')->middleware('can:vendors');
     Route::get('/vendors/create', 'VendorController@create')->name('vendor.create')->middleware('can:vendorscreate');
@@ -132,6 +133,8 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/supply/po/{id}', 'SupplyController@previewPO')->name('supply.po.preview');
     Route::get('/supply/so/{id}', 'SupplyController@previewSO')->name('supply.so.preview');
     Route::get('/supply/versus/{id}', 'SupplyController@versus')->name('supply.so.preview');
+    Route::post('/supply/recalibrate_data', 'SupplyController@recalibrate_data')->name('recalibrate.data');
+
 
     Route::get('/users', 'UserController@index')->name('users')->middleware('can:useraccounts');
     Route::get('/user/detail/{id}', 'UserController@show')->name('user.detail')->middleware('can:useraccountsupdate');
