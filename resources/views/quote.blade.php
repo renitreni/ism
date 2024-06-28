@@ -406,6 +406,7 @@
                                     '<a class="btn btn-primary display_print" data="' + value.id +'"><i class="fa fa-print" aria-hidden="true"></i></a>' +
                                     edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
+                                    '<button type="button" class="btn btn-danger btn-clone" data="' + value.id + '" data-so="' + value.so_no +'" ><i class="fa fa-clone"></i></button>' +
                                     '</div>'
                             },
                             searchable: false,
@@ -467,6 +468,28 @@
                         });
                         $('.btn-destroy').on('click', function () {
                             $this.destroy();
+                        });
+                        $('.btn-clone').on('click', function() {
+                            let id = $(this).attr('data');
+                            let so = $(this).attr('data-so');
+                            Swal.fire({
+                                title: "Do you want to clone this "+so+"?",
+                                showCancelButton: true,
+                                confirmButtonText: "Clone"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: "{{ route('sales.clone') }}",
+                                        method: 'POST',
+                                        data: {id: id},
+                                        success(value) {
+                                            Swal.fire('Cloned!', 'Your file has been cloned.', 'success');
+                                            $this.dt.draw();
+                                        }
+                                    });
+                                }
+                            });
+
                         });
                         $('.btn-status').on('click', function () {
                             $('#statusModal').modal('show');

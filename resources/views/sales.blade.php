@@ -79,13 +79,14 @@
                                     </select>
                                 </div>
                                 <div class="form-group" style="padding-top:32px;">
-                                    <button class="btn btn-info" id="filter_search" > Search </button>
+                                    <button class="btn btn-info" id="filter_search"> Search </button>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12 mt-3">
-                                <table id="table-sales" class="table table-striped nowrap table-general" style="width:100%; text-align:center;">
+                                <table id="table-sales" class="table table-striped nowrap table-general"
+                                    style="width:100%; text-align:center;">
                                 </table>
                             </div>
                         </div>
@@ -209,12 +210,14 @@
                                             @endcan
                                         @endcan
                                     </select>
-                                        @cannot('statusUpdateToUnshipped')
-                                            <label for="">You dont have permission to Not Shipped please contact the administrator</label>
-                                        @endcannot
-                                        @cannot('statusUpdateToShipped')
-                                            <label for="">You dont have permission to Shipped please contact the administrator</label>
-                                        @endcannot
+                                    @cannot('statusUpdateToUnshipped')
+                                        <label for="">You dont have permission to Not Shipped please contact the
+                                            administrator</label>
+                                    @endcannot
+                                    @cannot('statusUpdateToShipped')
+                                        <label for="">You dont have permission to Shipped please contact the
+                                            administrator</label>
+                                    @endcannot
                                 </div>
                             </div>
                         </div>
@@ -276,19 +279,24 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Warranty Slip</label>
-                                            <a href="/sales/print/" id="print_warranty" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> WS</a>
+                                            <a href="/sales/print/" id="print_warranty"
+                                                class="btn btn-primary btn-block"><i class="fa fa-print"
+                                                    aria-hidden="true"></i> WS</a>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Quote</label>
-                                            <a href="/sales/quote/" id="print_quote" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> QN</a>
+                                            <a href="/sales/quote/" id="print_quote" class="btn btn-primary btn-block"><i
+                                                    class="fa fa-print" aria-hidden="true"></i> QN</a>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="control-label">Delivery Receipt</label>
-                                            <a href="/sales/deliver/" id="print_delivery" class="btn btn-primary btn-block"><i class="fa fa-print" aria-hidden="true"></i> DR</a>
+                                            <a href="/sales/deliver/" id="print_delivery"
+                                                class="btn btn-primary btn-block"><i class="fa fa-print"
+                                                    aria-hidden="true"></i> DR</a>
                                         </div>
                                     </div>
                                 </div>
@@ -477,9 +485,11 @@
                                     '<a href="/sales/view/' + value.id +
                                     '" class="btn btn-primary btn-view">' +
                                     '<i class="fa fa-eye"></i></a>' +
-                                    '<a class="btn btn-primary display_print" data="' + value.id +'"><i class="fa fa-print" aria-hidden="true"></i></a>' +
+                                    '<a class="btn btn-primary display_print" data="' + value.id +
+                                    '"><i class="fa fa-print" aria-hidden="true"></i></a>' +
                                     edit +
                                     '<button type="button" class="btn btn-danger btn-destroy"><i class="fa fa-trash"></i></button>' +
+                                    '<button type="button" class="btn btn-danger btn-clone" data="' + value.id + '" data-so="' + value.so_no +'" ><i class="fa fa-clone"></i></button>' +
                                     '</div>'
                             },
                             searchable: false,
@@ -543,9 +553,12 @@
                                 } else if (["VAT INC"].includes(value.vat_type)) {
                                     $class_color = 'btn-primary';
                                     $name = "VI";
+                                }else{
+                                    $name = "VE";
                                 }
                                 return '<div class="btn-group btn-group-sm shadow-sm btn-block" role="group">' +
-                                    '<a href="#" value="'+value.vat_type+'" class="btn ' + $class_color + ' btn-vat">' +
+                                    '<a href="#" value="' + value.vat_type + '" class="btn ' +
+                                    $class_color + ' btn-vat">' +
                                     $name + '</a>' +
                                     '</div>'
                             },
@@ -601,6 +614,28 @@
                         $('.btn-destroy').on('click', function() {
                             $this.destroy();
                         });
+                        $('.btn-clone').on('click', function() {
+                            let id = $(this).attr('data');
+                            let so = $(this).attr('data-so');
+                            Swal.fire({
+                                title: "Do you want to clone this "+so+"?",
+                                showCancelButton: true,
+                                confirmButtonText: "Clone"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: "{{ route('sales.clone') }}",
+                                        method: 'POST',
+                                        data: {id: id},
+                                        success(value) {
+                                            Swal.fire('Cloned!', 'Your file has been cloned.', 'success');
+                                            $this.dt.draw();
+                                        }
+                                    });
+                                }
+                            });
+
+                        });
                         $('.btn-status').on('click', function() {
                             $('#statusModal').modal('show');
                         });
@@ -618,17 +653,17 @@
                         });
                         $('.display_print').on('click', function(e) {
                             var id = $(this).attr('data');
-                            $("#print_warranty").attr("href", "/sales/print/"+id);
-                            $("#print_quote").attr("href", "/sales/quote/"+id);
-                            $("#print_delivery").attr("href", "/sales/deliver/"+id);
+                            $("#print_warranty").attr("href", "/sales/print/" + id);
+                            $("#print_quote").attr("href", "/sales/quote/" + id);
+                            $("#print_delivery").attr("href", "/sales/deliver/" + id);
                             $('#printModal').modal('show');
                         });
                     }
                 });
-                $( document ).on('click', '#filter_search', function() {
+                $(document).on('click', '#filter_search', function() {
                     $this.dt.draw();
                 });
-                            }
+            }
         });
     </script>
 @endsection

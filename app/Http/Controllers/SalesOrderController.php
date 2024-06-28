@@ -253,6 +253,98 @@ class SalesOrderController extends Controller
         return ['success' => true];
     }
 
+    public function clone_so(Request $request){
+        $id = $request->input('id');
+        $data = $this->getOverview($id);
+
+        $so_no = SalesOrder::generate()->newSONo();
+
+        $salesorder = new SalesOrder();
+        $salesorder->so_no = $so_no;
+        $salesorder->status = "Quote";
+        $salesorder->delivery_status = "Not Shipped";
+        $salesorder->payment_status =  "UNPAID";
+        $salesorder->save();
+
+        $new_id = $salesorder->id;
+
+        $product_details = [];
+        $pd              = false;
+        $count = 0;
+
+        if (isset($data['product_details'])) {
+            foreach ($data['product_details'] as $item) {
+
+                if($count == 0){
+                    if (count($item) > 2) {
+                        $product_details[] = [
+                            //'purchase_order_id' => $id,
+                            'sales_order_id' => $new_id,
+                            //'product_return_id' => '',
+                            'product_id'     => $item['product_id'],
+                            'product_name'   => $item['product_name'],
+                            'notes'          => $item['notes'],
+                            'qty'            => $item['qty'],
+                            'selling_price'  => $item['selling_price'],
+                            'vendor_price'   => $item['vendor_price'],
+                            'discount'  => $data['summary']['discount'],
+                            'shipping'  => $data['summary']['shipping'],
+                            'actual_sales'  => $data['summary']['sales_actual'],
+                        ];
+                    }
+                }else{
+                    if (count($item) > 2) {
+
+                        $product_details[] = [
+                            //'purchase_order_id' => $id,
+                            'sales_order_id' => $new_id,
+                            //'product_return_id' => '',
+                            'product_id'     => $item['product_id'],
+                            'product_name'   => $item['product_name'],
+                            'notes'          => $item['notes'],
+                            'qty'            => $item['qty'],
+                            'selling_price'  => $item['selling_price'],
+                            'vendor_price'   => $item['vendor_price'],
+                            'discount'  => "0.0",
+                            'shipping'  => "0.0",
+                            'actual_sales'  => "0.0",
+                        ];
+                    }
+                }
+                $count++;
+            }
+
+            $pd = DB::table('product_details')->insert($product_details);
+        }
+
+
+        if ($pd) {
+            Supply::recalibrate();
+        }
+
+        unset($data['summary']['id']);
+        $data['summary']['sales_order_id'] = $new_id;
+        $data['summary'] = $data['summary']->toArray();
+        DB::table('summaries')->insert($data['summary']);
+
+        // Record Action in Audit Log
+        $name = auth()->user()->name;
+
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $so_no,
+                'current' => "Clone SO",
+                'method' => "CREATED"
+            ]);
+        }
+
+        return ['success' => true];
+
+    }
+
     public function update(Request $request)
     {
         $data = $request->input();
@@ -406,6 +498,8 @@ class SalesOrderController extends Controller
                 'shipped_date' =>  $data['delivery_status'] == 'Shipped' ? now() : null
             ]);
 
+        Supply::recalibrate();
+
         return ['success' => true];
     }
 
@@ -416,36 +510,69 @@ class SalesOrderController extends Controller
 
         if ($salesOrder->status != $data['status']) {
 
-         // Record Action in Audit Log
-         $name = auth()->user()->name;
+            if($salesOrder->status == 'Quote' && ($data['status'] == 'Sales' || $data['status'] == 'Project')){
 
-         if($name != 'Super Admin') {
-             \App\AuditLog::record([
-                 'name' => $name,
-                 'inputs' => $request->input(),
-                 'url' => $request->url(),
-                 'action_id' => $data['so_no'],
-                 'current' => $data['status'],
-                 'method' => "UPDATED"
-             ]);
-         }
+                $getMaxSo = DB::table('sales_orders')->max('so_no');
+                $numbering = explode('-', $getMaxSo)[1];
+                $final_num = (int) $numbering + 1;
+                $str       = substr("0000{$final_num}", -5);
+                $year       = Carbon::now()->format('y');
+                $new_so = 'SO'.$year.'-'.$str;
+                  // Record Action in Audit Log
+                $name = auth()->user()->name;
 
-        DB::table('sales_orders')->where('id', $data['id'])
-                ->update([
-                    'status' => $data['status'],
-                ]);
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $new_so,
+                        'current' => $data['status'],
+                        'method' => "UPDATED"
+                    ]);
+                }
 
-            return ['success' => true];
+                DB::table('sales_orders')->where('id', $data['id'])
+                        ->update([
+                            'so_no' => $new_so,
+                            'status' => $data['status'],
+                        ]);
+
+                Supply::recalibrate();
+
+                    return ['success' => true];
+            }else{
+                  // Record Action in Audit Log
+                $name = auth()->user()->name;
+
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $data['so_no'],
+                        'current' => $data['status'],
+                        'method' => "UPDATED"
+                    ]);
+            }
+
+                DB::table('sales_orders')->where('id', $data['id'])
+                        ->update([
+                            'status' => $data['status'],
+                        ]);
+
+                    return ['success' => true];
+                }
         }
 
 
-        if ($salesOrder->shipped_date != $data['shipped_date']) {
-            DB::table('sales_orders')->where('id', $data['id'])
-                ->update([
-                    'shipped_date' => $data['shipped_date'],
-                ]);
-            return ['success' => true];
-        }
+            if ($salesOrder->shipped_date != $data['shipped_date']) {
+                DB::table('sales_orders')->where('id', $data['id'])
+                    ->update([
+                        'shipped_date' => $data['shipped_date'],
+                    ]);
+                return ['success' => true];
+            }
 
         return ['success' => false];
     }
@@ -654,6 +781,7 @@ class SalesOrderController extends Controller
             ->get()[0];
 
         $product_details = $this->getProductDetail($id);
+
 
         $categories = [];
         foreach ($product_details->toArray() as $value) {

@@ -74,6 +74,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-12 mt-3">
                                 <table id="table-inquiry" class="table table-striped nowrap table-general"
@@ -84,6 +85,8 @@
                 </div>
             </div>
         </div>
+
+
 
         <!-- Modal -->
         <div class="modal fade" id="purchaseReportMdl" tabindex="-1" role="dialog" aria-labelledby="purchaseReportMdl"
@@ -280,6 +283,7 @@
         </div>
 
     </div>
+    <input type="hidden" id="bulk_id" name="bulk_id">
 @endsection
 
 @section('scripts')
@@ -305,11 +309,15 @@
                     $.ajax({
                         url: '{{ route('purchase.payment.status.update') }}',
                         method: 'POST',
-                        data: $this.overview,
+                        data: {
+                            data: $this.overview,
+                            bulk_id: $('#bulk_id').val()
+                        },
                         success: function(value) {
                             Swal.fire('Updated!', 'Payment Status has been updated.', 'success');
                             $this.dt.draw();
                             $('#paymentModal').modal('hide');
+                            $('#bulk_id').val("");
                         }
                     })
                 },
@@ -318,7 +326,10 @@
                     $.ajax({
                         url: '{{ route('purchase.status.update') }}',
                         method: 'POST',
-                        data: $this.overview,
+                        data: {
+                            data: $this.overview,
+                            bulk_id: $('#bulk_id').val()
+                        },
                         success: function(value) {
                             Swal.fire('Updated!', 'Status has been updated.', 'success');
                             $this.dt.draw();
@@ -327,6 +338,7 @@
                             $('#poTypeModal').modal('hide');
                             $('#paymentModal').modal('hide');
                             $('#receivedDateModal').modal('hide');
+                            $('#bulk_id').val("");
                         }
                     });
                 },
@@ -389,6 +401,16 @@
                         method: "POST",
                     },
                     columns: [{
+                            data: function(value) {
+                                return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
+                                    '<input type="checkbox" class="bulk-checkbox" value="' + value.id + '">' +
+                                    '</div>'
+                            },
+                            searchable: false,
+                            bSortable: false,
+                            title: 'Bulk Action'
+                        },
+                        {
                             data: function(value) {
                                 if (value.status == 'Ordered') {
                                     edit = '<a href="/purchase/detail/' + value.id +
@@ -523,6 +545,20 @@ edit +
                             $this.overview = hold;
                             console.log(hold);
                         });
+
+                        $('.bulk-checkbox').on('change', function() {
+                            var $this = $(this);
+                            var $bulk_id = $('#bulk_id').val();
+
+                            if ($this.is(':checked')) {
+                                $bulk_id = $bulk_id + ',' + $this.val();
+                            } else {
+                                $bulk_id = $bulk_id.replace(',' + $this.val(), '');
+                            }
+
+                            $('#bulk_id').val($bulk_id);
+                        });
+
                         $('.btn-destroy').on('click', function() {
                             $this.destroy();
                         });
