@@ -42,45 +42,47 @@ class SalesOrderController extends Controller
     public function table(Request $request)
     {
         Supply::recalibrate();
-                $vendors = SalesOrder::query()
-            ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
-            shipped_date,summaries.grand_total')
-            ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
-            ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
-            ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
-            ->whereIn('sales_orders.status', ['Sales', 'Project']);
+        $vendors = SalesOrder::query()
+        ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name, summaries.grand_total')
+        ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
+        ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
+        ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
+        ->whereIn('sales_orders.status', ['Sales', 'Project']);
 
-            if ($request->filled('filter_payment')) {
-                $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));
-            }
-            if ($request->filled('filter_status')) {
-                $vendors->where('sales_orders.status', $request->input('filter_status'));
-            }
-            if ($request->filled('filter_delivery_status')) {
-                $vendors->where('sales_orders.delivery_status', $request->input('filter_delivery_status'));
-            }
-            if ($request->filled('filter_vat')) {
-                $vendors->where('sales_orders.vat_type', $request->input('filter_vat'));
-            }
+    if ($request->filled('filter_payment')) {
+        $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));
+    }
+    if ($request->filled('filter_status')) {
+        $vendors->where('sales_orders.status', $request->input('filter_status'));
+    }
+    if ($request->filled('filter_delivery_status')) {
+        $vendors->where('sales_orders.delivery_status', $request->input('filter_delivery_status'));
+    }
+    if ($request->filled('filter_vat')) {
+        $vendors->where('sales_orders.vat_type', $request->input('filter_vat'));
+    }
 
-        return DataTables::of($vendors)->setTransformer(function ($data)  {
-            $data                   = $data->toArray();
-            $data['created_at']     = Carbon::parse($data['created_at'])->format('F j, Y');
-            $data['shipped_date_display'] = $data['shipped_date'] ? Carbon::parse($data['shipped_date'])->format('F j, Y') : 'No Date';
-            $data['due_date']       = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
-            $data['can_be_shipped'] = 1;
+    $vendors->orderBy('sales_orders.so_no', 'desc');
 
-            $product_details = $this->getProductDetail($data['id']);
-            foreach ($product_details as $products) {
-                $diff = $products->quantity - $products->qty;
+    return DataTables::of($vendors)->setTransformer(function ($data) {
+        $data = $data->toArray();
+        $data['created_at'] = Carbon::parse($data['created_at'])->format('F j, Y');
+        $data['shipped_date_display'] = $data['shipped_date'] ? Carbon::parse($data['shipped_date'])->format('F j, Y') : 'No Date';
+        $data['due_date'] = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
+        $data['can_be_shipped'] = 1;
 
-                if ($diff < 0 && $products->type == 'limited') {
-                    $data['can_be_shipped'] = 0;
-                }
+        $product_details = $this->getProductDetail($data['id']);
+        foreach ($product_details as $products) {
+            $diff = $products->quantity - $products->qty;
+
+            if ($diff < 0 && $products->type == 'limited') {
+                $data['can_be_shipped'] = 0;
             }
+        }
 
-            return $data;
-        })->make(true);
+        return $data;
+    })->make(true);
+
     }
 
     public function table_stockout(Request $request)
@@ -443,26 +445,62 @@ class SalesOrderController extends Controller
 
     public function updatePaymentStatus(Request $request)
     {
-        $data = $request->input();
+        $data = $request->input('data');
+        $bulk  = $request->input('bulk_id');
 
-        // Record Action in Audit Log
-        $name = auth()->user()->name;
+        if($bulk){
+            $id = explode(',', $bulk);
+            unset($id[0]);
+            $index = 1;
 
-        if($name != 'Super Admin') {
-            \App\AuditLog::record([
-                'name' => $name,
-                'inputs' => $request->input(),
-                'url' => $request->url(),
-                'action_id' => $data['so_no'],
-                'current' => $data['payment_status'],
-                'method' => "UPDATED"
-            ]);
+            for ($x=0; $x < count($id) ; $x++) {
+                $so_id = $id[$index];
+
+                $name = auth()->user()->name;
+
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $so_id,
+                        'current' => $data['payment_status'],
+                        'method' => "UPDATED"
+                    ]);
+                }
+
+                DB::table('sales_orders')->where('id', $so_id)
+                ->update(['payment_status' => $data['payment_status']]);
+
+                $index++;
+            }
+
+            return ['success' => true];
+
+        }else{
+
+            // Record Action in Audit Log
+            $name = auth()->user()->name;
+
+            if($name != 'Super Admin') {
+                \App\AuditLog::record([
+                    'name' => $name,
+                    'inputs' => $request->input(),
+                    'url' => $request->url(),
+                    'action_id' => $data['so_no'],
+                    'current' => $data['payment_status'],
+                    'method' => "UPDATED"
+                ]);
+            }
+
+            DB::table('sales_orders')->where('id', $data['id'])
+                ->update(['payment_status' => $data['payment_status']]);
+
+            return ['success' => true];
+
         }
 
-        DB::table('sales_orders')->where('id', $data['id'])
-            ->update(['payment_status' => $data['payment_status']]);
 
-        return ['success' => true];
     }
 
     public function updateVatStatus(Request $request)
@@ -505,6 +543,7 @@ class SalesOrderController extends Controller
 
     public function updateStatus(Request $request)
     {
+
         $data = $request->input();
         $salesOrder = DB::table('sales_orders')->where('id', $data['id'])->get()[0];
 

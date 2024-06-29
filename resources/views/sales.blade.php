@@ -339,6 +339,8 @@
             </div>
         </div>
     </div>
+    <input type="hidden" id="bulk_id" name="bulk_id">
+
 @endsection
 
 @section('scripts')
@@ -382,7 +384,10 @@
                     $.ajax({
                         url: '{{ route('sales.payment.update') }}',
                         method: 'POST',
-                        data: $this.overview,
+                        data: {
+                            data: $this.overview,
+                            bulk_id: $('#bulk_id').val()
+                        },
                         success: function(value) {
                             Swal.fire('Updated!', 'Status has been updated.', 'success');
                             $this.dt.draw();
@@ -474,6 +479,16 @@
                         method: "POST",
                     },
                     columns: [{
+                            data: function(value) {
+                                return '<div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Basic example">' +
+                                    '<input type="checkbox" class="bulk-checkbox" value="' + value.id + '">' +
+                                    '</div>'
+                            },
+                            searchable: false,
+                            bSortable: false,
+                            title: 'Bulk Action'
+                        },
+                        {
                             data: function(value) {
                                 if (value.delivery_status !== 'Shipped') {
                                     edit = '<a href="/sales/detail/' + value.id +
@@ -611,6 +626,21 @@
                             let hold = $this.dt.row(data).data();
                             $this.overview = hold;
                         });
+
+
+                        $('.bulk-checkbox').on('change', function() {
+                            var $this = $(this);
+                            var $bulk_id = $('#bulk_id').val();
+
+                            if ($this.is(':checked')) {
+                                $bulk_id = $bulk_id + ',' + $this.val();
+                            } else {
+                                $bulk_id = $bulk_id.replace(',' + $this.val(), '');
+                            }
+
+                            $('#bulk_id').val($bulk_id);
+                        });
+
                         $('.btn-destroy').on('click', function() {
                             $this.destroy();
                         });

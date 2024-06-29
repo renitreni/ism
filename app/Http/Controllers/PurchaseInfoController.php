@@ -57,6 +57,9 @@ class PurchaseInfoController extends Controller
             if ($request->filled('filter_vat')) {
                 $purchase_info->where('purchase_infos.vat_type', $request->input('filter_vat'));
             }
+
+            $purchase_info->orderBy('purchase_infos.po_no', 'desc');
+
         return DataTables::of($purchase_info)->setTransformer(function ($data) {
             $data               = $data->toArray();
             $data['created_at'] = Carbon::parse($data['created_at'])->format('F j, Y');
