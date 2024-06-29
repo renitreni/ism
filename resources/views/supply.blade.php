@@ -13,10 +13,6 @@
                         <h6 class="m-0 font-weight-bold text-primary">Supplies Overview</h6>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('recalibrate.data') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-sm btn-primary">Recalibrate Data</button>
-                        </form>
                         <div class="row">
                             <div class="col-md-12 mt-3">
                                 <table id="table-supplies" class="table table-striped nowrap"
@@ -210,23 +206,16 @@
                         },
                         {
                             data: function (value) {
-                                console.log(value)
                                 return '<a href="#" class="links-btn-so btn btn-sm btn-primary">' + value.so_count + '</a>';
                             },
                             name: 'so_sum.total', title: 'SO',width: '5%'
                         },
-                        // {
-                        //     data: 'po_total' ,name: 'po_total', title: 'PO Quantity',width: '5%'
-                        // },
-                        // {
-                        //     data: 'so_qty' ,name: 'so_qty', title: 'SO Quantity',width: '5%'
-                        // },
                     ],
                     drawCallback: function () {
                         $('table .btn').on('click', function () {
                             let data = $(this).parent().parent();
                             let hold = $this.dt.row(data).data();
-                            // $this.overview = hold;
+                            $this.overview = hold;
                         });
 
                         $('.btn-destroy').on('click', function () {
