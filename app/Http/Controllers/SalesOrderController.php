@@ -176,8 +176,16 @@ class SalesOrderController extends Controller
     public function store(Request $request)
     {
         $data                            = $request->input();
+
+        $getUser =   DB::table('users')->where('name', $data['overview']['agent'])->first();
+        if($getUser){
+            $data['overview']['assigned_to'] = $getUser->id;
+        }else{
+            $data['overview']['assigned_to'] = auth()->id();
+        }
+
         $data['overview']['so_no']       = SalesOrder::generate()->newSONo();
-        $data['overview']['assigned_to'] = auth()->id();
+
         $data['overview']['created_at']  = Carbon::now()->format('Y-m-d');
         $id = DB::table('sales_orders')->insertGetId($data['overview']);
 
@@ -187,8 +195,6 @@ class SalesOrderController extends Controller
         $count = 0;
         if (isset($data['products'])) {
             foreach ($data['products'] as $item) {
-
-                // print_r($item);
 
                 if($count == 0){
                     if (count($item) > 2) {
@@ -264,8 +270,12 @@ class SalesOrderController extends Controller
         $salesorder = new SalesOrder();
         $salesorder->so_no = $so_no;
         $salesorder->status = "Quote";
+        $salesorder->assigned_to = auth()->id();
         $salesorder->delivery_status = "Not Shipped";
         $salesorder->payment_status =  "UNPAID";
+        $salesorder->tac =  $data['sales_order']['tac'];
+        $salesorder->warranty =  $data['sales_order']['warranty'];;
+
         $salesorder->save();
 
         $new_id = $salesorder->id;
@@ -353,6 +363,14 @@ class SalesOrderController extends Controller
 
         unset($data['overview']['unit']);
         unset($data['overview']['customer_name']);
+
+        $getUser =   DB::table('users')->where('name', $data['overview']['agent'])->first();
+
+        if($getUser){
+            $data['overview']['assigned_to'] = $getUser->id;
+        }else{
+            $data['overview']['assigned_to'] = auth()->id();
+        }
 
         // Record Action in Audit Log
         $name = auth()->user()->name;
