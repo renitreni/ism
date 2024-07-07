@@ -26,13 +26,13 @@ class QuoteController extends Controller
     {
 
         $vendors = SalesOrder::query()
-            ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
-                             summaries.grand_total')
-            ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
-            ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
-            ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
-            // ->whereNotIn('sales_orders.status', ['Sales', 'Project' ]);
-            ->where('sales_orders.status', 'Quote');
+                ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name, summaries.grand_total')
+                ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
+                ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
+                ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
+                ->whereNull('sales_orders.title_format_tag')
+                ->where('sales_orders.status', 'Quote');
+
 
             if ($request->filled('filter_payment')) {
                 $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));

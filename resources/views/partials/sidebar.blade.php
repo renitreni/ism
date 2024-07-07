@@ -64,6 +64,11 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingOne" data-parent="#accordionSidebar">
                 <ul style="padding:0; list-style:none">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('sales.order_formats') }}">
+                            <i class="fas fa-fw fa-certificate"></i>
+                            <span>Order Formats</span></a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('quote') }}">
                             <i class="fas fa-fw fa-certificate"></i>
                             <span>Quotes</span></a>

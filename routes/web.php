@@ -64,12 +64,14 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
 
     Route::get('/sales', 'SalesOrderController@index')->name('sales')->middleware('can:salesorder');
     Route::get('/sales/stock_out', 'SalesOrderController@stock_out')->name('sales.stockout')->middleware('can:salesorder');
+    Route::get('/sales/order_formats', 'SalesOrderController@order_formats')->name('sales.order_formats')->middleware('can:salesorder');
     Route::get('/sales/create', 'SalesOrderController@create')->name('sales.create')->middleware('can:salesordercreate');
     Route::get('/sales/view/{id}', 'SalesOrderController@show')->name('sales.view')->middleware('can:salesorderretrieve');
     Route::get('/sales/detail/{id}', 'SalesOrderController@show')->name('sales.detail')->middleware('can:salesorderupdate');
     Route::post('/sales/destroy', 'SalesOrderController@destroy')->name('sales.destroy')->middleware('can:salesorderdestroy');
     Route::post('/sales/table', 'SalesOrderController@table')->name('sales.table');
     Route::post('/sales/table/stockout', 'SalesOrderController@table_stockout')->name('stock_out.table');
+    Route::post('/sales/table/table_order_format', 'SalesOrderController@table_order_format')->name('table_order_format.table');
     Route::post('/sales/update', 'SalesOrderController@update')->name('sales.update');
     Route::post('/sales/store', 'SalesOrderController@store')->name('sales.store');
     Route::post('/sales/status/update', 'SalesOrderController@updateStatus')->name('sales.status.update')->middleware('can:salesstatusupdate');
@@ -85,6 +87,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/sales/report/{start}/{end}', 'SalesOrderController@downloadSaleReport')->name('sales.report');
     Route::get('/sales/report/all', 'SalesOrderController@downloadSaleReportAll')->name('sales.report.all');
     Route::post('/sales/clone', 'SalesOrderController@clone_so')->name('sales.clone');
+    Route::post('/sales/cloneToFormat', 'SalesOrderController@cloneToFormat')->name('sales.cloneToFormat');
 
     Route::get('/vendors', 'VendorController@index')->name('vendor')->middleware('can:vendors');
     Route::get('/vendors/create', 'VendorController@create')->name('vendor.create')->middleware('can:vendorscreate');
