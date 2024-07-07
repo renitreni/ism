@@ -209,7 +209,7 @@
                             bSortable: false,
                             title: 'Action'
                         },
-                        {data: 'id', name: 'id', title: 'ID'},
+                        // {data: 'id', name: 'id', title: 'ID'},
                         {data: 'name', title: 'Name'},
                         {data: 'position', title: 'Position'},
                         {data: 'email', title: 'Email'},

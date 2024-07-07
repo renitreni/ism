@@ -10,7 +10,7 @@
                 <!-- Approach -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Quotes Overview</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Order Format</h6>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -29,7 +29,6 @@
                                         <option value="UNPAID">UNPAID</option>
                                         <option value="PAID WITH BALANCE">PAID WITH BALANCE</option>
                                         <option value="STOCK OUT">STOCK OUT</option>
-
                                     </select>
                                 </div>
                                 <div class="form-group" style="padding-right: 11px;">
@@ -271,10 +270,10 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="CloneFormatToggleLabel2">Clone to Format</h5>
-                  <button type="button" class="btn-close" aria-label="Close">X</button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="format_so_id">
+                    <input type="text" id="format_so_id">
                     <label for="">Clone Title</label>
                     <input type="text" class="form-control" id="format_title">
                 </div>
@@ -410,7 +409,7 @@
                         [1, 'desc']
                     ],
                     ajax: {
-                        url: "{{ route('quote.table') }}",
+                        url: "{{ route('table_order_format.table') }}",
                         data: function(data) {
                             data.filter_payment = $("#filter_payment").val();
                             data.filter_status = $("#filter_status").val();
@@ -512,19 +511,8 @@
                             title: 'Assigned'
                         },
                         {
-                            data: function(value) {
-                                if (value.delivery_status == 'Shipped') {
-                                    return value.updated_at
-                                }
-                                return 'No Date'
-                            },
-                            name: 'sales_orders.updated_at',
-                            title: 'Shipped Date'
-                        },
-                        {
-                            data: 'due_date',
-                            name: 'due_date',
-                            title: 'Date of Purchased'
+                            data: 'format_title',
+                            title: 'Format Title'
                         },
                     ],
                     drawCallback: function() {
@@ -540,33 +528,20 @@
                             let id = $(this).attr('data');
                             let so = $(this).attr('data-so');
                             Swal.fire({
-                                title: "Do you want to clone this " + so + "?",
+                                title: "Do you want to clone this "+so+"?",
                                 showCancelButton: true,
-                                confirmButtonText: "Clone",
-                                cancelButtonText: "Clone to Format",
-                                showDenyButton: true,
-                                denyButtonText: 'Cancel'
+                                confirmButtonText: "Clone"
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    // Clone action
                                     $.ajax({
                                         url: "{{ route('sales.clone') }}",
                                         method: 'POST',
-                                        data: {
-                                            id: id
-                                        },
+                                        data: {id: id},
                                         success(value) {
-                                            Swal.fire('Cloned!',
-                                                'Your file has been cloned.',
-                                                'success');
+                                            Swal.fire('Cloned!', 'Your file has been cloned.', 'success');
                                             $this.dt.draw();
                                         }
                                     });
-                                } else if (result.isDismissed && result.dismiss === Swal
-                                    .DismissReason.cancel) {
-                                    // Clone to Format action
-                                    $('#format_so_id').val(id);
-                                    $('#CloneFormat').modal('show');
                                 }
                             });
                         });
@@ -583,14 +558,9 @@
                                     Swal.fire('Cloned to Format!',
                                         'Your file has been cloned to format.',
                                         'success');
-                                    $('#CloneFormat').modal('hide');
                                     $this.dt.draw();
                                 }
                             });
-                        });
-
-                        $('.btn-close').on('click', function() {
-                            $('#CloneFormat').modal('hide');
                         });
 
                         $('.btn-status').on('click', function() {
@@ -605,7 +575,6 @@
                         $('.btn-delivery-status').on('click', function() {
                             $('#deliveryStatusModal').modal('show');
                         });
-
                         $('.display_print').on('click', function(e) {
                             var id = $(this).attr('data');
                             $("#print_warranty").attr("href", "/sales/print/" + id);

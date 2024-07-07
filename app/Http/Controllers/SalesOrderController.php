@@ -35,8 +35,12 @@ class SalesOrderController extends Controller
     }
     public function stock_out()
     {
-
         return view('sales_stock_out');
+    }
+
+    public function order_formats()
+    {
+        return view('order_format');
     }
 
     public function table(Request $request)
@@ -129,6 +133,49 @@ class SalesOrderController extends Controller
         })->make(true);
     }
 
+    public function table_order_format(Request $request)
+    {
+        Supply::recalibrate();
+                $vendors = SalesOrder::query()
+            ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
+            shipped_date,summaries.grand_total')
+            ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
+            ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
+            ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
+            ->where('sales_orders.title_format_tag', 1);
+
+            if ($request->filled('filter_payment')) {
+                $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));
+            }
+            if ($request->filled('filter_status')) {
+                $vendors->where('sales_orders.status', $request->input('filter_status'));
+            }
+            if ($request->filled('filter_delivery_status')) {
+                $vendors->where('sales_orders.delivery_status', $request->input('filter_delivery_status'));
+            }
+            if ($request->filled('filter_vat')) {
+                $vendors->where('sales_orders.vat_type', $request->input('filter_vat'));
+            }
+
+        return DataTables::of($vendors)->setTransformer(function ($data)  {
+            $data                   = $data->toArray();
+            $data['created_at']     = Carbon::parse($data['created_at'])->format('F j, Y');
+            $data['shipped_date_display'] = $data['shipped_date'] ? Carbon::parse($data['shipped_date'])->format('F j, Y') : 'No Date';
+            $data['due_date']       = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
+            $data['can_be_shipped'] = 1;
+
+            $product_details = $this->getProductDetail($data['id']);
+            foreach ($product_details as $products) {
+                $diff = $products->quantity - $products->qty;
+
+                if ($diff < 0 && $products->type == 'limited') {
+                    $data['can_be_shipped'] = 0;
+                }
+            }
+
+            return $data;
+        })->make(true);
+    }
 
     public function create()
     {
@@ -357,6 +404,104 @@ class SalesOrderController extends Controller
 
     }
 
+    public function cloneToFormat(Request $request){
+
+
+        $id = $request->input('id');
+        $data = $this->getOverview($id);
+
+        $so_no = SalesOrder::generate()->newSONo();
+
+        $salesorder = new SalesOrder();
+        $salesorder->so_no = $so_no;
+        $salesorder->status = "Quote";
+        $salesorder->assigned_to = auth()->id();
+        $salesorder->delivery_status = "Not Shipped";
+        $salesorder->payment_status =  "UNPAID";
+        $salesorder->tac =  $data['sales_order']['tac'];
+        $salesorder->warranty =  $data['sales_order']['warranty'];
+        $salesorder->format_title =  $request->input('title');
+        $salesorder->title_format_tag =  1;
+        $salesorder->save();
+
+        $new_id = $salesorder->id;
+
+        $product_details = [];
+        $pd              = false;
+        $count = 0;
+
+        if (isset($data['product_details'])) {
+            foreach ($data['product_details'] as $item) {
+
+                if($count == 0){
+                    if (count($item) > 2) {
+                        $product_details[] = [
+                            //'purchase_order_id' => $id,
+                            'sales_order_id' => $new_id,
+                            //'product_return_id' => '',
+                            'product_id'     => $item['product_id'],
+                            'product_name'   => $item['product_name'],
+                            'notes'          => $item['notes'],
+                            'qty'            => $item['qty'],
+                            'selling_price'  => $item['selling_price'],
+                            'vendor_price'   => $item['vendor_price'],
+                            'discount'  => $data['summary']['discount'],
+                            'shipping'  => $data['summary']['shipping'],
+                            'actual_sales'  => $data['summary']['sales_actual'],
+                        ];
+                    }
+                }else{
+                    if (count($item) > 2) {
+
+                        $product_details[] = [
+                            //'purchase_order_id' => $id,
+                            'sales_order_id' => $new_id,
+                            //'product_return_id' => '',
+                            'product_id'     => $item['product_id'],
+                            'product_name'   => $item['product_name'],
+                            'notes'          => $item['notes'],
+                            'qty'            => $item['qty'],
+                            'selling_price'  => $item['selling_price'],
+                            'vendor_price'   => $item['vendor_price'],
+                            'discount'  => "0.0",
+                            'shipping'  => "0.0",
+                            'actual_sales'  => "0.0",
+                        ];
+                    }
+                }
+                $count++;
+            }
+
+            $pd = DB::table('product_details')->insert($product_details);
+        }
+
+
+        if ($pd) {
+            Supply::recalibrate();
+        }
+
+        unset($data['summary']['id']);
+        $data['summary']['sales_order_id'] = $new_id;
+        $data['summary'] = $data['summary']->toArray();
+        DB::table('summaries')->insert($data['summary']);
+
+        // Record Action in Audit Log
+        $name = auth()->user()->name;
+
+        if($name != 'Super Admin') {
+            \App\AuditLog::record([
+                'name' => $name,
+                'inputs' => $request->input(),
+                'url' => $request->url(),
+                'action_id' => $so_no,
+                'current' => "Clone SO",
+                'method' => "CREATED"
+            ]);
+        }
+
+        return ['success' => true];
+
+    }
     public function update(Request $request)
     {
         $data = $request->input();
