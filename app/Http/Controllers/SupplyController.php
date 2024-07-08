@@ -192,4 +192,10 @@ class SupplyController extends Controller
 
         return view('supply_versus', compact('po', 'so'));
     }
+
+    public function recalibrate_data(){
+        Supply::recalibrate();
+        return response()->json(['message' => 'Recalibrated']);
+    }
+
 }
