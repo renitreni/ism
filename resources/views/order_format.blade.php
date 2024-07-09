@@ -265,20 +265,20 @@
             </div>
         </div>
 
-        <div class="modal fade" id="CloneFormat" aria-hidden="true" aria-labelledby="CloneFormatToggleLabel2" tabindex="-1">
+        <div class="modal fade" id="FormatTitle" aria-hidden="true" aria-labelledby="FormatTitleToggleLabel2" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="CloneFormatToggleLabel2">Clone to Format</h5>
+                  <h5 class="modal-title" id="FormatTitleToggleLabel2">Edit Format Title</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" id="format_so_id">
-                    <label for="">Clone Title</label>
+                    <input type="hidden" id="format_so_id">
+                    <label for="">Format Title</label>
                     <input type="text" class="form-control" id="format_title">
                 </div>
                 <div class="modal-footer">
-                  <button class="btn btn-primary" id="clone_to_format">Clone to Format </button>
+                  <button class="btn btn-primary" id="update_format">Save</button>
                 </div>
               </div>
             </div>
@@ -496,24 +496,17 @@
                             title: 'Customer'
                         },
                         {
-                            data: 'subject',
-                            name: 'subject',
-                            title: 'Subject'
-                        },
-                        {
                             data: 'grand_total',
                             name: 'summaries.grand_total',
                             title: 'Total'
                         },
                         {
-                            data: 'agent',
-                            name: 'agent',
-                            title: 'Assigned'
-                        },
-                        {
                             data: 'format_title',
-                            title: 'Format Title'
-                        },
+                            title: 'Format Title',
+                            render: function(data, type, row) {
+                                return '<span class="badge badge-primary badge-title " data-value="'+row.id+'" style="display: inline-block; width:100%;cursor: pointer;">'+data+'</span>';
+                            }
+                        }
                     ],
                     drawCallback: function() {
                         $('table .btn').on('click', function() {
@@ -545,7 +538,26 @@
                                 }
                             });
                         });
-
+                        $('#update_format').on('click', function() {
+                            $.ajax({
+                                url: "{{ route('sales.updateFormat') }}",
+                                method: 'POST',
+                                data: {
+                                    id: $('#format_so_id').val(),
+                                    title: $('#format_title').val()
+                                },
+                                success(value) {
+                                    Swal.fire('Updated Format Title!',
+                                        'Your file has been updated.',
+                                        'success');
+                                    $this.dt.draw();
+                                    $('#FormatTitle').modal('hide');
+                                }
+                            });
+                        });
+                        $('.btn-close').click(function(){
+                            $('#FormatTitle').modal('hide');
+                        })
                         $('#clone_to_format').on('click', function() {
                             $.ajax({
                                 url: "{{ route('sales.cloneToFormat') }}",
@@ -574,6 +586,13 @@
                         });
                         $('.btn-delivery-status').on('click', function() {
                             $('#deliveryStatusModal').modal('show');
+                        });
+                        $('.badge-title').on('click', function() {
+                            let id = $(this).attr('data-value');
+                            $('#FormatTitle').modal('show');
+                            $('#format_so_id').val(id);
+                            $('#format_title').val($(this).text());
+
                         });
                         $('.display_print').on('click', function(e) {
                             var id = $(this).attr('data');
