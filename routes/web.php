@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/sales/report/all', 'SalesOrderController@downloadSaleReportAll')->name('sales.report.all');
     Route::post('/sales/clone', 'SalesOrderController@clone_so')->name('sales.clone');
     Route::post('/sales/cloneToFormat', 'SalesOrderController@cloneToFormat')->name('sales.cloneToFormat');
+    Route::post('/sales/updateFormat', 'SalesOrderController@updateFormat')->name('sales.updateFormat');
 
     Route::get('/vendors', 'VendorController@index')->name('vendor')->middleware('can:vendors');
     Route::get('/vendors/create', 'VendorController@create')->name('vendor.create')->middleware('can:vendorscreate');

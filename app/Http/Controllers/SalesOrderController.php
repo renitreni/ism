@@ -941,6 +941,17 @@ class SalesOrderController extends Controller
             ->download('DR ' . $sales_order["so_no"] . ' ' . $sales_order["customer_name"] . '.pdf');
     }
 
+    public function updateFormat(Request $request){
+
+        DB::table('sales_orders')->where('id', $request->id)
+            ->update([
+                'format_title' => $request->title,
+            ]);
+
+        return ['success' => true];
+
+    }
+
     public function previewSO($id)
     {
         $data            = $this->getOverview($id);
