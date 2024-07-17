@@ -572,6 +572,8 @@
                         });
 
                         $('#clone_to_format').on('click', function() {
+
+                            $('#CloneFormat').modal('hide');
                             $.ajax({
                                 url: "{{ route('sales.cloneToFormat') }}",
                                 method: 'POST',
