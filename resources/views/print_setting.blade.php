@@ -15,7 +15,7 @@
                     <div class="card-body">
                         <div class="row">
                             {{-- Payment Methods --}}
-                            @livewire('component.payment-method-livewire')
+                            {{-- @livewire('component.payment-method-livewire') --}}
 
                             {{--Auto Fills--}}
                             <div class="col-md-12 mt-3 row">
