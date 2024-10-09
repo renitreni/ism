@@ -27,59 +27,84 @@ class SalesReportExcel implements FromQuery, WithHeadings, WithStylesAlias, With
     {
 
         return ProductDetail::query()
-            ->selectRaw(
-                '
-        so.status,
-        so.due_date,
-        so.agent,
-        so.so_no,
-        c.name,
-        product_details.product_name,
-        product_details.qty,
-        product_details.vendor_price,
-        product_details.selling_price,
-        CASE
-            WHEN ROW_NUMBER() OVER (PARTITION BY so.so_no ORDER BY product_details.id) = 1
-            THEN COALESCE(d.discount, 0)
-            ELSE 0
-        END as discount,
-        CASE
-            WHEN ROW_NUMBER() OVER (PARTITION BY so.so_no ORDER BY product_details.id) = 1
-            THEN COALESCE(d.shipping, 0)
-            ELSE 0
-        END as summary_shipping,
-        CASE
-            WHEN ROW_NUMBER() OVER (PARTITION BY so.so_no ORDER BY product_details.id) = 1
-            THEN COALESCE(d.sales_actual, 0)
-            ELSE 0
-        END as sales_actual,
-        product_details.shipping as product_shipping,
-        product_details.actual_sales,
-        -- Calculate subtotal including (qty * selling_price)
-        (
-            (COALESCE(product_details.qty, 0) * COALESCE(product_details.selling_price, 0)) -
-            COALESCE(
-                CASE WHEN ROW_NUMBER() OVER (PARTITION BY so.so_no ORDER BY product_details.id) = 1
-                THEN d.discount ELSE 0 END, 0)
-            + COALESCE(
-                CASE WHEN ROW_NUMBER() OVER (PARTITION BY so.so_no ORDER BY product_details.id) = 1
-                THEN d.shipping ELSE 0 END, 0)
-            + COALESCE(
-                CASE WHEN ROW_NUMBER() OVER (PARTITION BY so.so_no ORDER BY product_details.id) = 1
-                THEN d.sales_actual ELSE 0 END, 0)
-        ) as subtotal, -- Subtotal: (qty * selling_price) - discount + shipping + sales_actual
-        so.payment_status,
-        so.payment_method,
-        so.vat_type'
-            )
-            ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
-            ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
-            ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
-            ->whereIn('so.status', ['Sales', 'Project'])
-            ->when($this->start && $this->end, function ($q) {
-                return $q->whereBetween('so.due_date', [$this->start, $this->end]);
-            })
-            ->orderBy('so.so_no', 'desc');
+        ->selectRaw(
+            '
+            so.status,
+            so.due_date,
+            so.agent,
+            so.so_no,
+            c.name,
+            product_details.product_name,
+            product_details.qty,
+            product_details.vendor_price,
+            product_details.selling_price,
+
+            -- Use subquery to get the discount, shipping, and sales_actual only for the first product in the sales order
+            IF(
+                product_details.id = (
+                    SELECT MIN(pd.id)
+                    FROM product_details pd
+                    WHERE pd.sales_order_id = product_details.sales_order_id
+                ),
+                COALESCE(d.discount, 0), 0
+            ) as discount,
+
+            IF(
+                product_details.id = (
+                    SELECT MIN(pd.id)
+                    FROM product_details pd
+                    WHERE pd.sales_order_id = product_details.sales_order_id
+                ),
+                COALESCE(d.shipping, 0), 0
+            ) as summary_shipping,
+
+            IF(
+                product_details.id = (
+                    SELECT MIN(pd.id)
+                    FROM product_details pd
+                    WHERE pd.sales_order_id = product_details.sales_order_id
+                ),
+                COALESCE(d.sales_actual, 0), 0
+            ) as sales_actual,
+
+            product_details.shipping as product_shipping,
+            product_details.actual_sales,
+
+            -- Calculate subtotal correctly
+            (
+                (COALESCE(product_details.qty, 0) * COALESCE(product_details.selling_price, 0)) -- Multiplication of qty and selling price
+                - COALESCE(
+                    IF(product_details.id = (
+                        SELECT MIN(pd.id)
+                        FROM product_details pd
+                        WHERE pd.sales_order_id = product_details.sales_order_id
+                    ), d.discount, 0), 0)
+                + COALESCE(
+                    IF(product_details.id = (
+                        SELECT MIN(pd.id)
+                        FROM product_details pd
+                        WHERE pd.sales_order_id = product_details.sales_order_id
+                    ), d.shipping, 0), 0)
+                + COALESCE(
+                    IF(product_details.id = (
+                        SELECT MIN(pd.id)
+                        FROM product_details pd
+                        WHERE pd.sales_order_id = product_details.sales_order_id
+                    ), d.sales_actual, 0), 0)
+            ) as subtotal,
+
+            so.payment_status,
+            so.payment_method,
+            so.vat_type
+        ')
+        ->join('sales_orders as so', 'so.id', '=', 'product_details.sales_order_id')
+        ->leftJoin('summaries as d', 'd.sales_order_id', '=', 'product_details.sales_order_id')
+        ->leftJoin('customers as c', 'c.id', '=', 'so.customer_id')
+        ->whereIn('so.status', ['Sales', 'Project'])
+        ->when($this->start && $this->end, function ($q) {
+            return $q->whereBetween('so.due_date', [$this->start, $this->end]);
+        })
+        ->orderBy('so.so_no', 'desc');
 
 
         // dd($sales);
