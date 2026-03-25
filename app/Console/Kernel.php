@@ -24,8 +24,23 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        // Daily backup at 2:00 AM
+        $schedule->command('backup:run daily')
+                 ->dailyAt('02:00')
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/backup.log'));
+
+        // Weekly backup on Sunday at 3:00 AM
+        $schedule->command('backup:run weekly')
+                 ->weeklyOn(0, '03:00')
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/backup.log'));
+
+        // Monthly backup on the 1st at 4:00 AM
+        $schedule->command('backup:run monthly')
+                 ->monthlyOn(1, '04:00')
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/backup.log'));
     }
 
     /**

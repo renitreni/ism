@@ -191,6 +191,10 @@
                         <i class="fas fa-exclamation-triangle"></i>
                         <span>Override</span>
                     </a>
+                    <a class="collapse-item" href="{{ route('backup') }}">
+                        <i class="fas fa-database"></i>
+                        <span>Backup & Restore</span>
+                    </a>
                     <a class="collapse-item" href="{{ route('users') }}">
                         <i class="fas fa-fw fa-user-alt"></i>
                         <span>User Accounts</span>
