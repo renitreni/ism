@@ -204,6 +204,17 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/override/restore/sql', 'OverrideController@restoreSQL')->name('restore.sql');
     Route::post('/override/wipe/sql', 'OverrideController@databaseWipe')->name('override.wipe');
 
+    // Backup & Restore Module
+    Route::get('/backup', 'BackupController@index')->name('backup')->middleware('can:override');
+    Route::post('/backup/export/categories', 'BackupController@exportCategories')->name('backup.export.categories');
+    Route::post('/backup/export/all', 'BackupController@exportAll')->name('backup.export.all');
+    Route::post('/backup/download', 'BackupController@download')->name('backup.download');
+    Route::post('/backup/delete', 'BackupController@deleteFile')->name('backup.delete');
+    Route::get('/backup/files', 'BackupController@files')->name('backup.files');
+    Route::get('/backup/history', 'BackupController@history')->name('backup.history');
+    Route::post('/restore/upload', 'RestoreController@restore')->name('restore.upload');
+    Route::post('/restore/from-file', 'RestoreController@restoreFromFile')->name('restore.from-file');
+
     Route::get('/expenses',  'ExpensesController@index')->name('expenses')->middleware('can:expenses');
     Route::post('/expenses/table', 'ExpensesController@table')->name('expenses.table');
     Route::get('/expenses/create', 'ExpensesController@create')->name('expenses.create');
