@@ -919,7 +919,7 @@ class SalesOrderController extends Controller
                 ]
         );
 
-        // return view('sales_printable', compact('sales_order', 'product_details', 'summary', 'sections', 'print_setting'));
+        return view('sales_printable', compact('sales_order', 'product_details', 'summary', 'sections', 'print_setting'));
         return $pdf->setPaper('a4')
             ->setTemporaryFolder(public_path())
             ->download('SO ' . $sales_order["so_no"] . ' ' . $sales_order["customer_name"] . '.pdf');

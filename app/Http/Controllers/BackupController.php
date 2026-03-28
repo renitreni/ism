@@ -104,9 +104,12 @@ class BackupController extends Controller
      */
     public function exportAll()
     {
+        // Unlimited time & enough memory for very large exports (600MB+)
+        set_time_limit(0);
+        ini_set('memory_limit', '1G');
+
         try {
-            $data = $this->backupService->exportAll();
-            $path = $this->backupService->saveToFile($data);
+            $path = $this->backupService->exportAllToFile();
             $this->backupService->logBackup('full', 'success', $path);
 
             return response()->json([

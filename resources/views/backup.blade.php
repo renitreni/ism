@@ -351,7 +351,7 @@
                     </div>
                     <div class="table-responsive" v-else>
                         <table class="table table-bordered table-hover">
-                            <thead class="thead-light">
+                            <thead class="thead-dark">
                                 <tr>
                                     <th>#</th>
                                     <th>Filename</th>
