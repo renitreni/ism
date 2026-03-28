@@ -20,24 +20,25 @@ class RestoreController extends Controller
     public function restore(Request $request)
     {
         $request->validate([
-            'backup_file' => 'required|file|max:102400', // 100MB max
+            'backup_file' => 'required|file|max:2097152', // 2GB max
             'restore_type' => 'required|string',
         ]);
 
+        // Allow unlimited time and memory for large restore operations (800MB+ files)
+        set_time_limit(0);
+        ini_set('memory_limit', '2G');
+
+        $tempPath = null;
         try {
             $file = $request->file('backup_file');
-            $contents = file_get_contents($file->getRealPath());
-            $backupData = json_decode($contents, true);
+            $tempPath = $file->getRealPath();
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid JSON file. Please upload a valid backup file.',
-                ], 422);
-            }
+            // Validate JSON structure without loading entire file
+            $handle = fopen($tempPath, 'r');
+            $headerChunk = fread($handle, 100);
+            fclose($handle);
 
-            // Validate backup structure
-            if (!isset($backupData['meta']) || !isset($backupData['tables'])) {
+            if (strpos($headerChunk, '"meta"') === false || strpos($headerChunk, '"tables"') === false) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid backup file structure. Missing meta or tables data.',
@@ -46,11 +47,8 @@ class RestoreController extends Controller
 
             $restoreType = $request->input('restore_type');
 
-            if ($restoreType === 'full') {
-                $result = $this->backupService->restoreAll($backupData);
-                $this->backupService->logRestore('full', 'success', 'Full restore completed. Tables: ' . implode(', ', array_keys($result['restored'])));
-            } else {
-                // Validate category
+            // Validate category
+            if ($restoreType !== 'full') {
                 $allCategories = array_keys($this->backupService->getCategories());
                 if (!in_array($restoreType, $allCategories)) {
                     return response()->json([
@@ -58,10 +56,15 @@ class RestoreController extends Controller
                         'message' => "Invalid restore category: {$restoreType}",
                     ], 422);
                 }
-
-                $result = $this->backupService->restoreCategory($restoreType, $backupData);
-                $this->backupService->logRestore($restoreType, 'success', 'Category restore completed. Tables: ' . implode(', ', array_keys($result['restored'])));
             }
+
+            // Use streaming restore for uploaded files
+            $result = $this->backupService->restoreFromFile($tempPath, $restoreType);
+            $message = $restoreType === 'full'
+                ? 'Full database restored successfully from uploaded file'
+                : "Category '{$restoreType}' restored successfully from uploaded file";
+
+            $this->backupService->logRestore($restoreType, 'success', $message);
 
             return response()->json([
                 'success' => true,
@@ -92,40 +95,25 @@ class RestoreController extends Controller
             'restore_type' => 'required|string',
         ]);
 
+        // Allow unlimited time and memory for large restore operations (800MB+ files)
+        set_time_limit(0);
+        ini_set('memory_limit', '2G');
+
         try {
             $filename = basename($request->input('filename'));
-            $path = 'backups/' . $filename;
+            $path = storage_path('app/backups/' . $filename);
 
-            if (!\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            if (!file_exists($path)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Backup file not found on server.',
                 ], 404);
             }
 
-            $contents = \Illuminate\Support\Facades\Storage::disk('local')->get($path);
-            $backupData = json_decode($contents, true);
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Backup file contains invalid JSON.',
-                ], 422);
-            }
-
-            if (!isset($backupData['meta']) || !isset($backupData['tables'])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid backup file structure.',
-                ], 422);
-            }
-
             $restoreType = $request->input('restore_type');
 
-            if ($restoreType === 'full') {
-                $result = $this->backupService->restoreAll($backupData);
-                $this->backupService->logRestore('full', 'success', "Restored from file: {$filename}");
-            } else {
+            // Validate category
+            if ($restoreType !== 'full') {
                 $allCategories = array_keys($this->backupService->getCategories());
                 if (!in_array($restoreType, $allCategories)) {
                     return response()->json([
@@ -133,10 +121,15 @@ class RestoreController extends Controller
                         'message' => "Invalid restore category: {$restoreType}",
                     ], 422);
                 }
-
-                $result = $this->backupService->restoreCategory($restoreType, $backupData);
-                $this->backupService->logRestore($restoreType, 'success', "Restored {$restoreType} from file: {$filename}");
             }
+
+            // Use streaming restore for large files
+            $result = $this->backupService->restoreFromFile($path, $restoreType);
+            $message = $restoreType === 'full'
+                ? "Full database restored successfully from {$filename}"
+                : "Category '{$restoreType}' restored successfully from {$filename}";
+
+            $this->backupService->logRestore($restoreType, 'success', $message);
 
             return response()->json([
                 'success' => true,
@@ -157,3 +150,4 @@ class RestoreController extends Controller
         }
     }
 }
+

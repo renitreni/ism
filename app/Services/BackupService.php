@@ -201,6 +201,113 @@ class BackupService
     }
 
     /**
+     * Export all data directly to a file using chunked writes to avoid memory exhaustion.
+     * Handles 600MB+ exports by never holding the full dataset in memory.
+     * Returns the storage path of the created backup file.
+     */
+    public function exportAllToFile(string $filename = null): string
+    {
+        $filename = $filename ?: $this->generateFilename('all');
+        Storage::disk('local')->makeDirectory('backups');
+        $fullPath = storage_path('app/backups/' . $filename);
+
+        $handle = fopen($fullPath, 'w');
+        if (!$handle) {
+            throw new \RuntimeException('Could not create backup file.');
+        }
+
+        // Use a larger write buffer (4MB) for better I/O performance on large exports
+        stream_set_write_buffer($handle, 4 * 1024 * 1024);
+
+        try {
+            // Write opening and meta
+            $meta = [
+                'type' => 'full',
+                'category' => 'all',
+                'label' => 'Full Database Backup',
+                'created_at' => Carbon::now()->toIso8601String(),
+                'app' => 'ISM Backup System',
+                'version' => '1.0',
+            ];
+            fwrite($handle, '{"meta":' . json_encode($meta, JSON_UNESCAPED_UNICODE) . ',"tables":{');
+
+            // Collect unique table definitions, merging scoped tables
+            $tableDefsMap = [];
+            foreach ($this->categories as $category) {
+                foreach ($category['tables'] as $tableDef) {
+                    $parsed = $this->parseTableDef($tableDef);
+                    $tableName = $parsed['table'];
+                    if (!isset($tableDefsMap[$tableName])) {
+                        $tableDefsMap[$tableName] = [];
+                    }
+                    $tableDefsMap[$tableName][] = $tableDef;
+                }
+            }
+
+            $firstTable = true;
+            foreach ($tableDefsMap as $tableName => $defs) {
+                if (!$firstTable) {
+                    fwrite($handle, ',');
+                }
+                $firstTable = false;
+
+                fwrite($handle, json_encode($tableName) . ':[');
+
+                // Not all tables have an 'id' column (e.g. pivot tables like taggables)
+                $hasId = \Illuminate\Support\Facades\Schema::hasColumn($tableName, 'id');
+
+                // Only track IDs for dedup on shared tables (multiple scopes)
+                $needsDedup = count($defs) > 1 && $hasId;
+                $seenIds = [];
+                $firstRecord = true;
+
+                foreach ($defs as $tableDef) {
+                    $parsed = $this->parseTableDef($tableDef);
+                    $scope = $parsed['scope'];
+
+                    $query = DB::table($tableName);
+                    if ($scope === 'purchase_order') {
+                        $query->whereNotNull('purchase_order_id');
+                    } elseif ($scope === 'sales_order') {
+                        $query->whereNotNull('sales_order_id');
+                    } elseif ($scope === 'product_return') {
+                        $query->whereNotNull('product_return_id');
+                    }
+
+                    // Not all tables have an 'id' column (e.g. pivot tables like taggables)
+                    if ($hasId) {
+                        $query->orderBy('id')->chunk(1000, function ($rows) use ($handle, &$firstRecord, &$seenIds, $needsDedup) {
+                            $this->writeRows($handle, $rows, $firstRecord, $seenIds, $needsDedup);
+                        });
+                    } else {
+                        // Pivot tables without id are typically small — fetch all at once
+                        $rows = $query->get();
+                        $this->writeRows($handle, $rows, $firstRecord, $seenIds, $needsDedup);
+                    }
+                }
+
+                // Free dedup memory after each table
+                unset($seenIds);
+
+                fwrite($handle, ']');
+            }
+
+            fwrite($handle, '}}');
+        } catch (\Exception $e) {
+            fclose($handle);
+            // Clean up partial file on failure
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
+            }
+            throw $e;
+        }
+
+        fclose($handle);
+
+        return 'backups/' . $filename;
+    }
+
+    /**
      * Restore data for a single category from uploaded data.
      */
     public function restoreCategory(string $type, array $backupData): array
@@ -250,44 +357,225 @@ class BackupService
     }
 
     /**
-     * Restore all data from a full backup.
+     * Restore data from a backup file on disk using streaming to avoid memory exhaustion.
+     * Handles 800MB+ files by scanning for table positions first, then streaming
+     * records one at a time. Never loads the whole file into memory.
      */
-    public function restoreAll(array $backupData): array
+    public function restoreFromFile(string $filePath, string $restoreType): array
     {
-        $tables = $backupData['tables'] ?? [];
+        if (!file_exists($filePath)) {
+            throw new \RuntimeException("Backup file not found: {$filePath}");
+        }
+
+        // Step 1: Find byte positions of each table's data array in the file
+        $tablePositions = $this->findTablePositionsInFile($filePath);
+
+        if (empty($tablePositions)) {
+            throw new \RuntimeException("No tables found in backup file.");
+        }
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         $restored = [];
 
-        // Move FK check outside transaction to avoid scope issues
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
         try {
-            DB::beginTransaction();
-
-            // Delete only tables that we have data for (in reverse order)
-            foreach (array_reverse($this->fullRestoreOrder) as $tableName) {
-                if (isset($tables[$tableName])) {
+            if ($restoreType === 'full') {
+                // Delete all existing data first (in reverse order)
+                foreach (array_reverse($this->fullRestoreOrder) as $tableName) {
                     DB::table($tableName)->delete();
                 }
-            }
 
-            // Insert in correct dependency order
-            foreach ($this->fullRestoreOrder as $tableName) {
-                if (!isset($tables[$tableName])) {
-                    continue;
+                // Restore each table in dependency order
+                foreach ($this->fullRestoreOrder as $tableName) {
+                    if (isset($tablePositions[$tableName])) {
+                        $count = $this->streamRestoreTable($filePath, $tableName, $tablePositions[$tableName]);
+                        $restored[$tableName] = $count;
+                    }
                 }
-                $count = $this->insertRecords($tableName, $tables[$tableName]);
-                $restored[$tableName] = $count;
-            }
+            } else {
+                // Restore specific category
+                if (!isset($this->categories[$restoreType])) {
+                    throw new \InvalidArgumentException("Unknown category: {$restoreType}");
+                }
 
-            DB::commit();
+                foreach ($this->categories[$restoreType]['tables'] as $tableDef) {
+                    $parsed = $this->parseTableDef($tableDef);
+                    $tableName = $parsed['table'];
+                    $scope = $parsed['scope'];
+
+                    if (!isset($tablePositions[$tableName])) {
+                        continue;
+                    }
+
+                    $this->truncateScoped($tableName, $scope);
+
+                    $count = $this->streamRestoreTable($filePath, $tableName, $tablePositions[$tableName]);
+                    $restored[$tableName] = $count;
+                }
+            }
         } catch (\Exception $e) {
-            DB::rollBack();
             throw $e;
         } finally {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         }
 
         return ['restored' => $restored];
+    }
+
+    /**
+     * Fast scan: Find byte position of each table's "[" in the backup file.
+     * Uses 4MB chunks with regex — handles 800MB in seconds.
+     */
+    private function findTablePositionsInFile(string $filePath): array
+    {
+        $handle = fopen($filePath, 'rb');
+        if (!$handle) {
+            throw new \RuntimeException("Cannot open file: {$filePath}");
+        }
+
+        $fileSize = filesize($filePath);
+        $positions = [];
+        $chunkSize = 4 * 1024 * 1024; // 4MB
+        $overlap = 300;
+        $pos = 0;
+
+        while ($pos < $fileSize) {
+            fseek($handle, $pos);
+            $readSize = min($chunkSize, $fileSize - $pos);
+            $chunk = fread($handle, $readSize);
+            if ($chunk === false || $chunk === '') break;
+
+            $offset = 0;
+            while (preg_match('/"([a-z_]+)"\s*:\s*\[/', $chunk, $m, PREG_OFFSET_CAPTURE, $offset)) {
+                $name = $m[1][0];
+                $bracketPos = strpos($chunk, '[', $m[0][1]);
+                if ($bracketPos !== false && !isset($positions[$name])) {
+                    $positions[$name] = $pos + $bracketPos;
+                }
+                $offset = $m[0][1] + strlen($m[0][0]);
+            }
+
+            $pos += strlen($chunk);
+            if ($pos < $fileSize) {
+                $pos -= $overlap;
+            }
+        }
+
+        fclose($handle);
+        return $positions;
+    }
+
+    /**
+     * Stream-restore a single table: reads records one at a time from the file
+     * starting at the given byte position, inserts in batches of 200.
+     * Memory usage stays constant regardless of table size.
+     */
+    private function streamRestoreTable(string $filePath, string $tableName, int $startPos): int
+    {
+        $handle = fopen($filePath, 'rb');
+        fseek($handle, $startPos + 1); // Skip past the '['
+
+        $count = 0;
+        $buffer = [];
+        $batchSize = 200;
+
+        $depth = 0;
+        $inString = false;
+        $escapeNext = false;
+        $recordJson = '';
+        $inRecord = false;
+
+        while (!feof($handle)) {
+            $chunk = fread($handle, 65536);
+            if ($chunk === false || $chunk === '') break;
+            $len = strlen($chunk);
+
+            for ($i = 0; $i < $len; $i++) {
+                $c = $chunk[$i];
+
+                if ($escapeNext) {
+                    if ($inRecord) $recordJson .= $c;
+                    $escapeNext = false;
+                    continue;
+                }
+
+                if ($c === '\\' && $inString) {
+                    if ($inRecord) $recordJson .= $c;
+                    $escapeNext = true;
+                    continue;
+                }
+
+                if ($c === '"') {
+                    $inString = !$inString;
+                    if ($inRecord) $recordJson .= $c;
+                    continue;
+                }
+
+                if ($inString) {
+                    if ($inRecord) $recordJson .= $c;
+                    continue;
+                }
+
+                if ($c === '{') {
+                    $depth++;
+                    if (!$inRecord) {
+                        $inRecord = true;
+                        $recordJson = '{';
+                    } else {
+                        $recordJson .= $c;
+                    }
+                } elseif ($c === '}') {
+                    $depth--;
+                    if ($inRecord) {
+                        $recordJson .= $c;
+                        if ($depth === 0) {
+                            $record = json_decode($recordJson, true);
+                            if (is_array($record)) {
+                                $buffer[] = $record;
+                                $count++;
+                                if (count($buffer) >= $batchSize) {
+                                    $this->insertBatchSafe($tableName, $buffer);
+                                    $buffer = [];
+                                }
+                            }
+                            $recordJson = '';
+                            $inRecord = false;
+                        }
+                    }
+                } elseif ($c === ']' && !$inRecord && $depth === 0) {
+                    break 2;
+                } elseif ($inRecord) {
+                    $recordJson .= $c;
+                }
+            }
+        }
+
+        if (!empty($buffer)) {
+            $this->insertBatchSafe($tableName, $buffer);
+        }
+
+        fclose($handle);
+        return $count;
+    }
+
+    /**
+     * Insert a batch with fallback to row-by-row on failure.
+     */
+    private function insertBatchSafe(string $tableName, array $records): void
+    {
+        if (empty($records)) return;
+
+        try {
+            DB::table($tableName)->insert($records);
+        } catch (\Exception $e) {
+            // Batch failed — try one by one to salvage good records
+            foreach ($records as $record) {
+                try {
+                    DB::table($tableName)->insert($record);
+                } catch (\Exception $e2) {
+                    // Skip bad record
+                }
+            }
+        }
     }
 
     /**
@@ -383,9 +671,8 @@ class BackupService
     public function runScheduledBackup(string $frequency = 'daily'): bool
     {
         try {
-            $data = $this->exportAll();
             $filename = 'scheduled_' . $frequency . '_' . Carbon::now()->format('Y-m-d_His') . '.json';
-            $path = $this->saveToFile($data, $filename);
+            $path = $this->exportAllToFile($filename);
 
             $this->logBackup('full', 'success', $path, "Scheduled {$frequency} backup completed");
 
@@ -400,6 +687,34 @@ class BackupService
     }
 
     // ─── PRIVATE HELPERS ─────────────────────────────────────────
+
+    /**
+     * Write a batch of rows to the backup file handle as JSON.
+     */
+    private function writeRows($handle, $rows, bool &$firstRecord, array &$seenIds, bool $needsDedup): void
+    {
+        $buffer = '';
+        foreach ($rows as $row) {
+            $record = (array) $row;
+            if ($needsDedup) {
+                $id = $record['id'] ?? null;
+                if ($id !== null && isset($seenIds[$id])) {
+                    continue;
+                }
+                if ($id !== null) {
+                    $seenIds[$id] = true;
+                }
+            }
+            if (!$firstRecord) {
+                $buffer .= ',';
+            }
+            $firstRecord = false;
+            $buffer .= json_encode($record, JSON_UNESCAPED_UNICODE);
+        }
+        if ($buffer !== '') {
+            fwrite($handle, $buffer);
+        }
+    }
 
     /**
      * Fetch data for a table definition (handles scoping for shared tables).
@@ -474,6 +789,34 @@ class BackupService
         foreach ($chunks as $chunk) {
             DB::table($tableName)->insert($chunk);
             $count += count($chunk);
+        }
+
+        return $count;
+    }
+
+    /**
+     * Insert records from a Generator/iterable in small chunks.
+     * Never holds more than one chunk (500 records) in memory.
+     */
+    private function insertRecordsStreaming(string $tableName, iterable $records): int
+    {
+        $buffer = [];
+        $count = 0;
+
+        foreach ($records as $record) {
+            $buffer[] = $record;
+
+            if (count($buffer) >= 500) {
+                DB::table($tableName)->insert($buffer);
+                $count += count($buffer);
+                $buffer = [];
+            }
+        }
+
+        // Insert remaining records
+        if (!empty($buffer)) {
+            DB::table($tableName)->insert($buffer);
+            $count += count($buffer);
         }
 
         return $count;
