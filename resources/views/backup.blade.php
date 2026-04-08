@@ -59,6 +59,14 @@
         <h1 class="h3 mb-0 text-light">
             <i class="fas fa-database"></i> Backup & Restore
         </h1>
+        <div>
+            <a href="/guides/ISM-Backup-Restore-Guide.html" target="_blank" class="btn btn-info btn-sm mr-2" title="View as HTML (can print to PDF)">
+                <i class="fas fa-book"></i> HTML Guide
+            </a>
+            <a href="/guides/ISM-Backup-Restore-QUICK-GUIDE.txt" download class="btn btn-info btn-sm" title="Download as text file">
+                <i class="fas fa-download"></i> Download Guide
+            </a>
+        </div>
     </div>
 
     <!-- Alert Messages -->
