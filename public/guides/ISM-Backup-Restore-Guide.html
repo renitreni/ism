@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISM Backup & Restore - User Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px 50px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid #4e73df;
+            padding-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            color: #4e73df;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .header .meta {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 15px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #4e73df;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4e73df;
+            padding-left: 15px;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight {
+            background: #f0f4f8;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .tip {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            background: #f9f9f9;
+        }
+
+        table th {
+            background: #4e73df;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tr:hover {
+            background: #f5f5f5;
+        }
+
+        ol, ul {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .step {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #4e73df;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.1em;
+        }
+
+        .category-box {
+            display: inline-block;
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        .button {
+            display: inline-block;
+            background: #4e73df;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin: 5px 5px 5px 0;
+        }
+
+        .button.success {
+            background: #27ae60;
+        }
+
+        .button.danger {
+            background: #e74a3b;
+        }
+
+        .toc {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: #4e73df;
+        }
+
+        .toc ol {
+            margin-left: 20px;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+                padding: 40px;
+                margin: 0;
+            }
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>📊 ISM Backup & Restore</h1>
+            <p>Complete User Guide</p>
+            <div class="meta">
+                <p>Version 1.0 | April 2024</p>
+                <p>IT Rockstar Trading Corporation</p>
+            </div>
+        </div>
+
+        <!-- TABLE OF CONTENTS -->
+        <div class="toc">
+            <h3>📑 Table of Contents</h3>
+            <ol>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#access">Accessing the Backup System</a></li>
+                <li><a href="#backup">How to Create Backups</a></li>
+                <li><a href="#download">How to Download Backups</a></li>
+                <li><a href="#restore">How to Restore from Backups</a></li>
+                <li><a href="#manage">Managing Backup Files</a></li>
+                <li><a href="#faq">Frequently Asked Questions</a></li>
+                <li><a href="#support">Support & Help</a></li>
+            </ol>
+        </div>
+
+        <!-- SECTION 1: OVERVIEW -->
+        <h2 id="overview">1. Overview</h2>
+
+        <p>The ISM Backup & Restore System is a powerful tool that allows you to create, download, and restore backups of your database. This ensures that your critical business data is always protected and can be recovered in case of accidental deletion, data corruption, or system failure.</p>
+
+        <div class="highlight">
+            <strong>Key Features:</strong>
+            <ul>
+                <li>✅ Create backups of entire database or specific categories</li>
+                <li>✅ Download backups for offsite storage</li>
+                <li>✅ Restore data from any previous backup</li>
+                <li>✅ Track backup history with detailed logs</li>
+                <li>✅ Automatic daily, weekly, and monthly backups</li>
+                <li>✅ JSON format (portable and universally compatible)</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 2: ACCESSING THE SYSTEM -->
+        <h2 id="access">2. Accessing the Backup System</h2>
+
+        <h3>Prerequisites</h3>
+        <ul>
+            <li>You must be logged in to the ISM application</li>
+            <li>You must have administrator or super admin access</li>
+            <li>Sufficient disk space for backup files</li>
+        </ul>
+
+        <h3>Steps to Access</h3>
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Login:</strong> Log in to your ISM application with your credentials
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Navigate:</strong> Look for the "Backup & Restore" link in the main navigation menu (usually under Settings or Admin section)
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Open:</strong> Click the link to open the Backup & Restore page
+        </div>
+
+        <p>You should see a page with tabs: <code>Backup</code>, <code>Restore</code>, <code>Backup Files</code>, and <code>History</code></p>
+
+        <!-- SECTION 3: HOW TO CREATE BACKUPS -->
+        <h2 id="backup">3. How to Create Backups</h2>
+
+        <h3>Understanding Backup Categories</h3>
+        <p>The system organizes your data into logical categories:</p>
+
+        <table>
+            <tr>
+                <th>Category</th>
+                <th>What It Includes</th>
+                <th>Best Use</th>
+            </tr>
+            <tr>
+                <td>Purchase Orders (P.O)</td>
+                <td>All purchase orders, details, and summaries</td>
+                <td>Backup vendor purchases</td>
+            </tr>
+            <tr>
+                <td>Sales Orders (S.O)</td>
+                <td>All sales orders, details, summaries, order forms</td>
+                <td>Backup customer sales</td>
+            </tr>
+            <tr>
+                <td>Products & Categories</td>
+                <td>Products, categories, supplies, galleries, tags</td>
+                <td>Backup product catalog</td>
+            </tr>
+            <tr>
+                <td>Vendors</td>
+                <td>All vendor information</td>
+                <td>Backup supplier data</td>
+            </tr>
+            <tr>
+                <td>Customers</td>
+                <td>All customer information</td>
+                <td>Backup customer data</td>
+            </tr>
+            <tr>
+                <td>Expenses</td>
+                <td>All expense records</td>
+                <td>Backup cost tracking</td>
+            </tr>
+            <tr>
+                <td>Job Orders</td>
+                <td>Job orders, statuses, and products</td>
+                <td>Backup job data</td>
+            </tr>
+            <tr>
+                <td>Product Returns</td>
+                <td>Returns, statuses, and details</td>
+                <td>Backup return data</td>
+            </tr>
+            <tr>
+                <td>System Settings</td>
+                <td>Users, preferences, settings, logs</td>
+                <td>Backup system configuration</td>
+            </tr>
+        </table>
+
+        <h3>Backup Method 1: Create a Category Backup</h3>
+        <p><strong>Best for:</strong> Regular, organized backups of specific business areas</p>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Open Backup Tab:</strong> Navigate to the <code>Backup</code> tab
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Select Categories:</strong> Check the boxes next to the categories you want to backup
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Use Helper Buttons:</strong>
+            <ul>
+                <li>Click "Select All" to select all categories at once</li>
+                <li>Click "Clear" to deselect all categories</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Start Backup:</strong> Click the <span class="button">Backup Selected</span> button
+        </div>
+
+        <div class="step">
+            <span class="step-number">5</span>
+            <strong>Wait for Completion:</strong> You'll see a processing message. Wait until the success message appears
+        </div>
+
+        <div class="step">
+            <span class="step-number">6</span>
+            <strong>Confirmation:</strong> You'll see a success message showing the backup filename (e.g., <code>backup_sales_orders_2024-04-08_143022.json</code>)
+        </div>
+
+        <h3>Backup Method 2: Create a Full Database Backup</h3>
+        <p><strong>Best for:</strong> Complete system backup, disaster recovery, archival</p>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Open Backup Tab:</strong> Go to the <code>Backup</code> tab
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Click Full Backup Button:</strong> Click the <span class="button success">Backup All (Full)</span> button
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Confirm:</strong> A confirmation dialog will appear asking "This will create a complete backup of all data. Continue?"
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Proceed:</strong> Click <span class="button success">Yes, backup all!</span> to proceed
+        </div>
+
+        <div class="step">
+            <span class="step-number">5</span>
+            <strong>Wait:</strong> Full backups may take from a few seconds to several minutes depending on your database size. You'll see a loading message
+        </div>
+
+        <div class="step">
+            <span class="step-number">6</span>
+            <strong>Success:</strong> You'll see a success message when complete
+        </div>
+
+        <div class="tip">
+            <strong>💡 Tip:</strong> Regular full backups are recommended for disaster recovery. Create one monthly and download it for offsite storage.
+        </div>
+
+        <!-- SECTION 4: HOW TO DOWNLOAD BACKUPS -->
+        <h2 id="download">4. How to Download Backups</h2>
+
+        <h3>Why Download Backups?</h3>
+        <ul>
+            <li><strong>Offsite Storage:</strong> Keep copies away from your server</li>
+            <li><strong>Long-term Archive:</strong> Store past versions for compliance</li>
+            <li><strong>Disaster Recovery:</strong> Have backups available if server is compromised</li>
+            <li><strong>Migration:</strong> Transfer data to other systems or servers</li>
+        </ul>
+
+        <h3>Steps to Download a Backup</h3>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Open Backup Files Tab:</strong> Click on the <code>Backup Files</code> tab
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>View Backup List:</strong> You'll see a table with all available backups showing:
+            <ul>
+                <li>Filename (what was backed up and when)</li>
+                <li>File size (in KB, MB, or GB)</li>
+                <li>Date created</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Select Backup:</strong> Find the backup file you want to download
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Click Download:</strong> Click the blue <strong>⬇️ Download</strong> button next to the file
+        </div>
+
+        <div class="step">
+            <span class="step-number">5</span>
+            <strong>Save File:</strong> Your browser will prompt you to save the file. Choose a location and click Save
+        </div>
+
+        <div class="step">
+            <span class="step-number">6</span>
+            <strong>Store Safely:</strong> Move the file to cloud storage (Google Drive, Dropbox) or external drive for long-term storage
+        </div>
+
+        <div class="highlight">
+            <strong>✅ Best Practices for Downloaded Backups:</strong>
+            <ul>
+                <li>Label backups with dates (e.g., "backup_full_2024-04_april.json")</li>
+                <li>Keep copies in multiple locations (local + cloud + external drive)</li>
+                <li>Test restoration from backups periodically</li>
+                <li>Keep at least 3 recent backups available</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 5: HOW TO RESTORE FROM BACKUPS -->
+        <h2 id="restore">5. How to Restore from Backups</h2>
+
+        <div class="warning">
+            <strong>⚠️ WARNING:</strong> Restoring from a backup will <strong>OVERWRITE</strong> your current data with the data from the backup. Make sure you have a current backup before restoring!
+        </div>
+
+        <h3>When to Restore</h3>
+        <ul>
+            <li>After accidental data deletion</li>
+            <li>After data corruption or inconsistency</li>
+            <li>To revert to a previous state</li>
+            <li>During disaster recovery</li>
+        </ul>
+
+        <h3>Restore Method 1: From Downloaded Backup File</h3>
+        <p><strong>Use this to:</strong> Restore a backup file you've saved on your computer</p>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Open Restore Tab:</strong> Click on the <code>Restore</code> tab
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Upload File:</strong> Click "Choose backup file..." button in the "Restore from Upload" section
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Select File:</strong> Browse to your backup file (*.json) and click Open
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Select Restore Type:</strong> Choose what to restore:
+            <ul>
+                <li><strong>Full Restore (All Data)</strong> - Restores everything from the backup</li>
+                <li><strong>Or select a category</strong> - Restores only that category (e.g., "Sales Orders")</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <span class="step-number">5</span>
+            <strong>Review Warning:</strong> Read the warning message carefully - you're about to overwrite data
+        </div>
+
+        <div class="step">
+            <span class="step-number">6</span>
+            <strong>Confirm:</strong> Click <span class="button danger">Restore Data</span> button
+        </div>
+
+        <div class="step">
+            <span class="step-number">7</span>
+            <strong>Final Confirmation:</strong> A dialog will ask for final confirmation. Click "Yes, restore!"
+        </div>
+
+        <div class="step">
+            <span class="step-number">8</span>
+            <strong>Wait for Completion:</strong> You'll see a "Restoring data..." message. Wait until completion
+        </div>
+
+        <div class="step">
+            <span class="step-number">9</span>
+            <strong>Success:</strong> You'll see "Restored!" message showing what was recovered
+        </div>
+
+        <h3>Restore Method 2: From Server Backup</h3>
+        <p><strong>Use this to:</strong> Restore from a backup file already on your server</p>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Open Restore Tab:</strong> Click on the <code>Restore</code> tab
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Select Backup:</strong> In "Restore from Server Backup" section, click the dropdown "-- Select backup file --"
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>Choose File:</strong> Select a backup from the dropdown list (shows filename, size, and date)
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Select Restore Type:</strong> Choose full restore or specific category
+        </div>
+
+        <div class="step">
+            <span class="step-number">5</span>
+            <strong>Confirm:</strong> Click <span class="button danger">Restore Data</span> button
+        </div>
+
+        <div class="step">
+            <span class="step-number">6</span>
+            <strong>Final Confirmation:</strong> Confirm in the dialog that appears
+        </div>
+
+        <div class="step">
+            <span class="step-number">7</span>
+            <strong>Wait & Verify:</strong> Wait for completion and verify the restored data looks correct
+        </div>
+
+        <div class="tip">
+            <strong>💡 Tip:</strong> Always create a backup before performing major changes. If something goes wrong, you can restore the previous version.
+        </div>
+
+        <!-- SECTION 6: MANAGING BACKUPS -->
+        <h2 id="manage">6. Managing Backup Files</h2>
+
+        <h3>View Backup Files</h3>
+        <ol>
+            <li>Go to <code>Backup Files</code> tab</li>
+            <li>You'll see a table with all available backups</li>
+            <li>Each backup shows: filename, size, and creation date</li>
+            <li>Files are sorted with newest at the top</li>
+        </ol>
+
+        <h3>Delete Backup Files</h3>
+        <ol>
+            <li>Go to <code>Backup Files</code> tab</li>
+            <li>Find the backup you want to delete</li>
+            <li>Click the red <strong>🗑️ Delete</strong> button</li>
+            <li>A confirmation dialog will appear</li>
+            <li>Click "Yes, delete it!" to confirm</li>
+        </ol>
+
+        <div class="warning">
+            <strong>⚠️ Important:</strong> Deleted backups cannot be recovered. Only delete old or unnecessary backups. Always keep at least one recent backup!
+        </div>
+
+        <h3>View Backup History</h3>
+        <ol>
+            <li>Go to <code>History</code> tab</li>
+            <li>You'll see a log of all backup and restore operations</li>
+            <li>Each entry shows:
+                <ul>
+                    <li>Type (Backup or Restore)</li>
+                    <li>Category backed up</li>
+                    <li>Status (Success or Failed)</li>
+                    <li>User who performed it</li>
+                    <li>Date and time</li>
+                </ul>
+            </li>
+        </ol>
+
+        <div class="highlight">
+            <strong>✅ Use History to:</strong>
+            <ul>
+                <li>See which backups were successful</li>
+                <li>Identify when data was backed up</li>
+                <li>Track who made changes</li>
+                <li>Troubleshoot backup issues</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 7: FREQUENTLY ASKED QUESTIONS -->
+        <h2 id="faq">7. Frequently Asked Questions</h2>
+
+        <h3>Q: How often should I backup my data?</h3>
+        <p><strong>A:</strong> It depends on your needs:</p>
+        <ul>
+            <li><strong>Critical systems:</strong> Daily or multiple times per day</li>
+            <li><strong>Standard systems:</strong> Weekly</li>
+            <li><strong>Archival:</strong> Monthly</li>
+        </ul>
+        <p>The system includes automatic backups:</p>
+        <ul>
+            <li>Daily at 2:00 AM</li>
+            <li>Weekly on Sundays at 3:00 AM</li>
+            <li>Monthly on the 1st at 4:00 AM</li>
+        </ul>
+
+        <h3>Q: How large are backup files?</h3>
+        <p><strong>A:</strong> File size depends on how much data you have:</p>
+        <ul>
+            <li><strong>Small backups (single category):</strong> 500 KB - 5 MB</li>
+            <li><strong>Medium backups (multiple categories):</strong> 5 - 50 MB</li>
+            <li><strong>Large backups (full database):</strong> 50 - 500 MB+</li>
+        </ul>
+
+        <h3>Q: How long does a backup take?</h3>
+        <p><strong>A:</strong> Timing depends on database size:</p>
+        <ul>
+            <li><strong>Single category:</strong> Less than 1 second</li>
+            <li><strong>Multiple categories:</strong> 1-30 seconds</li>
+            <li><strong>Full database:</strong> 1-5 minutes (or longer for very large databases)</li>
+        </ul>
+        <p>During backup, don't close the browser tab or navigate away.</p>
+
+        <h3>Q: Can I backup while others are using the system?</h3>
+        <p><strong>A:</strong> Yes! Backups use read-only queries, so other users can continue working normally. There's no performance impact.</p>
+
+        <h3>Q: What if I restore by mistake?</h3>
+        <p><strong>A:</strong> This is why you need multiple backups:</p>
+        <ol>
+            <li>Immediately create a new backup of the current (incorrect) state</li>
+            <li>Get the previous correct backup file</li>
+            <li>Restore from the correct backup</li>
+        </ol>
+
+        <h3>Q: Can I restore just one category instead of everything?</h3>
+        <p><strong>A:</strong> Yes! When restoring, you can choose:</p>
+        <ul>
+            <li>"Full Restore (All Data)" to restore everything</li>
+            <li>Or select a specific category to restore just that category</li>
+        </ul>
+
+        <h3>Q: Where are backup files stored on the server?</h3>
+        <p><strong>A:</strong> Backups are stored in: <code>storage/app/backups/</code></p>
+        <p>This location is automatically managed by the system.</p>
+
+        <h3>Q: Can I edit a backup file?</h3>
+        <p><strong>A:</strong> Backup files are JSON format (text-based) and technically can be opened in a text editor. However:</p>
+        <ul>
+            <li><strong>Not recommended</strong> - manual edits could corrupt the backup</li>
+            <li>If you need to modify data, it's better to restore to a test system first</li>
+            <li>For specific needs, contact your system administrator</li>
+        </ul>
+
+        <h3>Q: What if a backup fails?</h3>
+        <p><strong>A:</strong> If you see an error message:</p>
+        <ol>
+            <li>Check the error message - it often tells you what went wrong</li>
+            <li>Verify you have disk space available</li>
+            <li>Check that the database connection is working</li>
+            <li>Try again after a few minutes</li>
+            <li>Contact your administrator if the problem persists</li>
+        </ol>
+
+        <!-- SECTION 8: SUPPORT & HELP -->
+        <h2 id="support">8. Support & Help</h2>
+
+        <h3>Getting Help</h3>
+        <ul>
+            <li><strong>Questions about backups:</strong> Check the FAQ section above</li>
+            <li><strong>Technical issues:</strong> Contact your system administrator</li>
+            <li><strong>Data recovery:</strong> Contact your administrator immediately</li>
+            <li><strong>Feedback:</strong> Share improvement suggestions with your admin team</li>
+        </ul>
+
+        <h3>Quick Reference</h3>
+        <table>
+            <tr>
+                <th>Task</th>
+                <th>Where to Find It</th>
+                <th>Time Required</th>
+            </tr>
+            <tr>
+                <td>Create category backup</td>
+                <td>Backup tab → Select categories → Click "Backup Selected"</td>
+                <td>Seconds to 1 minute</td>
+            </tr>
+            <tr>
+                <td>Create full backup</td>
+                <td>Backup tab → Click "Backup All (Full)"</td>
+                <td>1-5 minutes</td>
+            </tr>
+            <tr>
+                <td>Download backup</td>
+                <td>Backup Files tab → Click Download button</td>
+                <td>Depends on file size</td>
+            </tr>
+            <tr>
+                <td>Restore from backup</td>
+                <td>Restore tab → Upload/Select file → Confirm</td>
+                <td>Depends on backup size</td>
+            </tr>
+            <tr>
+                <td>Check backup history</td>
+                <td>History tab → View all operations</td>
+                <td>Instant</td>
+            </tr>
+        </table>
+
+        <h3>Important Reminders</h3>
+        <div class="highlight">
+            <ul>
+                <li><strong>Create regular backups</strong> - Don't wait for problems to occur</li>
+                <li><strong>Download and store backups safely</strong> - Keep copies away from the server</li>
+                <li><strong>Test restores occasionally</strong> - Make sure your backups actually work</li>
+                <li><strong>Label your backups clearly</strong> - Include dates and what they contain</li>
+                <li><strong>Always backup before major changes</strong> - System updates, data migrations, etc.</li>
+                <li><strong>Keep multiple versions</strong> - Don't just keep the latest backup</li>
+            </ul>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p><strong>ISM Backup & Restore User Guide v1.0</strong></p>
+            <p>Created: April 2024 | IT Rockstar Trading Corporation</p>
+            <p>For technical support, contact your system administrator</p>
+            <p style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                This guide can be printed or saved as PDF using your browser's print function (Ctrl+P or Cmd+P)
+            </p>
+        </div>
+    </div>
+</body>
+</html>

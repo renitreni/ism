@@ -1,0 +1,365 @@
+USER GUIDE: ISM BACKUP & RESTORE SYSTEM
+
+================================================================================
+                    QUICK START - 3 STEPS TO BACKUP
+================================================================================
+
+1. GO TO THE BACKUP PAGE
+   - In your ISM application, find "Backup & Restore" in the menu
+   - Click to open the Backup & Restore interface
+
+2. SELECT WHAT TO BACKUP
+   - Check the categories or click "Backup All (Full)" for everything
+   - Use "Select All" to quickly select all categories
+
+3. CLICK BACKUP
+   - Click "Backup Selected" or "Backup All (Full)"
+   - Wait for the success message
+
+Done! Your backup is ready to download.
+
+================================================================================
+                        AVAILABLE BACKUP CATEGORIES
+================================================================================
+
+📦 PURCHASE ORDERS (P.O)
+   Includes: Purchase orders, order details, order summaries
+   Use: Backup all vendor purchases and procurement data
+
+💰 SALES ORDERS (S.O)
+   Includes: Sales orders, details, summaries, order forms
+   Use: Backup all customer sales and quotations
+
+📋 PRODUCTS & CATEGORIES
+   Includes: Product catalog, categories, supplies, images, tags
+   Use: Backup your complete product database
+
+🚚 VENDORS
+   Includes: All vendor/supplier information
+   Use: Backup vendor contact and business data
+
+👥 CUSTOMERS
+   Includes: All customer information
+   Use: Backup customer contacts and information
+
+💵 EXPENSES
+   Includes: All expense records
+   Use: Backup expense tracking data
+
+🔧 JOB ORDERS
+   Includes: Job orders, statuses, products
+   Use: Backup custom job/service orders
+
+↩️ PRODUCT RETURNS
+   Includes: Returns, statuses, return details
+   Use: Backup return and RMA data
+
+⚙️ SYSTEM SETTINGS
+   Includes: Users, preferences, print settings, audit logs
+   Use: Backup system configuration and settings
+
+================================================================================
+                          HOW TO CREATE A BACKUP
+================================================================================
+
+STEP 1: LOG IN
+   - Log in to ISM with your admin credentials
+   - Ensure you have administrator access
+
+STEP 2: NAVIGATE TO BACKUP
+   - Click "Backup & Restore" in the menu
+   - You'll see the Backup & Restore interface
+
+STEP 3: SELECT CATEGORIES
+   - Check boxes next to categories you want to backup
+   - Use "Select All" to select everything
+   - Use "Clear" to deselect everything
+
+STEP 4: START BACKUP
+   - Click "Backup Selected" for selected categories
+   - OR Click "Backup All (Full)" for complete backup
+   - A loading dialog will appear
+
+STEP 5: WAIT FOR COMPLETION
+   - Don't close the browser tab
+   - Wait for the success message
+   - You'll see the backup filename (e.g., backup_sales_orders_2024-04-08_143022.json)
+
+================================================================================
+                       HOW TO DOWNLOAD A BACKUP FILE
+================================================================================
+
+STEP 1: GO TO BACKUP FILES TAB
+   - Click the "Backup Files" tab
+   - You'll see a list of all available backups
+
+STEP 2: FIND YOUR BACKUP
+   - Look for the filename you want (newest at top)
+   - Check the size and date to confirm it's the right one
+
+STEP 3: CLICK DOWNLOAD
+   - Click the blue download button (⬇️) next to the file
+   - Your browser will start downloading the file
+
+STEP 4: SAVE SECURELY
+   - Choose where to save the file on your computer
+   - Move it to secure storage (cloud drive, external drive, etc.)
+   - Label it with the date and what it contains
+
+BEST PRACTICE: Keep multiple backups in different locations!
+
+================================================================================
+                        HOW TO RESTORE FROM BACKUP
+================================================================================
+
+⚠️ IMPORTANT: Restoring OVERWRITES your current data with the backup data!
+   Always have a current backup before restoring!
+
+OPTION A: RESTORE FROM DOWNLOADED FILE
+
+   1. Click the "Restore" tab
+   2. In "Restore from Upload" section, click "Choose backup file..."
+   3. Select your backup file (*.json) from your computer
+   4. Click "Select restore type":
+      - Full Restore (all data)
+      - Or a specific category
+   5. Click "Restore Data"
+   6. CONFIRM the warning dialog
+   7. Wait for completion message
+
+OPTION B: RESTORE FROM SERVER BACKUP
+
+   1. Click the "Restore" tab
+   2. In "Restore from Server Backup" section:
+   3. Select a backup file from the dropdown
+   4. Choose restore type (full or category)
+   5. Click "Restore Data"
+   6. CONFIRM when prompted
+   7. Wait for success message
+
+================================================================================
+                        HOW TO DELETE OLD BACKUPS
+================================================================================
+
+1. Go to "Backup Files" tab
+2. Find the backup you want to delete
+3. Click the red delete button (🗑️)
+4. A confirmation will appear
+5. Click "Yes, delete it!" to confirm
+
+⚠️ WARNING: Deleted backups cannot be recovered!
+    Only delete old or unnecessary backups. Keep at least one backup!
+
+================================================================================
+                         HOW TO CHECK BACKUP HISTORY
+================================================================================
+
+1. Click the "History" tab
+2. You'll see a log of all backup and restore operations
+3. Each entry shows:
+   - Type (Backup or Restore)
+   - Category (what was backed up)
+   - Status (success or failed)
+   - User (who did it)
+   - Date and time
+
+Use this to see when backups were created and restore operations were performed.
+
+================================================================================
+                    AUTOMATIC SCHEDULED BACKUPS
+================================================================================
+
+The system automatically creates backups on a schedule:
+
+📅 DAILY: Every day at 2:00 AM
+   - Full database backup
+   - Automatically stored on server
+   - Can be downloaded anytime
+
+📅 WEEKLY: Every Sunday at 3:00 AM
+   - Full database backup
+   - Automatically stored on server
+   - Can be downloaded anytime
+
+📅 MONTHLY: 1st of month at 4:00 AM
+   - Full database backup
+   - Automatically stored on server
+   - Can be downloaded anytime
+
+Note: These happen automatically. You can also create manual backups anytime!
+
+================================================================================
+                        FREQUENTLY ASKED QUESTIONS
+================================================================================
+
+Q: How often should I backup?
+A: Depends on your needs:
+   - Critical data: Daily or multiple times per day
+   - Standard: Weekly
+   - Archival: Monthly
+   The system also creates automatic daily, weekly, and monthly backups.
+
+Q: How big are backup files?
+A: Depends on your data:
+   - Single category: 0.5-5 MB
+   - Multiple categories: 5-50 MB
+   - Full database: 50-500 MB+
+
+Q: How long does a backup take?
+A: Depends on database size:
+   - Single category: < 1 second
+   - Multiple categories: 1-30 seconds
+   - Full database: 1-5+ minutes
+
+Q: Can I backup while others work?
+A: Yes! Backups are read-only and don't affect other users.
+
+Q: What if I restore by accident?
+A: You need multiple backups:
+   1. Create a new backup of the wrong state
+   2. Get the previous correct backup
+   3. Restore from the correct one
+
+Q: Can I restore just one category?
+A: Yes! Choose "restore type" when restoring:
+   - Full Restore (All Data)
+   - Or select a specific category
+
+Q: Where are backups stored?
+A: Server: storage/app/backups/
+   Downloaded: Wherever you saved them
+
+Q: What format are backup files?
+A: JSON (text-based, portable, can be opened in text editor)
+
+Q: Can I edit a backup?
+A: Technically yes (it's JSON), but NOT RECOMMENDED
+   Manual edits could corrupt the backup
+
+Q: What if a backup fails?
+A: Check the error message, verify:
+   - Database connection is working
+   - Server has disk space
+   - Permissions are correct
+   Try again or contact your administrator
+
+Q: Can I access backups from other systems?
+A: Yes! Backup files are portable JSON format
+   Can be opened with any text editor
+   Can be transferred to other servers or systems
+
+================================================================================
+                    BEST PRACTICES FOR BACKUP MANAGEMENT
+================================================================================
+
+✅ DO:
+   - Create regular backups (weekly minimum)
+   - Download and store backups in multiple locations
+   - Label backups with dates (backup_full_2024-04.json)
+   - Keep at least 3 recent backups
+   - Test restorations occasionally
+   - Backup BEFORE major changes or updates
+   - Store copies in cloud storage (Google Drive, Dropbox)
+   - Keep detailed records of what's in each backup
+   - Follow the 3-2-1 backup rule (3 copies, 2 different media, 1 offsite)
+
+❌ DON'T:
+   - Keep only one backup
+   - Delete backups without checking what's in them
+   - Store all backups in the same location
+   - Forget about backups until something goes wrong
+   - Share backup files with others without care
+   - Restore without verifying you have a backup of current state
+   - Skip backup testing and verification
+
+================================================================================
+                     FILE NAMING CONVENTION
+================================================================================
+
+Backup files follow this pattern:
+   backup_{TYPE}_{DATE}_{TIME}.json
+
+Examples:
+   backup_sales_orders_2024-04-08_143022.json
+   backup_all_2024-04-08_021500.json
+   backup_customers_2024-04-15_150000.json
+
+When downloading, rename with clear labels:
+   backup_FULL_April2024.json
+   backup_SalesOrder_2024-Q1.json
+   backup_before_systemupdate_2024-04-08.json
+
+================================================================================
+                        COMMON SCENARIOS
+================================================================================
+
+SCENARIO 1: Regular Weekly Backup
+   1. Every Monday morning, backup "Sales Orders" and "Products"
+   2. Download the file
+   3. Store in cloud (Google Drive)
+   4. Keep the last 4 weeks of backups
+
+SCENARIO 2: Backup Before System Update
+   1. Create FULL backup
+   2. Wait for confirmation
+   3. Download the file
+   4. Mark: "BEFORE_UPDATE_2024-04-08"
+   5. Keep until update is complete and verified
+   6. Then archive
+
+SCENARIO 3: Accidental Data Deletion
+   1. STOP - don't make any more changes
+   2. Go to Backup & Restore
+   3. Check History to find when data was good
+   4. Go to Backup Files and download that backup
+   5. Restore from that file
+   6. Verify data is correct
+   7. Create a new backup after recovery
+
+SCENARIO 4: Monthly Archive
+   1. First of each month, create FULL backup
+   2. Download the file
+   3. Name it: backup_FULL_April2024.json
+   4. Store in archive folder or external drive
+   5. Keep monthly backups for 12 months
+
+================================================================================
+                       BACKUP STATUS INDICATORS
+================================================================================
+
+When viewing backup history:
+   ✅ SUCCESS (green) = Backup completed successfully
+   ❌ FAILED (red) = Backup had an error, check details
+   ⏳ IN PROGRESS = Backup currently running, wait for completion
+
+When creating backup:
+   ⏳ "Creating backup..." = Backup in progress, wait
+   ✅ Green message = Success, backup file created
+   ❌ Red message = Error occurred, see details
+
+================================================================================
+                          NEED HELP?
+================================================================================
+
+If you need assistance:
+
+1. Check this guide (search for your topic)
+2. Review the History tab for past operations
+3. Open the Backup Files tab to see available backups
+4. Check the error message shown
+5. Contact your system administrator:
+   - IT Rockstar Team
+   - [Your IT Contact Info]
+
+Remember:
+- Backups are your safety net
+- Regular, tested backups = peace of mind
+- Don't wait for a disaster to start backing up!
+
+================================================================================
+
+Version: 1.0
+Created: April 2024
+IT Rockstar Trading Corporation
+
+This guide can be printed or saved as PDF from your browser.
