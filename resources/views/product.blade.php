@@ -18,6 +18,8 @@
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <a href="{{ route('product.create') }}" class="btn btn-sm btn-success">
                                         <i class="fa fa-plus"></i> New Product</a>
+                                    <a href="{{ route('product.export.excel') }}" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-file-excel"></i> Export Excel</a>
                                     <a href="#" class="btn btn-sm btn-info" data-toggle="modal"
                                        data-target="#categoryModal">
                                         <i class="fa fa-list-ol"></i> Categories</a>
