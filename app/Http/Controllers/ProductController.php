@@ -8,12 +8,15 @@ use App\Product;
 use App\Category;
 use App\ProductDetail;
 use App\PurchaseInfo;
+use App\Exports\ProductExcel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Yajra\DataTables\DataTables;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductController extends Controller
 {
@@ -200,5 +203,12 @@ class ProductController extends Controller
         Supply::query()->where('product_id', $request->id)->delete();
 
         return ['success' => true];
+    }
+
+    public function exportExcel(): BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H-i-s');
+
+        return Excel::download(new ProductExcel(), "PRODUCT_LIST-$date.xlsx");
     }
 }

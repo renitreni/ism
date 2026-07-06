@@ -40,6 +40,13 @@ return [
         'timeout' => false,
         'options' => [
             'enable-local-file-access' => true,
+            'disable-smart-shrinking' => true,
+            'margin-top' => 5,
+            'margin-bottom' => 5,
+            'margin-left' => 5,
+            'margin-right' => 5,
+            'dpi' => 96,
+            'page-size' => 'A4',
         ],
         'env'     => [],
     ],

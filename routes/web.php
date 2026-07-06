@@ -124,6 +124,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/product/update', 'ProductController@update')->name('product.update');
     Route::post('/product/image/upload', 'ProductController@imageUpload')->name('product.image.upload');
     Route::post('/product/so/list', 'ProductController@getSOList')->name('product.so.list');
+    Route::get('/products/export/excel', 'ProductController@exportExcel')->name('product.export.excel')->middleware('can:products');
 
     Route::post('/category/list', 'CategoryController@getList')->name('category.list');
     Route::post('/category/destroy', 'CategoryController@destroy')->name('category.delete')->middleware('can:productsupdate');
@@ -175,6 +176,15 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/preference', 'PreferenceController@index')->name('preference')->middleware('can:preference');
     Route::post('/preference/update', 'PreferenceController@update')->name('preference.update');
 
+    Route::get('/payment-term', 'PaymentTermController@index')->name('payment-term')->middleware('can:preference');
+    Route::get('/payment-term/create', 'PaymentTermController@create')->name('payment-term.create')->middleware('can:preference');
+    Route::get('/payment-term/view/{id}', 'PaymentTermController@show')->name('payment-term.view')->middleware('can:preference');
+    Route::get('/payment-term/detail/{id}', 'PaymentTermController@show')->name('payment-term.detail')->middleware('can:preference');
+    Route::post('/payment-term/destroy', 'PaymentTermController@destroy')->name('payment-term.destroy')->middleware('can:preference');
+    Route::post('/payment-term/table', 'PaymentTermController@table')->name('payment-term.table');
+    Route::post('/payment-term/store', 'PaymentTermController@store')->name('payment-term.store');
+    Route::post('/payment-term/update', 'PaymentTermController@update')->name('payment-term.update');
+
     Route::get('/print_setting', 'PrintSettingController@index')->name('print.setting')->middleware('can:preference');
     Route::post('/print_setting/update', 'PrintSettingController@update')->name('print_setting.update');
 
@@ -217,6 +227,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
 
     Route::get('/expenses',  'ExpensesController@index')->name('expenses')->middleware('can:expenses');
     Route::post('/expenses/table', 'ExpensesController@table')->name('expenses.table');
+    Route::post('/expenses/summary', 'ExpensesController@summary')->name('expenses.summary');
     Route::get('/expenses/create', 'ExpensesController@create')->name('expenses.create');
     Route::post('/expenses/store', 'ExpensesController@store')->name('expenses.store')->middleware('can:expensescreate');
     Route::get('/expenses/detail/{id}', 'ExpensesController@edit')->name('expenses.edit');
@@ -239,4 +250,24 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/job-order/destroy', [JobOrderController::class, 'destroy'])->name('job-order.destroy')->middleware('can:joborderdestroy');
     Route::get('/job-order/download/{jobOrder}', [JobOrderController::class, 'download'])->name('job-order.download');
     Route::get('/job-order/preview/{jobOrder}', [JobOrderController::class, 'preview'])->name('job-order.preview');
+
+    // Accounts Payable Module
+    Route::get('/accounts-payable', 'AccountsPayableController@index')->name('accounts-payable');
+    Route::post('/accounts-payable/table', 'AccountsPayableController@table')->name('accounts-payable.table');
+    Route::get('/accounts-payable/create', 'AccountsPayableController@create')->name('accounts-payable.create');
+    Route::post('/accounts-payable/store', 'AccountsPayableController@store')->name('accounts-payable.store');
+    Route::get('/accounts-payable/detail/{id}', 'AccountsPayableController@edit')->name('accounts-payable.edit');
+    Route::get('/accounts-payable/view/{id}', 'AccountsPayableController@show')->name('accounts-payable.show');
+    Route::post('/accounts-payable/update', 'AccountsPayableController@store')->name('accounts-payable.update');
+    Route::post('/accounts-payable/destroy', 'AccountsPayableController@destroy')->name('accounts-payable.destroy');
+
+    // Accounts Receivable Module
+    Route::get('/accounts-receivable', 'AccountsReceivableController@index')->name('accounts-receivable');
+    Route::post('/accounts-receivable/table', 'AccountsReceivableController@table')->name('accounts-receivable.table');
+    Route::get('/accounts-receivable/create', 'AccountsReceivableController@create')->name('accounts-receivable.create');
+    Route::post('/accounts-receivable/store', 'AccountsReceivableController@store')->name('accounts-receivable.store');
+    Route::get('/accounts-receivable/detail/{id}', 'AccountsReceivableController@edit')->name('accounts-receivable.edit');
+    Route::get('/accounts-receivable/view/{id}', 'AccountsReceivableController@show')->name('accounts-receivable.show');
+    Route::post('/accounts-receivable/update', 'AccountsReceivableController@store')->name('accounts-receivable.update');
+    Route::post('/accounts-receivable/destroy', 'AccountsReceivableController@destroy')->name('accounts-receivable.destroy');
 });

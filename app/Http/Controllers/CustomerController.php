@@ -85,11 +85,11 @@ class CustomerController extends Controller
 
     public function printable()
     {
-        $customers = Customer::all()->sortByDesc('id');
+        $customers = Customer::orderBy('id', 'desc')->get();
 
         $pdf = PDF::loadView('customer_printable', ['customers' => $customers]);
 
-        return $pdf->setPaper('a4')
+        return $pdf->setPaper('a4', 'landscape')
             ->setTemporaryFolder(public_path())
             ->download('CUSTOMER_LIST - ' . Carbon::now()->format('Y-m-d') . '.pdf');
     }
