@@ -43,7 +43,6 @@ class SecurityController extends Controller
         "suppliesupdate",
         "vendorsdestroy",
         "suppliesdestroy",
-        "products",
         "securityview",
         "securitycreate",
         "securityretrieve",
@@ -54,6 +53,7 @@ class SecurityController extends Controller
         "useraccountschangepass",
         "useraccountsupdate",
         "useraccountsdestroy",
+        "products",
         "productscreate",
         "productsretrieve",
         "productsupdate",
@@ -79,6 +79,10 @@ class SecurityController extends Controller
         "quotecreate",
         "quoteupdate",
         "quotedestroy",
+        "statusUpdateToShipped",
+        "statusUpdateToUnshipped",
+        "statusUpdateToReceived",
+        "statusUpdateToOrdered",
     ];
 
     public function roles()

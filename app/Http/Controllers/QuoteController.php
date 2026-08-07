@@ -23,15 +23,16 @@ class QuoteController extends Controller
     }
 
     public function table(Request $request)
-    {   
+    {
 
         $vendors = SalesOrder::query()
-            ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name,
-                             summaries.grand_total')
-            ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
-            ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
-            ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
-            ->whereNotIn('sales_orders.status', ['Sales', 'Project']);
+                ->selectRaw('sales_orders.*, users.name as username, customers.name as customer_name, summaries.grand_total')
+                ->leftJoin('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
+                ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
+                ->leftJoin('users', 'users.id', '=', 'sales_orders.assigned_to')
+                ->whereNull('sales_orders.title_format_tag')
+                ->where('sales_orders.status', 'Quote');
+
 
             if ($request->filled('filter_payment')) {
                 $vendors->where('sales_orders.payment_status', $request->input('filter_payment'));
@@ -43,6 +44,7 @@ class QuoteController extends Controller
                 $vendors->where('sales_orders.delivery_status', $request->input('filter_delivery_status'));
             }
 
+
         return DataTables::of($vendors)->setTransformer(function ($data) {
             $data                   = $data->toArray();
             $data['created_at']     = Carbon::parse($data['created_at'])->format('F j, Y');
@@ -51,6 +53,7 @@ class QuoteController extends Controller
             $data['can_be_shipped'] = 1;
 
             $product_details = $this->getProductDetail($data['id']);
+
             foreach ($product_details as $products) {
                 $diff = $products->quantity - $products->qty;
 

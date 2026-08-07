@@ -87,10 +87,12 @@ class VendorController extends Controller
 
     public function printable()
     {
-        $vendors = Vendor::all()->sortByDesc('id');
+        $vendors = Vendor::orderBy('id', 'desc')->get();
 
         $pdf = PDF::loadView('vendor_printable', ['vendors' => $vendors]);
 
-        return $pdf->setPaper('a4')->download('VENDOR_LIST - ' . Carbon::now()->format('Y-m-d') . '.pdf');
+        return $pdf->setPaper('a4', 'landscape')
+            ->setTemporaryFolder(public_path())
+            ->download('VENDOR_LIST - ' . Carbon::now()->format('Y-m-d') . '.pdf');
     }
 }

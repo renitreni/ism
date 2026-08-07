@@ -8,12 +8,15 @@ use App\Product;
 use App\Category;
 use App\ProductDetail;
 use App\PurchaseInfo;
+use App\Exports\ProductExcel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Yajra\DataTables\DataTables;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductController extends Controller
 {
@@ -86,6 +89,7 @@ class ProductController extends Controller
 
     public function getList(Request $request)
     {
+
         $product = Product::query()
             ->selectRaw("id as id, name as text")
             ->whereRaw("upper(name) like '%" . strtoupper($request->term) . "%'");
@@ -120,7 +124,18 @@ class ProductController extends Controller
     {
         $data                = $request->except('fast_moving', 'tags');
         $data['assigned_to'] = auth()->id();
-        $id                  = Product::query()->insertGetId($data);
+        $product = new Product();
+        foreach ($data as $key => $value) {
+            $product->$key = $value;
+        }
+        $product->created_at = date('Y-m-d H:i:s');
+        $product->updated_at = null;
+        $product->save();
+
+
+        // $id                  = Product::query()->insertGetId($data);
+
+        $id = $product->id;
 
         (new Product())->fastMoving($request, $id);
         Supply::query()->insert([
@@ -188,5 +203,12 @@ class ProductController extends Controller
         Supply::query()->where('product_id', $request->id)->delete();
 
         return ['success' => true];
+    }
+
+    public function exportExcel(): BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H-i-s');
+
+        return Excel::download(new ProductExcel(), "PRODUCT_LIST-$date.xlsx");
     }
 }

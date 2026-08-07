@@ -16,7 +16,18 @@
         .header-content {
             font-weight: bold;
         }
+        .footer {
+            margin-top: 50px;
+            width: 100%;
+            background-color: white;
+            border-top: 1px solid black;
+        }
 
+        .TC {
+            background-color: white;
+            padding: 10px;
+            margin-top: 50px;
+        }
         .bg-aliceblue {
             background-color: #c4ddf3;
         }
@@ -84,13 +95,14 @@
                 </tr>
                 <tr>
                     <td>Date:</td>
-                    <td class="header-content">{{ \Carbon\Carbon::parse($sales_order->created_at)->format('F j, Y') }}</td>
+                    <td class="header-content">{{ \Carbon\Carbon::parse($sales_order->due_date)->format('F j, Y') }}</td>
                 </tr>
                 </tbody>
             </table>
         </td>
         <td width="20%">
-            <img src="{{ public_path('app/public/logo/logo.jpg') }}" width="150" height="150">
+            {{-- <img src="{{ public_path('app/public/print/header/1_ITR_CORPORATION_LOGO.jpg') }}" height="150"> --}}
+            <img src="{{ public_path('app/public/print/header/'.$print_setting->header_logo) }}" height="100">
         </td>
     </tr>
     </tbody>
@@ -100,8 +112,8 @@
     <thead class="bg-aliceblue">
     <tr>
         <th scope="col">Description</th>
-        <th scope="col">Product Model</th>
-        <th scope="col">Serial No.</th>
+        {{-- <th scope="col">Product Model</th> --}}
+        <th scope="col" colspan="2">Serial No.</th>
         <th scope="col">Quantity</th>
         <th scope="col">Unit</th>
         <th scope="col">(Material)<br> Unit Cost</th>
@@ -112,26 +124,59 @@
     <tbody>
     @foreach($product_details as $product)
         @if(isset($product['product_name']))
-            <tr>
-                <td>{{ $product['product_name'] }}</td>
-                <td>{{ $product['code'] }}</td>
-                <td>{{ $product['notes'] }}</td>
-                <td>{{ $product['qty'] }}</td>
-                <td>{{ $product['unit'] }}</td>
-                <td>{{ number_format($product['selling_price'], 2) }}</td>
-                <td>{{ number_format($product['qty'] * $product['selling_price'], 2) }}</td>
-                <td>{{ number_format(($product['qty'] * $product['selling_price']) + $product['discount_item'], 2) }}</td>
+        <tr>
+            <td>{{ $product['product_name'] }}</td>
+            {{-- <td>{{ $product['code'] }}</td> --}}
+            <td colspan="2">{{ $product['notes'] }}</td>
+            <td>{{ $product['qty'] }}</td>
+            <td>{{ $product['unit'] }}</td>
+            <td>{{ number_format($product['selling_price'], 2) }}</td>
+            <td>{{ number_format($product['qty'] * $product['selling_price'], 2) }}</td>
+            <td colspan="2" style="text-align: right">{{ number_format($product['qty'] * $product['selling_price'] + $product['discount_item'], 2) }}
+            </td>
+        </tr>
+            @else
+                <tr class="bg-category">
+                    <td colspan="9"><strong>{{ $product['category'] }}</strong></td>
+                </tr>
+            @endif
+        @endforeach
+        <tr class="bg-aliceblue">
+            <td colspan="4"></td>
+            <td colspan="2" style="text-align: right;"><strong>Sub-Total</strong></td>
+            <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->sub_total, 2) }}</td>
+        </tr>
+        @if ($summary->shipping)
+            <tr class="bg-aliceblue">
+                <td colspan="4"></td>
+                <td colspan="2" style="text-align: right;"><strong>Shipping</strong></td>
+                <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->shipping, 2) }}</td>
             </tr>
-        @else
-            <tr class="bg-category">
-                <td colspan="9"><strong>{{ $product['category'] }}</strong></td>
+        @endif
+        @if ($summary->discount)
+            <tr class="bg-aliceblue">
+                <td colspan="4"></td>
+                <td colspan="2" style="text-align: right;"><strong style="color:red">Discount</strong></td>
+                <td colspan="2" style="text-align: right; color:red">&#8369; - {{ number_format($summary->discount, 2) }}</td>
             </tr>
-        @endif @endforeach
-    <tr class="bg-aliceblue">
-        <td colspan="6"></td>
-        <td><strong>Sub-Total</strong></td>
-        <td>&#8369; {{ number_format($summary->sub_total,2) }}</td>
-    </tr>
+        @endif
+        {{-- <tr class="bg-aliceblue">
+            <td colspan="6"></td>
+            <td><strong>Sales %</strong></td>
+            <td style="text-align: right"> {{ $summary->sales_tax }} %</td>
+        </tr> --}}
+        @if ($summary->sales_actual)
+            <tr class="bg-aliceblue">
+                <td colspan="4"></td>
+                <td colspan="2" style="text-align: right;"><strong>Sales TAX</strong></td>
+                <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->sales_actual, 2) }}</td>
+            </tr>
+        @endif
+        <tr class="bg-aliceblue">
+            <td colspan="4"></td>
+            <td colspan="2" style="text-align: right;"><strong>Grand Total</strong></td>
+            <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->grand_total, 2) }}</td>
+        </tr>
     </tbody>
 </table>
 {{--SUMMARY--}}
@@ -175,7 +220,7 @@
                 </tbody>
             </table>
         </td>
-        <td>
+        {{-- <td>
             <table
                 style="border: 1px solid black; padding-left: 5%; width: 100%">
                 <tbody>
@@ -218,7 +263,7 @@
                 </tr>
                 </tbody>
             </table>
-        </td>
+        </td> --}}
     </tr>
     </tbody>
 </table>
@@ -257,5 +302,46 @@
     </tr>
     </tbody>
 </table>
+<div class="TC">
+    <table style="width: 100%; text-align: center;">
+        <table>
+
+            <tbody>
+                <tr>
+                    <td style="padding-bottom: 5px;"><strong>Warranty Policy</strong></td>
+                </tr>
+                <tr>
+                    <td>{!! nl2br(e($sales_order->warranty)) !!}</td>
+                </tr>
+            </tbody>
+    </table>
+</div>
+<div class="footer">
+    <table style="width: 100%; text-align: center; margin-top:20px;"">
+        <table>
+            <thead style="text-align: center">
+                <th colspan="3"  style="text-align: center; font-size: 10px !important;"><strong style="font-size: 10px !important;" >Address</strong></th>
+                <th colspan="" rowspan="2" style="text-align: center; font-size: 10px !important;"><strong style="font-size: 10px !important;"> For warranty and technical concerns please call our RMA team</strong></th>
+                <th colspan="3" style="text-align: center; font-size: 10px !important;"><strong style="font-size: 10px !important;"> For Sales inquiries, Please call our Sales Team</strong></th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" style="text-align: center;padding-right: 11px !important; font-size: 8px !important;">
+                        {{$print_setting->address}}
+                    </td>
+                    <td colspan="3" style="text-align: center;padding-right: 11px !important; font-size: 8px !important;">
+                        {{$print_setting->rma_team}}
+                    </td>
+                    <td  style="text-align: center; padding-left: 16px !important; font-size: 8px !important;">
+                        *{{$print_setting->sales1}}
+                        *{{$print_setting->sales2}}
+                        *{{$print_setting->email}}
+                    </td>
+                </tr>
+
+            </tbody>
+    </table>
+</div>
+
 </body>
 </html>

@@ -1,5 +1,22 @@
 @extends('admin_layout')
+@section('styles')
+    <style>
+        input,
+        select,
+        textarea {
+            color: #ffffff !important;
+            background-color: #ffffff00 !important;
+        }
 
+        .select2-selection__rendered {
+            color: #ffffff !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            background-color: #ffffff00;
+        }
+    </style>
+@endsection
 @section('content')
     <div id='app' class="container-fluid">
         @include('partials.loading')
@@ -42,7 +59,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Sales Order</label>
-                                    <input type="text" name="so_no" class="form-control form-control-sm"
+                                    <input type="text" name="so_no" readonly class="form-control form-control-sm"
                                         v-model="overview.so_no">
                                 </div>
                                 <div class="form-group">
@@ -110,12 +127,9 @@
                                 <div class="form-group">
                                     <label>Payment Method</label>
                                     <select class="form-control" v-model="overview.payment_method">
-                                        <option value="Cash">Cash</option>
-                                        <option value="Credit">Credit</option>
-                                        <option value="Check">Check</option>
-                                        <option value="Gcash">Gcash</option>
-                                        <option value="BDO Bank">BDO Bank</option>
-                                        <option value="Unionbank">Unionbank</option>
+                                        @foreach ($paymentMethods as $methods)
+                                            <option value="{{ $methods->name }}">{{ $methods->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 {{--                                <div class="form-group"> --}}
@@ -167,7 +181,8 @@
                                                         class="form-control-plaintext form-control-sm"
                                                         style="width: 180px;" v-model="product.product_name">
                                                 </td>
-                                                <td v-else colspan="7" style="background-color: rgba(61, 61, 61, 0.925);">
+                                                <td v-else colspan="7"
+                                                    style="background-color: rgba(61, 61, 61, 0.925);">
                                                     <h5 style="margin-top: 5px;"><strong>@{{ product.category }}</strong>
                                                     </h5>
                                                 </td>
@@ -183,10 +198,10 @@
                                                     <input type="number" class="form-control form-control-sm"
                                                         style="width: 100px;" v-model="product.selling_price">
                                                 </td>
-                                                <td v-if="product.product_name">
+                                                {{-- <td v-if="product.product_name">
                                                     <input type="text" class="form-control form-control-sm"
                                                         style="width: 100px;" v-model="product.discount_item">
-                                                </td>
+                                                </td> --}}
                                                 <td v-if="product.product_name">
                                                     <input type="text" class="form-control form-control-sm"
                                                         style="width: 100px;" v-model="product.notes">
@@ -195,7 +210,7 @@
                                                     <input readonly type="text"
                                                         class="form-control-plaintext form-control-sm total-grid"
                                                         style="width: 100px;"
-                                                        v-bind:value="(product.selling_price * product.qty) + parseFloat(product.discount_item)">
+                                                        v-bind:value="(product.selling_price * product.qty)">
                                                 </td>
                                                 <td v-if="viewType != 2">
                                                     <button class="btn btn-sm btn-block btn-danger"
@@ -207,7 +222,44 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="offset-md-9 col-md-4">
+                            <div class="col-md-4">
+                                <div class="form-group row">
+                                    <div class="col-md-auto">
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="displayShipping">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <label class="switch-label">Shipping</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-auto">
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="displayDiscount">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <label class="switch-label">Discount</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-auto">
+                                        <label class="switch">
+                                            <input type="checkbox" v-model="displayVat">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <label class="switch-label">Vat</label>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
                                 <div class="form-group row">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Sub Total</label>
                                     <div class="col-md-4">
@@ -215,36 +267,36 @@
                                             v-model="summary.sub_total">
                                     </div>
                                 </div>
-                                {{--                                <div class="form-group row"> --}}
-                                {{--                                    <label class="col-form-label col-md-4 col-form-label-sm">Discount</label> --}}
-                                {{--                                    <div class="col-md-4"> --}}
-                                {{--                                        <input type="number" class="form-control form-control-sm" --}}
-                                {{--                                               v-model="summary.discount"> --}}
-                                {{--                                    </div> --}}
-                                {{--                                </div> --}}
-                                <div class="form-group row" v-show="overview.vat_type == 'VAT INC'">
-                                    <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax %</label>
-                                    <div class="input-group col-md-4">
-                                        <input type="number" class="form-control form-control-sm"
-                                            v-model="summary.sales_tax">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text" id="basic-addon2"><i
-                                                    class="fa fa-percentage"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group row" v-show="overview.vat_type == 'VAT INC'">
-                                    <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax</label>
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control-plaintext form-control-sm"
-                                            v-bind:value="summary.sales_actual">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
+                                <div class="form-group row"  v-show="displayShipping">
                                     <label class="col-form-label col-md-4 col-form-label-sm">Shipping</label>
                                     <div class="col-md-4">
                                         <input type="number" class="form-control form-control-sm"
                                             v-model="summary.shipping">
+                                    </div>
+                                </div>
+                                <div class="form-group row"  v-show="displayDiscount">
+                                 <label class="col-form-label col-md-4 col-form-label-sm">Discount</label>
+                                    <div class="col-md-4">
+                                        <input type="number" class="form-control form-control-sm"
+                                                v-model="summary.discount">
+                                    </div>
+                                </div>
+                                {{-- <div class="form-group row" v-show="displayVat">
+                                    <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax %</label>
+                                    <div class="input-group col-md-4">
+                                        <input type="number"class="form-control form-control-sm"
+                                            v-model="summary.sales_tax">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"  id="basic-addon2"><i
+                                                    class="fa fa-percentage"></i></span>
+                                        </div>
+                                    </div>
+                                </div> --}}
+                                <div class="form-group row" v-show="displayVat">
+                                    <label class="col-form-label col-md-4 col-form-label-sm">Sales Tax</label>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control-plaintext form-control-sm"
+                                            v-bind:value="summary.sales_actual">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -255,23 +307,31 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <h4>Terms & Conditions</h4>
                                 <hr>
-                            </div>
-                            <div class="col-md-12">
                                 <div class="form-group row">
                                     <div class="col-md-12">
                                         <textarea type="text" class="form-control form-control-sm" v-model="overview.tac" rows="8"></textarea>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <h4>Warranty Policy</h4>
+                                <hr>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <textarea type="text" class="form-control form-control-sm" v-model="overview.warranty" rows="8"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
                             <div class="col-md-12">
                                 <a href="{{ URL::previous() }}" class="btn btn-warning">Back</a>
                                 <button class="btn btn-info" v-if="viewType == 1" @click="store">Save New</button>
                                 <button class="btn btn-primary" v-if="viewType == 0" @click="update">Update Now</button>
                                 <a href="{{ route('sales.print', isset($sales_order->id) ? $sales_order->id : '') }}"
-                                    class="btn btn-primary" v-if="viewType == 2">Sales Order</a>
+                                    class="btn btn-primary" v-if="viewType == 2">Warranty Slip</a>
                                 <a href="{{ route('sales.quote', isset($sales_order->id) ? $sales_order->id : '') }}"
                                     class="btn btn-info" v-if="viewType == 2">Quote</a>
                                 <a href="{{ route('sales.deliver', isset($sales_order->id) ? $sales_order->id : '') }}"
@@ -354,10 +414,13 @@
             el: '#app',
             data() {
                 return {
+                    displayDiscount: false,
+                    displayShipping: false,
+                    displayVat: false,
                     loading: false,
                     viewType: 0,
                     columns: [
-                        'Product', 'Stock', 'Qty', 'Unit Cost', 'Discount', 'Serial No.', 'Total Cost', 'Action'
+                        'Product', 'Stock', 'Qty', 'Unit Cost', 'Serial No.', 'Total Cost', 'Action'
                     ],
                     sub_total: 0,
                     overview: {!! $sales_order !!},
@@ -372,17 +435,34 @@
                     deep: true,
                     handler(products) {
                         console.log(products);
+
                         var $this = this;
                         var hold = 0;
                         $.each(products, function(x, product) {
                             if (product.product_name) {
-                                hold += (product.selling_price * product.qty) + parseFloat(product
-                                    .discount_item)
+                                hold += (product.selling_price * product.qty)
                             }
                         });
 
                         $this.summary.sub_total = hold;
                         this.grandTotal()
+                    }
+                },
+                displayDiscount(newValue) {
+                    if (!newValue) {
+                        this.summary.discount = 0;
+                    }
+                },
+
+                displayShipping(newValue) {
+                    if (!newValue) {
+                        this.summary.shipping = 0;
+                    }
+                },
+                displayVat(newValue) {
+                    this.summary.sales_tax = 12;
+                    if (!newValue) {
+                        this.summary.sales_tax = 0;
                     }
                 },
                 'summary.discount': function(value) {
@@ -396,20 +476,21 @@
                 },
             },
             methods: {
+
                 grandTotal() {
 
                     var $this = this;
                     var sales_tax = parseFloat($this.summary.sales_tax);
                     $this.summary.sales_actual = 0;
-                    $this.summary.grand_total = $this.summary.sub_total - $this.summary.discount
-                    if ($this.overview.vat_type == 'VAT INC') {
+                    $this.summary.grand_total = parseFloat($this.summary.sub_total) + parseFloat($this.summary.shipping) - parseFloat($this.summary.discount) ;
+                    if ($this.overview.vat_type == 'VAT INC' || $this.overview.vat_type == 'VAT EX' ) {
                         var hold = 0
-                        hold = ($this.summary.grand_total * (1 + (sales_tax / 100)))
+                        hold = ($this.summary.grand_total  * (1 + (sales_tax / 100)))
                         $this.summary.sales_actual = (hold - $this.summary.grand_total).toFixed(2)
                         $this.summary.grand_total = (hold).toFixed(2)
                     }
-                    $this.summary.grand_total = parseFloat($this.summary.grand_total) + parseFloat($this.summary
-                        .shipping)
+                    // $this.summary.grand_total = parseFloat($this.summary.grand_total) + parseFloat($this.summary.shipping)
+                    $this.summary.grand_total = parseFloat($this.summary.grand_total)
                 },
                 store() {
                     var $this = this;
@@ -422,6 +503,7 @@
                         return false;
                     }
                     $this.loading = true;
+
                     $.ajax({
                         url: '{{ route('sales.store') }}',
                         method: 'POST',
@@ -546,6 +628,17 @@
             mounted() {
                 var $this = this;
 
+                if(this.summary.discount != 0){
+                    this.displayDiscount = true;
+                }
+
+                if(this.summary.shipping != 0){
+                    this.displayShipping = true;
+                }
+
+                if(this.summary.sales_tax != 0){
+                    this.displayVat = true;
+                }
                 //$this.grandTotal();
                 $('.select2-category').select2({
                     width: '100%',

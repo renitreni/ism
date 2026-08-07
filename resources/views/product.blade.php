@@ -18,13 +18,15 @@
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <a href="{{ route('product.create') }}" class="btn btn-sm btn-success">
                                         <i class="fa fa-plus"></i> New Product</a>
+                                    <a href="{{ route('product.export.excel') }}" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-file-excel"></i> Export Excel</a>
                                     <a href="#" class="btn btn-sm btn-info" data-toggle="modal"
                                        data-target="#categoryModal">
                                         <i class="fa fa-list-ol"></i> Categories</a>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <table id="table-product" class="table table-striped  table-general nowrap" style="width:100%"></table>
+                                <table id="table-product" class="table table-striped" style="width:100%"></table>
                             </div>
                         </div>
                     </div>
@@ -59,11 +61,13 @@
                             <div class="col-md-12">
                                 <ul class="list-group">
                                     <li v-for="(category, idx) in categories"
-                                        class="list-group-item d-flex justify-content-between align-items-center">
+                                        class="list-group-item d-flex justify-content-between align-items-center bg-dark">
                                         @{{ category }}
-                                        <button class="btn btn-sm btn-danger" @click="deleteCategory(idx)"><i
-                                                    class="fa fa-times"></i>
-                                        </button>
+                                        @can('productsdestroy')
+                                            <button class="btn btn-sm btn-danger" @click="deleteCategory(idx)"><i
+                                                        class="fa fa-times"></i>
+                                            </button>
+                                        @endcan
                                     </li>
                                 </ul>
                             </div>
@@ -168,14 +172,34 @@
                             bSortable: false,
                             title: 'Action'
                         },
-                        {data: 'name', name: 'products.name', title: 'Name'},
-                        {data: 'code', name: 'products.code', title: 'Product Model'},
+                        {data: 'name', name: 'products.name', title: 'Name',width: '30%'},
+                        // {data: 'code', name: 'products.code', title: 'Product Model'},
                         {data: 'selling_price', name: 'products.selling_price', title: 'Selling Price'},
-                            @if(env('PRODUCT_BATCH_COL') == 'show')
+                        @if(env('PRODUCT_BATCH_COL') == 'show')
                         {data: 'batch', name: 'products.batch', title: 'Batch No.'},
-                            @endif
-                        {data: 'manufacturer', name: 'products.manufacturer', title: 'Brand'},
+                        @endif
+                        // {data: 'manufacturer', name: 'products.manufacturer', title: 'Brand'},
                         {data: 'category', name: 'products.category', title: 'Category'},
+                        {data: 'username', name: 'users.name', title: 'Created By'},
+                        {
+                            data: 'created_at',
+                            name: 'products.created_at',
+                            title: 'Created At',
+                            render: function (data) {
+                                if (data !== null) {
+                                    return new Date(data).toLocaleString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        second: '2-digit'
+                                    });
+                                } else {
+                                    return '';
+                                }
+                            }
+                        },
                     ],
                     drawCallback: function () {
                         $('table .btn').on('click', function () {

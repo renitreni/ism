@@ -17,6 +17,13 @@
             font-weight: bold;
         }
 
+
+        .footer {
+            margin-top: 50px;
+            width: 100%;
+            background-color: white;
+            border-top: 1px solid black;
+        }
         .bg-aliceblue {
             background-color: #c4ddf3;
         }
@@ -54,7 +61,7 @@
 <table style="width: 100%">
     <tbody>
     <tr>
-        <td class="title">Purchase Order</td>
+        <td class="title">Purchase Order </td>
     </tr>
     <tr>
         <td class="iden">{{ $purchase_info->po_no }}</td>
@@ -93,7 +100,8 @@
             </table>
         </td>
         <td width="20%">
-            <img src="{{ public_path('app/public/logo/logo.jpg') }}"  width="150" height="150">
+            {{-- <img src="{{ asset(''.$print_setting->header_logo_path . $print_setting->header_logo) }}" style="width: auto; height: 86px;"> --}}
+            <img src="{{ public_path('app/public/print/header/'.$print_setting->header_logo) }}" height="100">
         </td>
     </tr>
     </tbody>
@@ -129,9 +137,10 @@
             </tr>
         @endif @endforeach
     <tr class="bg-aliceblue">
-        <td colspan="4"></td>
-        <td><strong>Sub-Total</strong></td>
-        <td>&#8369; {{ number_format($summary->sub_total, 2) }}</td>
+        <td colspan="2"></td>
+
+        <td colspan="2" style="text-align: right"><strong>Sub-Total</strong></td>
+        <td colspan="2" style="text-align: right">&#8369; {{ number_format($summary->sub_total, 2) }}</td>
     </tr>
     </tbody>
 </table>
@@ -260,5 +269,32 @@
     </tr>
     </tbody>
 </table>
+
+<div class="footer">
+    <table style="width: 100%; text-align: center;">
+        <table>
+            <thead style="text-align: center">
+                <th colspan="3"  style="text-align: center; font-size: 10px !important;"><strong style="font-size: 10px !important;" >Address</strong></th>
+                <th colspan="" rowspan="2" style="text-align: center; font-size: 10px !important;"><strong style="font-size: 10px !important;"> For warranty and technical concerns please call our RMA team</strong></th>
+                <th colspan="3" style="text-align: center; font-size: 10px !important;"><strong style="font-size: 10px !important;"> For Sales inquiries, Please call our Sales Team</strong></th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" style="text-align: center;padding-right: 11px !important; font-size: 8px !important;">
+                        {{$print_setting->address}}
+                    </td>
+                    <td colspan="3" style="text-align: center;padding-right: 11px !important; font-size: 8px !important;">
+                        {{$print_setting->rma_team}}
+                    </td>
+                    <td  style="text-align: center; padding-left: 16px !important; font-size: 8px !important;">
+                        *{{$print_setting->sales1}}
+                        *{{$print_setting->sales2}}
+                        *{{$print_setting->email}}
+                    </td>
+                </tr>
+
+            </tbody>
+    </table>
+</div>
 </body>
 </html>

@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Preference;
-use App\Product;
-use App\ProductDetail;
-use App\PurchaseInfo;
-use App\Summary;
+use PDF;
 use App\Supply;
+use App\Product;
+use App\Summary;
 use App\AuditLog;
 use Carbon\Carbon;
+use App\Preference;
+use App\PurchaseInfo;
+use App\ProductDetail;
+use App\PrintSetting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Silber\Bouncer\BouncerFacade as Bouncer;
 use Yajra\DataTables\DataTables;
-use PDF;
+use Illuminate\Support\Facades\DB;
+use App\Exports\PurchaseReportExcel;
+use App\Http\Controllers\Controller;
+use App\SupplyHistory;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PurchaseInfoController extends Controller
 {
@@ -24,18 +28,26 @@ class PurchaseInfoController extends Controller
         return view('purchase');
     }
 
+    public function purchase_stockin()
+    {
+        return view('purchase_stock_in');
+    }
     public function table(Request $request)
     {
-
+        Supply::recalibrate();
         $purchase_info = PurchaseInfo::query()
-            ->selectRaw('purchase_infos.id, purchase_infos.subject,
-            purchase_infos.vat_type,purchase_infos.payment_status,
+            ->selectRaw('purchase_infos.id, purchase_infos.subject,purchase_infos.received_date,
+            purchase_infos.vat_type,purchase_infos.po_status,purchase_infos.payment_status,
             vendors.name as vendor_name, purchase_infos.tracking_number, purchase_infos.po_no,
             purchase_infos.requisition_no, users.name, purchase_infos.status, purchase_infos.created_at,
             purchase_infos.updated_at, grand_total, purchase_infos.due_date')
             ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
             ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
-            ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to');
+            ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to')
+            ->where(function ($purchase_info) {
+                $purchase_info->where('purchase_infos.po_status', '<>', 'SI')
+                      ->orWhereNull('purchase_infos.po_status');
+            });
 
             if ($request->filled('filter_payment')) {
                 $purchase_info->where('purchase_infos.payment_status', $request->input('filter_payment'));
@@ -43,11 +55,49 @@ class PurchaseInfoController extends Controller
             if ($request->filled('filter_status')) {
                 $purchase_info->where('purchase_infos.status', $request->input('filter_status'));
             }
+            if ($request->filled('filter_vat')) {
+                $purchase_info->where('purchase_infos.vat_type', $request->input('filter_vat'));
+            }
+
+            $purchase_info->orderBy('purchase_infos.po_no', 'desc');
 
         return DataTables::of($purchase_info)->setTransformer(function ($data) {
             $data               = $data->toArray();
             $data['created_at'] = Carbon::parse($data['created_at'])->format('F j, Y');
-            $data['updated_at'] = Carbon::parse($data['updated_at'])->format('F j, Y');
+            $data['received_date_display'] = $data['received_date'] ? Carbon::parse($data['received_date'])->format('F j, Y') : 'No Date';
+            $data['due_date']   = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
+
+            return $data;
+        })->make(true);
+    }
+
+    public function table_stock_in(Request $request)
+    {
+        Supply::recalibrate();
+        $purchase_info = PurchaseInfo::query()
+            ->selectRaw('purchase_infos.id, purchase_infos.subject,purchase_infos.received_date,
+            purchase_infos.vat_type,purchase_infos.po_status,purchase_infos.payment_status,
+            vendors.name as vendor_name, purchase_infos.tracking_number, purchase_infos.po_no,
+            purchase_infos.requisition_no, users.name, purchase_infos.status, purchase_infos.created_at,
+            purchase_infos.updated_at, grand_total, purchase_infos.due_date')
+            ->leftJoin('summaries', 'summaries.purchase_order_id', '=', 'purchase_infos.id')
+            ->leftJoin('vendors', 'vendors.id', '=', 'purchase_infos.vendor_id')
+            ->leftJoin('users', 'users.id', '=', 'purchase_infos.assigned_to')
+            ->where('purchase_infos.po_status', 'SI');
+
+            if ($request->filled('filter_payment')) {
+                $purchase_info->where('purchase_infos.payment_status', $request->input('filter_payment'));
+            }
+            if ($request->filled('filter_status')) {
+                $purchase_info->where('purchase_infos.status', $request->input('filter_status'));
+            }
+            if ($request->filled('filter_vat')) {
+                $purchase_info->where('purchase_infos.vat_type', $request->input('filter_vat'));
+            }
+        return DataTables::of($purchase_info)->setTransformer(function ($data) {
+            $data               = $data->toArray();
+            $data['created_at'] = Carbon::parse($data['created_at'])->format('F j, Y');
+            $data['received_date_display'] = $data['received_date'] ? Carbon::parse($data['received_date'])->format('F j, Y') : 'No Date';
             $data['due_date']   = isset($data['due_date']) ? Carbon::parse($data['due_date'])->format('F j, Y') : 'No Date';
 
             return $data;
@@ -83,6 +133,7 @@ class PurchaseInfoController extends Controller
             "description"      => "",
             "updated_at"       => Carbon::now()->format('Y-m-d'),
             "vat_type"         => "VAT EX",
+            "received_date"   => Carbon::now()->format('Y-m-d'),
         ]);
 
         $product_details = collect([]);
@@ -115,6 +166,7 @@ class PurchaseInfoController extends Controller
         }
 
         $data['overview']['po_no']       = PurchaseInfo::generate()->newPONo();
+
         $data['overview']['created_at']  = Carbon::now()->format('Y-m-d');
         $data['overview']['assigned_to'] = auth()->id();
         $id                              = DB::table('purchase_infos')->insertGetId($data['overview']);
@@ -141,11 +193,37 @@ class PurchaseInfoController extends Controller
                     $product = Product::find($item['product_id']);
                     $product->selling_price = $item['selling_price'];
                     $product->vendor_price = $item['vendor_price'];
+
                     $product->save();
                 }
             }
-
             $pd = DB::table('product_details')->insert($product_details);
+
+            //get Pruchase Order Info
+            $purchase_info = PurchaseInfo::find($id);
+
+            if($purchase_info->status == "Received"){
+                foreach ($product_details as $product_detail) {
+                    $product_data = Product::where('id', $product_detail['product_id'])->first();
+
+                    // get Balance in Supply
+                    $supply = Supply::where('product_id',$product_detail['product_id'])->first();
+                    $SupplyHistory = new SupplyHistory(); // New instance for each record
+                    $SupplyHistory->product_id = $product_detail['product_id'];
+                    $SupplyHistory->po_so_id = $data['overview']['po_no'];
+                    $SupplyHistory->product_name = $product_data->name;
+                    $SupplyHistory->previous = $supply->quantity;
+                    $SupplyHistory->quantity = $product_detail['qty'];
+                    $SupplyHistory->balance_qty = $supply->quantity + $product_detail['qty'];
+                    $SupplyHistory->unit = $product_data->unit;
+                    $SupplyHistory->in_out = 'In';
+                    $SupplyHistory->from = "Purchase Order";
+                    $SupplyHistory->item_status = $purchase_info->status;
+                    $SupplyHistory->action_by = auth()->id();
+                    $SupplyHistory->created_at = Carbon::now()->format('Y-m-d');
+                    $SupplyHistory->save();
+                }
+            }
         }
 
         if ($pd) {
@@ -158,7 +236,7 @@ class PurchaseInfoController extends Controller
 
         DB::table('summaries')->insert($data['summary']);
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -188,7 +266,7 @@ class PurchaseInfoController extends Controller
             $data['overview']['check_writer'] = '';
         }
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -251,7 +329,7 @@ class PurchaseInfoController extends Controller
     }
 
     public function destroy(Request $request)
-    {    
+    {
 
         // Reset supply count based on current product details
         $product_details = ProductDetail::fetchDataPO($request->id);
@@ -263,7 +341,7 @@ class PurchaseInfoController extends Controller
             }
         }
 
-        // Record Action in Audit Log 
+        // Record Action in Audit Log
         $name = auth()->user()->name;
 
         if($name != 'Super Admin') {
@@ -287,12 +365,234 @@ class PurchaseInfoController extends Controller
 
     public function updateStatus(Request $request)
     {
-        $data          = $request->input();
-        $purchase_info = DB::table('purchase_infos')->where('id', $data['id'])->get()[0];
+        $data  = $request->input('data');
+        $bulk  = $request->input('bulk_id');
 
-        if ($purchase_info->status != $data['status']) {
+        if($bulk){
+            $id = explode(',', $bulk);
+            unset($id[0]);
+            $index = 1;
 
-            // Record Action in Audit Log 
+            for ($x=0; $x < count($id) ; $x++) {
+                $po_id = $id[$index];
+                $purchase_info = DB::table('purchase_infos')->where('id', $po_id)->get()[0];
+
+                // Record Action in Audit Log
+                $name = auth()->user()->name;
+
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $purchase_info->po_no,
+                        'current' => $data['status'],
+                        'method' => "UPDATED"
+                    ]);
+                }
+                if ($purchase_info->status != $data['status']) {
+
+                    $purchase = PurchaseInfo::find($po_id);
+                    $purchase->received_date = null;
+                    $purchase->status = $data['status'];
+
+                    if ($data['status'] == 'Received') {
+
+                        $SupplyHistory = new SupplyHistory();
+
+
+                        $purchase->received_date = Carbon::now()->format('Y-m-d');
+                    }
+                    $purchase->save();
+
+                }
+                if ($purchase_info->vat_type != $data['vat_type']) {
+                    DB::table('purchase_infos')->where('id', $po_id)
+                        ->update(['vat_type' => $data['vat_type']]);
+
+                }
+                if ($purchase_info->po_status != $data['po_status']) {
+                    DB::table('purchase_infos')->where('id', $po_id)
+                        ->update(['po_status' => $data['po_status']]);
+                }
+                if ($purchase_info->received_date != $data['received_date']) {
+                    DB::table('purchase_infos')->where('id', $po_id)
+                        ->update(['received_date' => Carbon::parse($data['received_date'])->format('Y-m-d')]);
+
+                }
+                $index++;
+
+            }
+        Supply::recalibrate();
+
+            return ['success' => true];
+
+        }else{
+
+            $purchase_info = DB::table('purchase_infos')->where('id', $data['id'])->get()[0];
+
+            if ($purchase_info->status != $data['status']) {
+
+                // Record Action in Audit Log
+                $name = auth()->user()->name;
+
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $data['po_no'],
+                        'current' => $data['status'],
+                        'method' => "UPDATED"
+                    ]);
+                }
+
+
+                $purchase = PurchaseInfo::find($data['id']);
+                $purchase->received_date = null;
+                $purchase->status = $data['status'];
+                if ($data['status'] == 'Received') {
+                    $product_details = ProductDetail::where('purchase_order_id', $data['id'])->get();
+
+                    foreach ($product_details as $product_detail) {
+                         $product_data = Product::where('id', $product_detail['product_id'])->first();
+
+                    // get Balance in Supply
+                    $supply = Supply::where('product_id',$product_detail['product_id'])->first();
+                    $SupplyHistory = new SupplyHistory(); // New instance for each record
+                    $SupplyHistory->product_id = $product_detail['product_id'];
+                    $SupplyHistory->po_so_id = $data['po_no'];
+                    $SupplyHistory->product_name = $product_data->name;
+                    $SupplyHistory->previous = $supply->quantity;
+                    $SupplyHistory->quantity = $product_detail['qty'];
+                    $SupplyHistory->balance_qty = $supply->quantity + $product_detail['qty'];
+                    $SupplyHistory->unit = $product_data->unit ?? 'No Unit';
+                    $SupplyHistory->in_out = 'In';
+                    $SupplyHistory->from = "Purchase Order";
+                    $SupplyHistory->item_status = "Received";
+                    $SupplyHistory->action_by = auth()->id();
+                    $SupplyHistory->created_at = Carbon::now()->format('Y-m-d');
+                    $SupplyHistory->save();
+                    }
+
+                    $purchase->received_date = Carbon::now()->format('Y-m-d');
+                }
+                else{
+                    $product_details = ProductDetail::where('purchase_order_id', $data['id'])->get();
+
+                    for ($x=0; $x < count($product_details); $x++) {
+
+                        $product_data = Product::where('id', $product_details[$x]['product_id'])->first();
+
+                        // get Balance in Supply
+                        $supply = Supply::where('product_id',$product_details[$x]['product_id'])->first();
+
+                        $SupplyHistory = new SupplyHistory(); // New instance for each record
+                        $SupplyHistory->product_id = $product_details[$x]['product_id'];
+                        $SupplyHistory->po_so_id = $data['po_no'];
+                        $SupplyHistory->product_name = $product_data->name;
+                        $SupplyHistory->previous = $supply->quantity;
+                        $SupplyHistory->quantity = $product_details[$x]['qty'];
+                        $SupplyHistory->balance_qty = $supply->quantity - $product_details[$x]['qty'];
+                        $SupplyHistory->unit = $product_data->unit ?? 'No Unit';
+                        $SupplyHistory->in_out = 'Out';
+                        $SupplyHistory->from = "Purchase Order";
+                        $SupplyHistory->item_status = "Ordered";
+                        $SupplyHistory->action_by = auth()->id();
+                        $SupplyHistory->created_at = Carbon::now()->format('Y-m-d');
+                        $SupplyHistory->save();
+
+                        // $SupplyHistory = new SupplyHistory();
+                        // $product_data = Product::where('id', $product_details[$x]->product_id)->first();
+                        // $SupplyHistory->product_id = $product_details[$x]->product_id;
+                        // $SupplyHistory->po_so_id = $data['po_no'];
+                        // $SupplyHistory->product_name = $product_data->name;
+                        // $SupplyHistory->quantity = $product_details[$x]->qty;
+                        // $SupplyHistory->unit = $product_data->unit;
+                        // $SupplyHistory->in_out = 'out';
+                        // $SupplyHistory->from = "Purchase Order";
+                        // $SupplyHistory->item_status =  $data['status'];
+                        // $SupplyHistory->action_by = auth()->id();
+                        // $SupplyHistory->created_at = Carbon::now()->format('Y-m-d');
+                        // $SupplyHistory->save();
+                    }
+                }
+
+                $purchase->save();
+
+                Supply::recalibrate();
+
+                return ['success' => true];
+            }
+
+            if ($purchase_info->vat_type != $data['vat_type']) {
+                DB::table('purchase_infos')->where('id', $data['id'])
+                    ->update(['vat_type' => $data['vat_type']]);
+                Supply::recalibrate();
+
+                return ['success' => true];
+            }
+
+            if ($purchase_info->po_status != $data['po_status']) {
+                DB::table('purchase_infos')->where('id', $data['id'])
+                    ->update(['po_status' => $data['po_status']]);
+                Supply::recalibrate();
+
+                return ['success' => true];
+            }
+
+            if ($purchase_info->received_date != $data['received_date']) {
+                DB::table('purchase_infos')->where('id', $data['id'])
+                    ->update(['received_date' => Carbon::parse($data['received_date'])->format('Y-m-d')]);
+                Supply::recalibrate();
+
+                return ['success' => true];
+            }
+        }
+
+        return ['success' => false];
+    }
+
+    public function updatePaymentStatus(Request $request)
+    {
+        $data  = $request->input('data');
+        $bulk  = $request->input('bulk_id');
+
+        if($bulk){
+
+            $id = explode(',', $bulk);
+            unset($id[0]);
+            $index = 1;
+
+            for ($x=0; $x < count($id) ; $x++) {
+                $po_id = $id[$index];
+                $purchase_info = DB::table('purchase_infos')->where('id', $po_id)->get()[0];
+                // Record Action in Audit Log
+                $name = auth()->user()->name;
+
+                if($name != 'Super Admin') {
+                    \App\AuditLog::record([
+                        'name' => $name,
+                        'inputs' => $request->input(),
+                        'url' => $request->url(),
+                        'action_id' => $purchase_info->po_no,
+                        'current' => $data['status'],
+                        'method' => "UPDATED"
+                    ]);
+                }
+
+                DB::table('purchase_infos')->where('id', $po_id)
+                ->update(['payment_status' => $data['payment_status']]);
+
+                $index++;
+
+            }
+
+            return ['success' => true];
+
+        }else{
+
+            // Record Action in Audit Log
             $name = auth()->user()->name;
 
             if($name != 'Super Admin') {
@@ -301,54 +601,19 @@ class PurchaseInfoController extends Controller
                     'inputs' => $request->input(),
                     'url' => $request->url(),
                     'action_id' => $data['po_no'],
-                    'current' => $data['status'],
+                    'current' => $data['payment_status'],
                     'method' => "UPDATED"
                 ]);
             }
 
             DB::table('purchase_infos')->where('id', $data['id'])
-                ->update([
-                    'status'     => $data['status'],
-                    'updated_at' => Carbon::now()->format('Y-m-d'),
-                ]);
-            
+                ->update(['payment_status' => $data['payment_status']]);
+
 
             return ['success' => true];
+
         }
 
-        if ($purchase_info->vat_type != $data['vat_type']) {
-            DB::table('purchase_infos')->where('id', $data['id'])
-                ->update(['vat_type' => $data['vat_type']]);
-
-            return ['success' => true];
-        }
-        
-        return ['success' => false];
-    }
-
-    public function updatePaymentStatus(Request $request)
-    {
-        $data = $request->input();
-        
-        // Record Action in Audit Log 
-        $name = auth()->user()->name;
-            
-        if($name != 'Super Admin') {
-            \App\AuditLog::record([
-                'name' => $name,
-                'inputs' => $request->input(),
-                'url' => $request->url(),
-                'action_id' => $data['po_no'],
-                'current' => $data['payment_status'],
-                'method' => "UPDATED"
-            ]);
-        }
-
-        DB::table('purchase_infos')->where('id', $data['id'])
-            ->update(['payment_status' => $data['payment_status']]);
-
-
-        return ['success' => true];
     }
 
     public function show($id)
@@ -370,6 +635,8 @@ class PurchaseInfoController extends Controller
         $summary         = $data['summary'];
         $sections        = [];
         $cnt             = -1;
+        $print_setting   = PrintSetting::query()->first();
+
         foreach ($product_details as $key => $value) {
             if (count($value) == 1) {
                 $sections[] = [
@@ -386,20 +653,26 @@ class PurchaseInfoController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
             }
         }
         $sections = $hold_section;
 
-        $pdf = PDF::loadView('purchase_printable',
+        $pdf = PDF::loadView(
+            'purchase_printable',
             [
                 'purchase_info'   => $purchase_info,
                 'product_details' => $product_details,
                 'summary'         => $summary,
                 'sections'        => $sections,
-            ]);
+                'print_setting' => $print_setting,
 
-        return $pdf->setPaper('a4')->download($purchase_info["po_no"].'_'.$purchase_info["vendor_name"].'.pdf');
+            ]
+        );
+
+        return $pdf->setPaper('a4')
+            ->setTemporaryFolder(public_path())
+            ->download($purchase_info["po_no"] . '_' . $purchase_info["vendor_name"] . '.pdf');
     }
 
     public function previewPO($id)
@@ -426,7 +699,7 @@ class PurchaseInfoController extends Controller
         $hold_section = $sections;
         foreach ($hold_section as $index => $section) {
             foreach ($section as $key => $value) {
-                $hold_section[$index] = [$this->converToRoman($index + 1).'. '.$key => $value];
+                $hold_section[$index] = [$this->converToRoman($index + 1) . '. ' . $key => $value];
             }
         }
         $sections = $hold_section;
@@ -528,5 +801,24 @@ class PurchaseInfoController extends Controller
 
         // return the result
         return $res;
+    }
+
+    public function downloadPurchaseReport(Request $request): BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H:i:s');
+        $start = $request->start ?: now()->format('Y-m-d');
+        $end = $request->end ?: now()->format('Y-m-d');
+        return Excel::download(
+            new PurchaseReportExcel($start, $end),
+            "PURCHASE_REPORT_$date.xlsx"
+        );
+    }
+
+    public function downloadPurchaseReportAll(Request $request): BinaryFileResponse
+    {
+        return Excel::download(
+            new PurchaseReportExcel(0, 0),
+            "PURCHASE_REPORT_" . now()->format('Y-m-dHms') . ".xlsx"
+        );
     }
 }

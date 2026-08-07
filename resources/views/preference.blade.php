@@ -14,6 +14,8 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
+                            {{-- Payment Methods --}}
+                            @livewire('component.payment-method-livewire')
                             {{--Editables--}}
                             <div class="col-md-12 mt-3 row">
                                 <div class="col-md-12">
@@ -86,6 +88,12 @@
                                     <div class="form-group">
                                         <label>Terms and Conditions PO</label>
                                         <textarea class="form-control" v-model="overview.tac_po_fill"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Warranty Policy</label>
+                                        <textarea class="form-control" v-model="overview.warranty"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-3">

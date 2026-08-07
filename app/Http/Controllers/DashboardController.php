@@ -9,11 +9,14 @@ use App\Exports\LaborTotalExcel;
 use App\Exports\POTotalExcel;
 use App\Exports\QTNTotalExcel;
 use App\Exports\SOTotalExcel;
+use App\Exports\POVITotalExcel;
+use App\Exports\SOVITotalExcel;
 use App\Product;
 use App\ProductDetail;
 use App\PurchaseInfo;
 use App\SalesOrder;
 use App\Supply;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -26,27 +29,27 @@ class DashboardController extends Controller
     {
         Supply::recalibrate();
 
-//#################
+        //#################
         $supply = Supply::query()
             ->selectRaw('(supplies.quantity * products.selling_price) total')
             ->join('products', 'products.id', '=', 'supplies.product_id');
 
         $assets = $this->computeStock($supply);
-//#################
-//-----------------
+        //#################
+        //-----------------
         $supply = Supply::query()
             ->selectRaw('supplies.quantity total')
             ->join('products', 'products.id', '=', 'supplies.product_id')
             ->where('supplies.quantity', '<>', 0);
 
         $stocks = $this->computeStock($supply);
-//------------------
+        //------------------
         $po_count = PurchaseInfo::query()->count();
         $so_count = SalesOrder::query()->count();
 
         $product_details = (new ProductDetail())->getTotalProject();
         $labor_total     = $this->computeStock($product_details, 'subtotal');
-        $expenses_total   = Expenses::query()->sum('total_amount');
+        $expenses_total  = Expenses::query()->sum('total_amount');
         return view('dashboard', compact('assets', 'stocks', 'po_count', 'so_count', 'labor_total', 'expenses_total'));
     }
 
@@ -96,16 +99,14 @@ class DashboardController extends Controller
         return DataTables::of($so)->make(true);
     }
 
-    public function totalLaborPrintable()
-    : BinaryFileResponse
+    public function totalLaborPrintable(): BinaryFileResponse
     {
         $date = now()->format('Y-m-d_H:i:s');
 
         return Excel::download(new LaborTotalExcel(), "LABOR_AUDIT-$date.xlsx");
     }
 
-    public function assetsPrintable()
-    : BinaryFileResponse
+    public function assetsPrintable(): BinaryFileResponse
     {
         $date = now()->format('Y-m-d_H:i:s');
 
@@ -116,14 +117,37 @@ class DashboardController extends Controller
     {
         return (new PurchaseInfo())->total($request->start, $request->end)->sum('grand_total');
     }
-
-    public function poTotalPrintable($start, $end)
-    : BinaryFileResponse {
+    public function totalPOVI(Request $request)
+    {
+        return (new PurchaseInfo())->totalvi($request->month, $request->year)->sum('grand_total');
+    }
+    public function poTotalPrintable(Request $request): BinaryFileResponse
+    {
         $date = now()->format('Y-m-d_H:i:s');
+        $start = 0;
+        $end = 0;
+        if ($request->filled('daterange')) {
+            $dateRange = explode(' - ', $request->get('daterange'));
+            $start = Carbon::parse($dateRange[0])->format('Y-m-d');
+            $end = Carbon::parse($dateRange[1])->format('Y-m-d');
+        }
 
         return Excel::download(new POTotalExcel($start, $end), "PO_AUDIT-$date.xlsx");
     }
+    public function poviTotalPrintable(Request $request): BinaryFileResponse
+    {
+        $date = now()->format('Y-m-d_H:i:s');
+        $month = "";
+        $year = date('Y');
+        if ($request->povi_month) {
+            $month = $request->povi_month;
+        }
+        if ($request->povi_year) {
+            $year = $request->povi_year;
+        }
 
+        return Excel::download(new POVITotalExcel($month, $year), "PO_VI-$date.xlsx");
+    }
     public function totalExpenses(Request $request)
     {
         return (new Expenses())->total($request->start, $request->end)->sum('total_amount');
@@ -133,14 +157,32 @@ class DashboardController extends Controller
     {
         return (new SalesOrder())->total($request->start, $request->end)->sum('grand_total');
     }
-
-    public function soTotalPrintable($start, $end)
-    : BinaryFileResponse {
+    public function totalSOVI(Request $request)
+    {
+        return (new SalesOrder())->totalvi($request->month, $request->year)->sum('grand_total');
+    }
+    public function soTotalPrintable($start, $end): BinaryFileResponse
+    {
         $date = now()->format('Y - m - d_H:i:s');
 
         return Excel::download(new SOTotalExcel($start, $end), "SO_AUDIT-$date.xlsx");
     }
+    public function soviTotalPrintable(Request $request): BinaryFileResponse
+    {
+        $date = now()->format('Y - m - d_H:i:s');
+        $month = "";
+        $year = date('Y');
 
+        if ($request->sovi_month) {
+            $month = $request->sovi_month;
+        }
+        if ($request->sovi_year) {
+            $year = $request->sovi_year;
+        }
+
+
+        return Excel::download(new SOVITotalExcel($month, $year), "SOVI_AUDIT-$date.xlsx");
+    }
     public function qtnTotalPrintable($start, $end)
     {
         $date = now()->format('Y - m - d_H:i:s');

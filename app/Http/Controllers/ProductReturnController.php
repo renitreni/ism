@@ -175,6 +175,7 @@ class ProductReturnController extends Controller
             ]);
 
         return $pdf->setPaper('a4')
+                    ->setTemporaryFolder(public_path())
                    ->download('RETURNS ' . $sales_order["pr_no"] . ' ' . $sales_order["customer_name"] . '.pdf');
     }
 

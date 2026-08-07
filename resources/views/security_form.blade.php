@@ -167,6 +167,26 @@
                                                 <label class="switch-label">Status Update</label>
                                             </div>
                                         </div>
+                                        <div class="row" v-if="abilities.purchasestatusupdate">
+                                            <div class="col-3">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.statusUpdateToShipped">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-9">
+                                                <label class="switch-label ml-3">Received</label>
+                                            </div>
+                                            <div class="col-3">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.statusUpdateToOrdered">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-9">
+                                                <label class="switch-label ml-3">Ordered</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 {{-- Sales Order --}}
@@ -253,6 +273,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="col-md-3">
                                         <div class="form-group row">
                                             <div class="col-md-auto">
@@ -266,7 +287,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    {{-- <div class="col-md-3">
                                         <div class="form-group row">
                                             <div class="col-md-auto">
                                                 <label class="switch">
@@ -278,7 +299,7 @@
                                                 <label class="switch-label">Status Vat</label>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-md-3">
                                         <div class="form-group row">
                                             <div class="col-md-auto">
@@ -289,6 +310,26 @@
                                             </div>
                                             <div class="col-md-auto">
                                                 <label class="switch-label">Status Delivery</label>
+                                            </div>
+                                            <div class="row ml-0" v-if="abilities.salesdeliveryupdate">
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label class="switch">
+                                                        <input type="checkbox" v-model="abilities.statusUpdateToReceived">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-9">
+                                                    <label class="switch-label ml-md-3">Shipped</label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label class="switch">
+                                                        <input type="checkbox" v-model="abilities.statusUpdateToUnshipped">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-9">
+                                                    <label class="switch-label ml-md-3">Unshipped</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -976,6 +1017,80 @@
                                         </div>
                                     </div>
                                 </div>
+
+
+                                {{-- Job Order --}}
+                                <div class="col-md-12 row">
+                                    <div class="col-md-12 mt-4">
+                                        <h3>Job Order</h3>
+                                        <hr>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.joborder">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.jobordercreate">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order Create</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.joborderretrieve">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order Retrieve</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.joborderupdate">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order Update</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <div class="col-md-auto">
+                                                <label class="switch">
+                                                    <input type="checkbox" v-model="abilities.joborderdestroy">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="col-md-auto">
+                                                <label class="switch-label">Job Order Delete</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             @endif
 
                             <div class="col-md-12">
@@ -1004,6 +1119,7 @@
             methods: {
                 store() {
                     var $this = this;
+
                     $.ajax({
                         url: '{{ route('role.store') }}',
                         method: 'POST',
@@ -1028,26 +1144,27 @@
                 update() {
                     var $this = this;
                     $.ajax({
-                        url: '{{ route('role.abilities') }}',
-                        method: 'POST',
-                        data: {
-                            role: $this.role,
-                            abilities: $this.abilities
-                        },
-                        success: function(value) {
-                            Swal.fire(
-                                'Good job!',
-                                'Operation is successful.',
-                                'success'
-                            ).then((result) => {
-                                if (result.value) {
-                                    window.location = '{{ route('role') }}'
-                                }
+                    url: '{{ route('role.abilities') }}',
+                    method: 'POST',
+                    data: {
+                    role: $this.role,
+                    abilities: $this.abilities
+                    },
+                    success: function(value) {
+                    Swal.fire(
+                    'Good job!',
+                    'Operation is successful.',
+                    'success'
+                    ).then((result) => {
+                    if (result.value) {
+                    window.location = '{{ route('role') }}'
+                    }
                             })
-                        }
+                    }
                     })
                 },
             },
+
             mounted() {
                 var $this = this;
 

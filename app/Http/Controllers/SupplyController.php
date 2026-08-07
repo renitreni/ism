@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 
 class SupplyController extends Controller
@@ -18,7 +19,57 @@ class SupplyController extends Controller
      */
     public function index()
     {
-        return view('supply');
+
+        $products = DB::table('products')->get();
+
+        return view('supply', compact('products'));
+    }
+
+    public function add_supply(Request $request){
+        // insert to supply table
+       // Validate the incoming request
+    $validator = Validator::make($request->all(), [
+        'product_id' => 'required|exists:products,id',
+        'quantity' => 'required|numeric|min:1',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation error',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    // Fetch the product details
+    $product = DB::table('products')->find($request->product_id);
+    if (!$product) {
+        return response()->json(['message' => 'Product not found'], 404);
+    }
+
+    // Check if the supply record already exists
+    $supply = Supply::where('product_id', $request->product_id)->first();
+    $user = auth()->user();
+
+    if ($supply) {
+        // Update the existing supply record
+        $supply->quantity += $request->quantity;
+        $supply->save();
+        return response()->json(['message' => 'Supply added']);
+
+    } else {
+
+    $supplies = new Supply();
+    $supplies->product_id = $request->product_id;
+    $supplies->quantity = $request->quantity;
+    $supplies->unit_cost = $product->selling_price;
+    $supplies->assigned_to = $user->id;
+    $supplies->save();
+
+
+        return response()->json(['message' => 'Supply added']);
+
+    }
+
     }
 
     public function table()
@@ -56,7 +107,7 @@ class SupplyController extends Controller
                                  and product_details.deleted_at IS NULL group by product_id) as so_sum'),
                 'so_sum.product_id', '=', 'supplies.product_id'
             );
-
+        $supplies->orderBy('supplies.quantity', 'desc');
         return DataTables::of($supplies)->make(true);
     }
 
@@ -192,4 +243,10 @@ class SupplyController extends Controller
 
         return view('supply_versus', compact('po', 'so'));
     }
+
+    public function recalibrate_data(){
+        Supply::recalibrate();
+        return response()->json(['message' => 'Recalibrated']);
+    }
+
 }

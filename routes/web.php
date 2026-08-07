@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\JobOrderController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,10 +31,14 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/home/po', 'DashboardController@orderedPO')->name('home.po');
     Route::post('/home/so', 'DashboardController@quoteSO')->name('home.so');
     Route::post('/home/total/so', 'DashboardController@totalSO')->name('home.total.so');
+    Route::post('/home/total/sovi', 'DashboardController@totalSOVI')->name('home.total.sovi');
     Route::post('/home/total/po', 'DashboardController@totalPO')->name('home.total.po');
+    Route::post('/home/total/povi', 'DashboardController@totalPOVI')->name('home.total.povi');
     Route::post('/home/total/expenses', 'DashboardController@totalExpenses')->name('home.total.expenses');
     Route::get('/home/assets/printable', 'DashboardController@assetsPrintable')->name('home.assets.printable');
-    Route::get('/home/po/printable/{start}/{end}', 'DashboardController@poTotalPrintable')->name('home.po.printable');
+    Route::post('/home/po/printable', 'DashboardController@poTotalPrintable')->name('home.po.printable');
+    Route::post('/home/povi/printable', 'DashboardController@poviTotalPrintable')->name('home.povi.printable');
+    Route::post('/home/sovi/printable', 'DashboardController@soviTotalPrintable')->name('home.sovi.printable');
     Route::get('/home/so/printable/{start}/{end}', 'DashboardController@soTotalPrintable')->name('home.so.printable');
     Route::get('/home/qtn/printable/{start}/{end}', 'DashboardController@qtnTotalPrintable')->name('home.qtn.printable');
     Route::get('/home/labor', 'DashboardController@totalLaborPrintable')->name('home.labor.printable');
@@ -38,24 +46,32 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/home/expenses', 'DashboardController@expensesPrintable')->name('home.expenses.printable');
 
     Route::get('/purchase', 'PurchaseInfoController@index')->name('purchase')->middleware('can:purchaseorder');
+    Route::get('/purchase_stockin', 'PurchaseInfoController@purchase_stockin')->name('purchase_stockin')->middleware('can:purchaseorder');
     Route::get('/purchase/create', 'PurchaseInfoController@create')->name('purchase.create')->middleware('can:purchaseordercreate');
     Route::get('/purchase/view/{id}', 'PurchaseInfoController@show')->name('purchase.view')->middleware('can:purchaseorderretrieve');
     Route::get('/purchase/detail/{id}', 'PurchaseInfoController@show')->name('purchase.detail')->middleware('can:purchaseorderupdate');
     Route::post('/purchase/destroy', 'PurchaseInfoController@destroy')->name('purchase.destroy')->middleware('can:purchaseorderdestroy');
     Route::post('/purchase/table', 'PurchaseInfoController@table')->name('purchase.table');
+    Route::post('/purchase/table/stockin', 'PurchaseInfoController@table_stock_in')->name('purchase.table.stockIn');
     Route::post('/purchase/update', 'PurchaseInfoController@update')->name('purchase.update');
     Route::post('/purchase/store', 'PurchaseInfoController@store')->name('purchase.store');
     Route::post('/purchase/status/update', 'PurchaseInfoController@updateStatus')->name('purchase.status.update')->middleware('can:purchasestatusupdate');
     Route::get('/purchase/print/{id}', 'PurchaseInfoController@printable')->name('purchase.print');
     Route::get('/purchase/preview/{id}', 'PurchaseInfoController@previewPO')->name('purchase.preview');
     Route::post('/purchase/payment/status/update', 'PurchaseInfoController@updatePaymentStatus')->name('purchase.payment.status.update');
+    Route::get('/purchase/report/{start}/{end}', 'PurchaseInfoController@downloadPurchaseReport')->name('purchase.report');
+    Route::get('/purchase/report/all', 'PurchaseInfoController@downloadPurchaseReportAll')->name('purchase.report.all');
 
     Route::get('/sales', 'SalesOrderController@index')->name('sales')->middleware('can:salesorder');
+    Route::get('/sales/stock_out', 'SalesOrderController@stock_out')->name('sales.stockout')->middleware('can:salesorder');
+    Route::get('/sales/order_formats', 'SalesOrderController@order_formats')->name('sales.order_formats')->middleware('can:salesorder');
     Route::get('/sales/create', 'SalesOrderController@create')->name('sales.create')->middleware('can:salesordercreate');
     Route::get('/sales/view/{id}', 'SalesOrderController@show')->name('sales.view')->middleware('can:salesorderretrieve');
     Route::get('/sales/detail/{id}', 'SalesOrderController@show')->name('sales.detail')->middleware('can:salesorderupdate');
     Route::post('/sales/destroy', 'SalesOrderController@destroy')->name('sales.destroy')->middleware('can:salesorderdestroy');
     Route::post('/sales/table', 'SalesOrderController@table')->name('sales.table');
+    Route::post('/sales/table/stockout', 'SalesOrderController@table_stockout')->name('stock_out.table');
+    Route::post('/sales/table/table_order_format', 'SalesOrderController@table_order_format')->name('table_order_format.table');
     Route::post('/sales/update', 'SalesOrderController@update')->name('sales.update');
     Route::post('/sales/store', 'SalesOrderController@store')->name('sales.store');
     Route::post('/sales/status/update', 'SalesOrderController@updateStatus')->name('sales.status.update')->middleware('can:salesstatusupdate');
@@ -64,10 +80,15 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/sales/deliver/{id}', 'SalesOrderController@deliver')->name('sales.deliver');
     Route::get('/sales/preview/{id}', 'SalesOrderController@previewSO')->name('sales.preview');
     Route::post('/sales/shipped/list', 'SalesOrderController@getListShipped')->name('sales.shipped.list');
+    Route::get('/sales/shipped/get_permission', 'SalesOrderController@get_permission')->name('sales.get_permission_roles');
     Route::post('/sales/payment/update', 'SalesOrderController@updatePaymentStatus')->name('sales.payment.update')->middleware('can:salespaymentupdate');
-    Route::post('/sales/vat/update', 'SalesOrderController@updateVatStatus')->name('sales.vat.update')->middleware('can:salesvatupdate');
+    Route::post('/sales/vat/update', 'SalesOrderController@updateVatStatus')->name('sales.vat.update');
     Route::post('/sales/delivery/update', 'SalesOrderController@updateDeliveryStatus')->name('sales.delivery.update')->middleware('can:salesdeliveryupdate');
     Route::get('/sales/report/{start}/{end}', 'SalesOrderController@downloadSaleReport')->name('sales.report');
+    Route::get('/sales/report/all', 'SalesOrderController@downloadSaleReportAll')->name('sales.report.all');
+    Route::post('/sales/clone', 'SalesOrderController@clone_so')->name('sales.clone');
+    Route::post('/sales/cloneToFormat', 'SalesOrderController@cloneToFormat')->name('sales.cloneToFormat');
+    Route::post('/sales/updateFormat', 'SalesOrderController@updateFormat')->name('sales.updateFormat');
 
     Route::get('/vendors', 'VendorController@index')->name('vendor')->middleware('can:vendors');
     Route::get('/vendors/create', 'VendorController@create')->name('vendor.create')->middleware('can:vendorscreate');
@@ -103,6 +124,7 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/product/update', 'ProductController@update')->name('product.update');
     Route::post('/product/image/upload', 'ProductController@imageUpload')->name('product.image.upload');
     Route::post('/product/so/list', 'ProductController@getSOList')->name('product.so.list');
+    Route::get('/products/export/excel', 'ProductController@exportExcel')->name('product.export.excel')->middleware('can:products');
 
     Route::post('/category/list', 'CategoryController@getList')->name('category.list');
     Route::post('/category/destroy', 'CategoryController@destroy')->name('category.delete')->middleware('can:productsupdate');
@@ -113,9 +135,15 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::post('/supply/po', 'SupplyController@getPOLinks')->name('supply.po.links');
     Route::post('/supply/so', 'SupplyController@getSOLinks')->name('supply.so.links');
     Route::post('/supply/update/quantity', 'SupplyController@updateQuantity')->name('supply.update.quantity');
+    Route::post('/supply/add-supply', 'SupplyController@add_supply')->name('supply.add.manual');
     Route::get('/supply/po/{id}', 'SupplyController@previewPO')->name('supply.po.preview');
     Route::get('/supply/so/{id}', 'SupplyController@previewSO')->name('supply.so.preview');
     Route::get('/supply/versus/{id}', 'SupplyController@versus')->name('supply.so.preview');
+    Route::post('/supply/recalibrate_data', 'SupplyController@recalibrate_data')->name('recalibrate.data');
+
+    Route::get('/supply_history', 'SupplyHistoryController@index')->name('supply_history')->middleware('can:supplies');
+    Route::post('/supply_history/table', 'SupplyHistoryController@table')->name('supply_history.table');
+
 
     Route::get('/users', 'UserController@index')->name('users')->middleware('can:useraccounts');
     Route::get('/user/detail/{id}', 'UserController@show')->name('user.detail')->middleware('can:useraccountsupdate');
@@ -148,6 +176,19 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/preference', 'PreferenceController@index')->name('preference')->middleware('can:preference');
     Route::post('/preference/update', 'PreferenceController@update')->name('preference.update');
 
+    Route::get('/payment-term', 'PaymentTermController@index')->name('payment-term')->middleware('can:preference');
+    Route::get('/payment-term/create', 'PaymentTermController@create')->name('payment-term.create')->middleware('can:preference');
+    Route::get('/payment-term/view/{id}', 'PaymentTermController@show')->name('payment-term.view')->middleware('can:preference');
+    Route::get('/payment-term/detail/{id}', 'PaymentTermController@show')->name('payment-term.detail')->middleware('can:preference');
+    Route::post('/payment-term/destroy', 'PaymentTermController@destroy')->name('payment-term.destroy')->middleware('can:preference');
+    Route::post('/payment-term/table', 'PaymentTermController@table')->name('payment-term.table');
+    Route::post('/payment-term/store', 'PaymentTermController@store')->name('payment-term.store');
+    Route::post('/payment-term/update', 'PaymentTermController@update')->name('payment-term.update');
+
+    Route::get('/print_setting', 'PrintSettingController@index')->name('print.setting')->middleware('can:preference');
+    Route::post('/print_setting/update', 'PrintSettingController@update')->name('print_setting.update');
+
+
     Route::get('/return', 'ProductReturnController@index')->name('return')->middleware('can:productreturn');
     Route::post('/return/table', 'ProductReturnController@table')->name('return.table');
     Route::get('/return/create', 'ProductReturnController@create')->name('return.create')->middleware('can:productreturncreate');
@@ -167,14 +208,26 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/audit', 'AuditLogController@index')->name('audit')->middleware('can:auditlogs');
     Route::post('/audit/table', 'AuditLogController@table')->name('audit.table');
     Route::post('/audit/delete', 'AuditLogController@delete')->name('audit.delete');
-    
+
     Route::get('/override', 'OverrideController@index')->name('override')->middleware('can:override');
     Route::post('/override/restore/point', 'OverrideController@backupSQL')->name('restore.point');
     Route::post('/override/restore/sql', 'OverrideController@restoreSQL')->name('restore.sql');
     Route::post('/override/wipe/sql', 'OverrideController@databaseWipe')->name('override.wipe');
 
+    // Backup & Restore Module
+    Route::get('/backup', 'BackupController@index')->name('backup')->middleware('can:override');
+    Route::post('/backup/export/categories', 'BackupController@exportCategories')->name('backup.export.categories');
+    Route::post('/backup/export/all', 'BackupController@exportAll')->name('backup.export.all');
+    Route::post('/backup/download', 'BackupController@download')->name('backup.download');
+    Route::post('/backup/delete', 'BackupController@deleteFile')->name('backup.delete');
+    Route::get('/backup/files', 'BackupController@files')->name('backup.files');
+    Route::get('/backup/history', 'BackupController@history')->name('backup.history');
+    Route::post('/restore/upload', 'RestoreController@restore')->name('restore.upload');
+    Route::post('/restore/from-file', 'RestoreController@restoreFromFile')->name('restore.from-file');
+
     Route::get('/expenses',  'ExpensesController@index')->name('expenses')->middleware('can:expenses');
     Route::post('/expenses/table', 'ExpensesController@table')->name('expenses.table');
+    Route::post('/expenses/summary', 'ExpensesController@summary')->name('expenses.summary');
     Route::get('/expenses/create', 'ExpensesController@create')->name('expenses.create');
     Route::post('/expenses/store', 'ExpensesController@store')->name('expenses.store')->middleware('can:expensescreate');
     Route::get('/expenses/detail/{id}', 'ExpensesController@edit')->name('expenses.edit');
@@ -187,4 +240,34 @@ Route::group(['middleware' => ['auth','web', 'audit']], function () {
     Route::get('/quote/view/{id}', 'SalesOrderController@show')->name('quote.view')->middleware('can:quoteretrieve');
     Route::get('/quote/detail/{id}', 'SalesOrderController@show')->name('quote.detail')->middleware('can:quoteupdate');
     Route::post('/quote/destroy', 'SalesOrderController@destroy')->name('quote.destroy')->middleware('can:quotedestroy');
+
+    Route::get('/job-order', [JobOrderController::class, 'index'])->name('job-order')->middleware('can:joborder');
+    Route::post('/job-order/table', [JobOrderController::class, 'table'])->name('job-order.table');
+    Route::get('/job-order/create', [JobOrderController::class, 'create'])->name('job-order.create')->middleware('can:jobordercreate');
+    Route::post('/job-order/store', [JobOrderController::class, 'store'])->name('job-order.store')->middleware('can:jobordercreate');
+    Route::get('/job-order/edit/{jobOrder}', [JobOrderController::class, 'edit'])->name('job-order.edit')->middleware('can:joborderretrieve');
+    Route::post('/job-order/update', [JobOrderController::class, 'update'])->name('job-order.update')->middleware('can:joborderupdate');
+    Route::post('/job-order/destroy', [JobOrderController::class, 'destroy'])->name('job-order.destroy')->middleware('can:joborderdestroy');
+    Route::get('/job-order/download/{jobOrder}', [JobOrderController::class, 'download'])->name('job-order.download');
+    Route::get('/job-order/preview/{jobOrder}', [JobOrderController::class, 'preview'])->name('job-order.preview');
+
+    // Accounts Payable Module
+    Route::get('/accounts-payable', 'AccountsPayableController@index')->name('accounts-payable');
+    Route::post('/accounts-payable/table', 'AccountsPayableController@table')->name('accounts-payable.table');
+    Route::get('/accounts-payable/create', 'AccountsPayableController@create')->name('accounts-payable.create');
+    Route::post('/accounts-payable/store', 'AccountsPayableController@store')->name('accounts-payable.store');
+    Route::get('/accounts-payable/detail/{id}', 'AccountsPayableController@edit')->name('accounts-payable.edit');
+    Route::get('/accounts-payable/view/{id}', 'AccountsPayableController@show')->name('accounts-payable.show');
+    Route::post('/accounts-payable/update', 'AccountsPayableController@store')->name('accounts-payable.update');
+    Route::post('/accounts-payable/destroy', 'AccountsPayableController@destroy')->name('accounts-payable.destroy');
+
+    // Accounts Receivable Module
+    Route::get('/accounts-receivable', 'AccountsReceivableController@index')->name('accounts-receivable');
+    Route::post('/accounts-receivable/table', 'AccountsReceivableController@table')->name('accounts-receivable.table');
+    Route::get('/accounts-receivable/create', 'AccountsReceivableController@create')->name('accounts-receivable.create');
+    Route::post('/accounts-receivable/store', 'AccountsReceivableController@store')->name('accounts-receivable.store');
+    Route::get('/accounts-receivable/detail/{id}', 'AccountsReceivableController@edit')->name('accounts-receivable.edit');
+    Route::get('/accounts-receivable/view/{id}', 'AccountsReceivableController@show')->name('accounts-receivable.show');
+    Route::post('/accounts-receivable/update', 'AccountsReceivableController@store')->name('accounts-receivable.update');
+    Route::post('/accounts-receivable/destroy', 'AccountsReceivableController@destroy')->name('accounts-receivable.destroy');
 });

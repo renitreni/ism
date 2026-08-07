@@ -20,35 +20,50 @@ class SalesOrder extends Model
     public function newSONo()
     {
         if (Preference::verify('so_auto') == 0) {
-            return '';
-        }
+    return '';
+}
 
-        $so_no_list = $this->newQuery()
-            ->where('so_no', 'like', '%SO%')
-            ->orderBy('id', 'desc')
-            ->limit(1)
-            ->get()
-            ->toArray();
-        $str_length = 5;
-        $year       = Carbon::now()->format('y');
+$so_no_list = $this->newQuery()
+    ->where('so_no', 'like', '%SO%')
+    ->max('so_no');
 
-        if (isset($so_no_list[0]["so_no"])) {
-            $so_no = $so_no_list[0]["so_no"];
-        }
+$str_length = 5;
+$year = Carbon::now()->format('y');
 
-        if (count($so_no_list) == 0 || substr(explode('-', $so_no)[0], -2) != $year) {
-            $num = 1;
-            $str = substr("0000{$num}", -$str_length);
+// Initialize $so_no to prevent errors
+$so_no = $so_no_list ? [$so_no_list] : [];
 
-            return 'SO'.$year.'-'.$str;
-        } else {
-            $numbering = explode('-', $so_no)[1];
-            $year      = Carbon::now()->format('y');
-            $final_num = (int) $numbering + 1;
-            $str       = substr("0000{$final_num}", -$str_length);
+// Check if $so_no is not empty and has valid format
+if (!empty($so_no) && isset($so_no[0]) && strpos($so_no[0], '-') !== false) {
+    $numbering = explode('-', $so_no[0])[1];
+} else {
+    // Handle cases where $so_no is invalid or not in expected format
+    $numbering = str_pad('1', $str_length, '0', STR_PAD_LEFT); // Default numbering
+}
 
-            return 'SO'.$year.'-'.$str;
-        }
+        $year      = Carbon::now()->format('y');
+        $final_num = (int) $numbering + 1;
+        $str       = substr("0000{$final_num}", -$str_length);
+
+        return 'SO'.$year.'-'.$str;
+
+
+        // if (count($so_no_list) == 0 || substr(explode('-', $so_no)[0], -2) != $year) {
+        //     $num = 1;
+        //     $str = substr("0000{$num}", -$str_length);
+        //     print_r($str);
+        //     die();
+        //     return 'SO'.$year.'-'.$str;
+        // } else {
+        //     $numbering = explode('-', $so_no)[1];
+        //     $year      = Carbon::now()->format('y');
+        //     $final_num = (int) $numbering + 1;
+        //     $str       = substr("0000{$final_num}", -$str_length);
+        //     print_r($str);
+        //     die();
+        //     return 'SO'.$year.'-'.$str;
+        // }
+
     }
 
     public static function updateInfo($overview)
@@ -65,6 +80,49 @@ class SalesOrder extends Model
             ->when($start && $end, function ($q) use ($start, $end) {
                 $q->whereBetween('sales_orders.created_at', [$start, $end]);
             });
+    }
+
+    public function totalvi($month, $year)
+    {
+
+        $query =  $this->join('summaries', 'summaries.sales_order_id', '=', 'sales_orders.id')
+            ->leftJoin('customers', 'customers.id', '=', 'sales_orders.customer_id')
+            ->where('delivery_status', 'Shipped')
+            ->where('vat_type', 'VAT INC')
+            ->whereNull('purchase_order_id');
+
+            if ($month && $year) {
+
+                $startOfMonth = $year . '-' . $month . '-01';
+                $endOfMonth = date('Y-m-t', strtotime($startOfMonth));
+
+                $query->whereBetween('sales_orders.created_at', [$startOfMonth, $endOfMonth]);
+            }
+
+            if ($month && empty($year)) {
+                $year = date('Y');
+                $startOfMonth = $year . '-' . $month . '-01';
+                $endOfMonth = date('Y-m-t', strtotime($startOfMonth));
+
+                $query->whereBetween('sales_orders.created_at', [$startOfMonth, $endOfMonth]);
+            }
+
+            if (empty($month) && $year) {
+                $start_month = 01;
+                $end_month = 12;
+                $startOfMonth = $year . '-' . $start_month . '-01';
+
+                $endOfMonth = $year . '-' . $end_month . '-31';
+                $endOfMonth = date('Y-m-t', strtotime($endOfMonth));
+
+
+                $query->whereBetween('sales_orders.created_at', [$startOfMonth, $endOfMonth]);
+
+            }
+
+        // $totalGrandTotal = $query->sum('summaries.grand_total');
+
+        return $query;
     }
 
     public function totalQtn($start, $end)

@@ -36,10 +36,17 @@ return [
 
     'pdf' => [
         'enabled' => true,
-        'binary'  => env('PATH_PDF') ? base_path(env('PATH_PDF')) : '/usr/local/bin/wkhtmltopdf',
+        'binary'  => env('PATH_PDF') ? base_path(env('PATH_PDF')) : '/usr/bin/wkhtmltopdf',
         'timeout' => false,
         'options' => [
             'enable-local-file-access' => true,
+            'disable-smart-shrinking' => true,
+            'margin-top' => 5,
+            'margin-bottom' => 5,
+            'margin-left' => 5,
+            'margin-right' => 5,
+            'dpi' => 96,
+            'page-size' => 'A4',
         ],
         'env'     => [],
     ],

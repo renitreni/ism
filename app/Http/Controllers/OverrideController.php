@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\JobOrder;
+use App\JobOrderProduct;
+use App\JobOrderStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Spatie\DbDumper\Databases\MySql;
@@ -77,6 +80,13 @@ class OverrideController extends Controller
                     break;
                 case 'supplies':
                     DB::table('supplies')->update(['quantity' => 0]);
+                case 'supply_history':
+                    DB::table('supply_history')->delete();
+                    break;
+                case 'job_order':
+                    JobOrderStatus::query()->delete();
+                    JobOrderProduct::query()->delete();
+                    JobOrder::query()->delete();
                     break;
             }
             Alert::success('DB Wiped Successful!', 'Successful Wiped!');
